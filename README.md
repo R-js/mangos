@@ -14,7 +14,7 @@ Support this repo by ⭐ starring it.
 
 ## JPath
 
-An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/validator/README.md)
+An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/jpath/README.md)
 
 ## JValidator
 
