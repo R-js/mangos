@@ -52,7 +52,7 @@ describe('features tests', function () {
         });
         it('some array elements are not functions, should reject', () => {
             const checker = () => V.any([1, 2, 'he']); // 
-            expect(checker).to.throw('"any" validator on index 0 is not a callable function|"any" validator on index 1 is not a callable function|"any" validator on index 2 is not a callable function');
+            expect(checker).to.throw('\n|"any" validator on index 0 is not a callable function\n|"any" validator on index 1 is not a callable function\n|"any" validator on index 2 is not a callable function');
         });
         it('match 0 validators in the set', () => {
             const checker = V.any([

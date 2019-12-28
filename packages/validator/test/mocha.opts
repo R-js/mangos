@@ -4,6 +4,6 @@
 --exit
 --bail
 --timeout 0
-#test/utils.test.js
-#test/features.test.js
+test/utils.test.js
+test/features.test.js
 test/filepath.test.js

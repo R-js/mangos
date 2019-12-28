@@ -1,4 +1,4 @@
-
+'use strict';
 const { features } = require('./dictionary');
 const { isArray } = Array;
 
@@ -21,7 +21,7 @@ features.set('any', {
             }
         }
         if (errors.length) {
-            throw new Error('\n|'+errors.join('|\n')+'\n');
+            throw new Error('\n|'+errors.join('\n|')+'\n');
         }
         // everything set to go
         return function checkAny(obj, ctx = { data: obj, location: [] }) {
@@ -30,10 +30,10 @@ features.set('any', {
             for (let i = 0; i < idaat.length; i++){
                 let itmValid = false;
                 for (const validator of a) {
-                    const [result, error] = validator(idaat, ctx);
+                    const [result, error] = validator(idaat[i], ctx);
                     if (!error) {
                         idaat[i] = result;
-                        itemValid = true;
+                        itmValid = true;
                         break;
                     }
                 }
