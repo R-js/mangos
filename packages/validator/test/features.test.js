@@ -42,13 +42,9 @@ describe('features tests', function () {
         const string = V.string(0, 50);
         const integer = V.integer(-5, 10);
         const object = V.object({ a: V.integer() }).closed;
-        it('reject configuration thats not an array', () => {
-            const checker = () => V.any(); // 
-            expect(checker).to.throw('"any" feature needs an array as configuration input');
-        });
         it('reject empty configuration array', () => {
             const checker = () => V.any([]); // 
-            expect(checker).to.throw('trying to configure "any" feature with an non-empty array');
+            expect(checker).to.throw('trying to configure "any" feature with an empty array');
         });
         it('some array elements are not functions, should reject', () => {
             const checker = () => V.any([1, 2, 'he']); // 

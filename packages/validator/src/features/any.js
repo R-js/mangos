@@ -7,16 +7,14 @@ features.set('any', {
     factory: 1,
     name: 'any',
     fn: a => {
-        if (!isArray(a)) {
-            throw new Error('"any" feature needs an array as configuration input');
-        }
-        if (a.length === 0) {
-            throw new Error('trying to configure "any" feature with an non-empty array');
+        if (isArray(a) && a.length === 0) {
+            throw new Error('trying to configure "any" feature with an empty array');
         }
         // all of the elements must be functions
+        const validators = isArray(a) ? a: [a];
         const errors = [];
-        for (let i = 0; i < a.length; i++) {
-            if (!(a[i] instanceof Function)) {
+        for (let i = 0; i < validators.length; i++) {
+            if (!(validators[i] instanceof Function)) {
                 errors.push(`"any" validator on index ${i} is not a callable function`);
             }
         }
@@ -29,7 +27,7 @@ features.set('any', {
             const idaat = Array.isArray(obj) ?  obj : [obj];
             for (let i = 0; i < idaat.length; i++){
                 let itmValid = false;
-                for (const validator of a) {
+                for (const validator of validators) {
                     const [result, error] = validator(idaat[i], ctx);
                     if (!error) {
                         idaat[i] = result;
