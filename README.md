@@ -1,6 +1,6 @@
 # mangos
 
-🥭🥭 A monorepo collecting data wrangling and data validation utilities.
+🥭🥭 A monorepo collecting data wrangling and data validation utilities (release date jan 2020).
 
 
 The current collection of tools is listed below, new tools are planned for the future, create an [issue](issues) to propose new features, new tools, and/or bug findings.
