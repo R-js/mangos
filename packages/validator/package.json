@@ -1,5 +1,5 @@
 {
-  "name": "validator",
+  "name": "@mangos/jvalidator",
   "version": "1.0.0",
   "description": "",
   "main": "src/proxy.js",
