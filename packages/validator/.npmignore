@@ -1,0 +1,9 @@
+src
+doc
+nyc.md
+.*
+package-lock.json
+test
+node_modules
+.nyc_output
+coverage

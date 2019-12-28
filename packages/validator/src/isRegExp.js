@@ -1,0 +1,1 @@
+module.exports = isRegexp = regex => regex instanceof RegExp;
