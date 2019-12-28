@@ -14,15 +14,12 @@ Support this repo by ⭐ starring it.
 
 ## JPath
 
-An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR]()
+An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/validator/README.md)
 
 ## JValidator
 
-An extreemly intuitive `JOI like` (but easier to use) JS validator, validates arrays and scalar values, including **the ability to internally cross reference data within Javascript objects**, extend existing validators, add new features to the validator dictionary and many more. [#TLDR]()
+An extreemly intuitive `JOI like` (but easier to use) JS validator, validates arrays and scalar values, including **the ability to internally cross reference data within Javascript objects**, extend existing validators, add new features to the validator dictionary and many more. [#TLDR](packages/validator/README.md)
 
-Thinking about contributing? Read [guidelines](#contributing) and [code of conduct](#conduct)
-
+Thinking about contributing? Read [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTIBUTING_GUIDELINES.md)
 
 [issues]: https://github.com/R-js/mangos/issues
-[contributing]: ./CONTIBUTING_GUIDELINES.md
-[conduct]: ./CODE_OF_CONDUCT.md
