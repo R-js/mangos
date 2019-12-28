@@ -21,18 +21,29 @@ features.set('any', {
             }
         }
         if (errors.length) {
-            throw new Error(errors.join('|'));
+            throw new Error('\n|'+errors.join('|\n')+'\n');
         }
         // everything set to go
         return function checkAny(obj, ctx = { data: obj, location: [] }) {
             // loop over all posibilities untill you have a success
-            for (const fn of a) {
-                const [result, error] = fn(obj, ctx);
-                if (!error) {
-                    return [result, undefined];
+            const idaat = Array.isArray(obj) ?  obj : [obj];
+            for (let i = 0; i < idaat.length; i++){
+                let itmValid = false;
+                for (const validator of a) {
+                    const [result, error] = validator(idaat, ctx);
+                    if (!error) {
+                        idaat[i] = result;
+                        itemValid = true;
+                        break;
+                    }
                 }
+                if (!itmValid){
+                    return [ undefined, idaat.length === 1 ? 'none of the "any" set of validation functions approved the input':
+                            `array element at index: ${i} failed any validation`];        
+                } 
             }
-            return [undefined, `none of the "any" set of validation functions approved the input`];
+            // all was ok
+            return [ idaat.length === 1 ? obj : idaat[0], undefined ];
         };
     }
 });
