@@ -93,20 +93,22 @@ create a validator for `retailOutlets`
 const { V } = require('@mangos/jsvalidator');
 
 const outlet = V.object({
-    name: V.string(5),                      // string must be minimally 5 characters in length
-    streetname: V.string(4,50),             // string must be between 4 and 50 characters in length
-    zip: V.regexp(/^[A-Z]{2}\s+[0-9]{5}$/), // US zipcode format, example "TN 12345"
-    housNumber: V.toNumber.number(1 , 500), // a number between 1 and 500
-    state: V.string(2,2).optional           // USstate is 2 letter code
-}).closed;                                  // closed means no other attributes are allowed
+    name:       V.string(5),                       // string must be minimally 5 characters in length
+    streetname: V.string(4,50),                    // string must be between 4 and 50 characters in length
+    zip:        V.regexp(/^[A-Z]{2}\s+[0-9]{5}$/), // US zipcode format, example "TN 12345"
+    housNumber: V.number(1 , 500),                 // a number between 1 and 500
+    state:      V.string(2,2).optional             // USstate is 2 letter code
+}).closed;                                         // closed means no other attributes are allowed
 
 const outlets = V.object({
-    retailOutlets: V.isArray().any([outlet])    // each individual item in retalOUtlets (or if retail) items in the array must validate 
-}).open
+    retailOutlets: V.any(outlet)    // each individual item in "retailOutlets" array must comply with the "outlet" validator 
+}).open                             // other object properties may exist, but will not be validated
 
+
+const [result, error] = outlets(data); //
+//-> error will be undefined,
+//-> result will be the same as data
 ```
-
-
 
 Thinking about contributing? Read [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTIBUTING_GUIDELINES.md)
 
