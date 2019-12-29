@@ -1,0 +1,7 @@
+--full-trace
+--recursive
+--sort
+--exit
+--bail
+--timeout 0
+test/test.js
