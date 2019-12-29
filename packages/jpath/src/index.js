@@ -14,3 +14,4 @@ module.exports = function jpath(path, data = undefined) {
         return objectSlice(data, tokens);
     }
 };
+

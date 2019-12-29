@@ -34,14 +34,6 @@ const tokens = Object.freeze({
 //  For now how absorbers are hierarchicly linked is programmicly determined, but later do a more declerative way of doing things.
 // 
 
-function createRegExp(regexpText) {
-    try {
-        return [new RegExp(regexpText), undefined]
-    } catch (err) {
-        return [undefined, String(err)];
-    }
-}
-
 const predicateElementAbsorber = {
     name: 'clauseElt',
     order: 0,
@@ -52,9 +44,8 @@ const predicateElementAbsorber = {
             for (let j = start + 2; j <= end; j++) {
                 if (str[j] === '/' && str[j - 1] === '\\') {
                     const correctedText = str.slice(start + 2, j - 1);
-                    const [value, error] = createRegExp(correctedText);
+                    const value = new RegExp(correctedText)
                     yield {
-                        error,
                         value,
                         token: tokens.PREDICATE_ELT_REGEXP,
                         start,
@@ -64,13 +55,14 @@ const predicateElementAbsorber = {
                 }
             }
             const value = str.slice(start, end + 1);
-            return {
+            yield {
                 error: `no closing "/" found to end the regular expression ${value}`,
                 token: tokens.PREDICATE_ELT_REGEXP,
                 start,
                 end,
                 value
             };
+            return;
         }
         // absorb till end or untill you see a '=' (not delimited with a "\")
         for (let j = start + 1; j <= end; j++) {
@@ -85,12 +77,14 @@ const predicateElementAbsorber = {
             }
         }
         // all of it till the end
-        yield {
-            value: str.slice(start, end + 1),
-            token: tokens.PREDICATE_ELT_LITERAL,
-            start,
-            end
-        };
+        if (end >= start) {
+            yield {
+                value: str.slice(start, end + 1),
+                token: tokens.PREDICATE_ELT_LITERAL,
+                start,
+                end
+            };
+        }
         return;
     }
 };
@@ -112,7 +106,7 @@ const predicateAbsorber = {
         let sepLoc = start + 1;
         do {
             sepLoc = str.indexOf('=', sepLoc);
-            if (sepLoc === -1 || sepLoc >= end - 1) {
+            if (sepLoc === -1 || sepLoc >= end - 1 || sepLoc <= start+1) { // there is no token before/after '='
                 return undefined;
             }
             if (str[sepLoc - 1] === '\\') {
@@ -121,17 +115,8 @@ const predicateAbsorber = {
             }
             break;
         } while (sepLoc <= end - 1);
-        const firstToken = Array.from(predicateElementTokenizer(str, start + 1, sepLoc - 1));
-        if (firstToken.length === 0) {
-            return undefined;
-        }
-        yield* firstToken;
-
-        const lastToken = Array.from(predicateElementTokenizer(str, sepLoc + 1, end - 1));
-        if (lastToken.length === 0) {
-            return undefined;
-        }
-        yield* lastToken;
+        yield* Array.from(predicateElementTokenizer(str, start + 1, sepLoc - 1));
+        yield* Array.from(predicateElementTokenizer(str, sepLoc + 1, end - 1));
         return;
     }
 };
@@ -218,102 +203,8 @@ const predicateElementTokenizer = createTokenizer(predicateElementAbsorber);
 
 const getTokens = path => Array.from(defaultTokenizer(path));
 
-const isAbsolute = t => t.length && t[0].token === tokens.SLASH;
-
-function escape(str) { // normal -> human interface
-    return str.replace('/', '\\/');
-}
-
-function descape(str) { // human interface -> normal
-    return str.replace(/\\\//g, '/');
-}
-
-const lastToken = a => a[a.length - 1] || {};
-
-function goUp(from) {
-    if (from.length === 1 && from.token === tokens.SLASH) {
-        return;
-    }
-    // protection
-    while (from.length && from[from.length - 1].token === tokens.SLASH) {
-        from.pop();
-    }
-    if (from.length > 0) {
-        // stip trailing "/"
-        while (lastToken(from).token === tokens.SLASH) {
-            from.pop();
-        }
-        // strip a path name
-        while (lastToken(from).token !== tokens.SLASH) {
-            from.pop();
-        }
-        // strap the '/' 
-        while (lastToken(from).token === tokens.SLASH) {
-            from.pop();
-        }
-    }
-    if (from.length === 0) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        })
-        return;
-    }
-}
-
-function add(from, token) {
-    if (from.length === 0) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        });
-    }
-    if (from[from.length - 1].token !== tokens.SLASH) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        });
-    }
-    from.push(token);
-}
-
-
-// take this out of this module at some later point
-function resolve(from, to) {
-    if (isAbsolute(to)) {
-        return to;
-    }
-    if (!isAbsolute(from)) {
-        throw new TypeError(`Internal error, object location path must be absolute`);
-    }
-    const resolved = from.slice(); //copy
-    for (const inst of to) {
-        switch (inst.token) {
-            case tokens.SLASH: // we dont care about this, as its just like a "space" between words
-                break;
-            case tokens.PARENT:
-                goUp(resolved);
-                break;
-            case tokens.CURRENT:
-                break; // skip
-            default: // case tokens.PATHPART: and dynamic variants go here
-                add(resolved, inst);
-        }
-    }
-    return resolved;
-}
-
-// take this out of this module at some later point
-function formatPath(tokens) {
-    if (tokens.length === 0) return '';
-    return tokens.map(t => t.value).join('');
-}
-
 module.exports = {
     tokens,
-    resolve,
-    formatPath,
-    escape,
     getTokens,
     defaultTokenizer,
     predicateTokenizer,

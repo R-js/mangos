@@ -25,6 +25,25 @@ const {
 
 describe('jspath', function () {
     describe('predicateElementTokenizer lexer', () => {
+      
+        it('error no closing \\/ on the end of a regexp', () => {
+            const text = '\\/\[a-z]';
+            const tokens = arr(predicateElementTokenizer(text, 0, text.length ? text.length - 1: 0));
+            expect(tokens).to.deep.equal([{
+                error: 'no closing "/" found to end the regular expression \\/[a-z]',
+                token: '\u0000x07',
+                start: 0,
+                end: 6,
+                value: '\\/[a-z]'
+            }]);
+        });
+        it('"=" should terminate search of any token', () => {
+            const text = 'sometoken=';
+            const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
+            expect(tokens).to.deep.equal(
+                [ { value: 'sometoken', token: '\u0000x08', start: 0, end: 8 } ]
+        );
+        });
         it('lexer "hello-world"', () => {
             const text = 'hello-world';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
@@ -33,13 +52,12 @@ describe('jspath', function () {
                 token: '\u0000x08',
                 start: 0,
                 end: 10
-            }])
+            }]);
         });
         it('lexer "/^[a-z]{3}$/"', () => {
             const text = '\\/^[a-z]{3}$\\/';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([{
-                error: undefined,
                 value: /^[a-z]{3}$/,
                 token: '\u0000x07',
                 start: 0,
@@ -50,7 +68,6 @@ describe('jspath', function () {
             const text = '\\/^[a-z]{3}$\\/=somevalue';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect([{
-                error: undefined,
                 value: /^[a-z]{3}$/,
                 token: '\u0000x07',
                 start: 0,
@@ -69,12 +86,31 @@ describe('jspath', function () {
         });
     });
     describe('predicateTokenizer lexer', () => {
+        it('empty predicate aka []',()=>{
+            const text = '[]';
+            const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
+            expect(tokens).to.deep.equal([]);
+        });
+        it('empty predicate aka []',()=>{
+            const text = '[=]';
+            const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
+            expect(tokens).to.deep.equal([]);
+        });
+        it('partial predicate aka [=b] should error',()=>{
+            const text = '[=b]';
+            const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
+            expect(tokens).to.deep.equal([]);
+        });
+        it('partial predicate aka [a=] should error',()=>{
+            const text = '[a=]';
+            const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
+            expect(tokens).to.deep.equal([]);
+        });
         it('lexer "[\\/^[a-z]{3}$\\/=somevalue]"', () => {
             const text = '[\\/^[a-z]{3}$\\/=somevalue]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal(
                 [{
-                        error: undefined,
                         value: /^[a-z]{3}$/,
                         token: '\u0000x07',
                         start: 1,
@@ -117,7 +153,6 @@ describe('jspath', function () {
                     end: 9
                 },
                 {
-                    error: undefined,
                     value: /^$/,
                     token: '\u0000x07',
                     start: 11,
@@ -127,6 +162,21 @@ describe('jspath', function () {
         });
     });
     describe('defaultTokenizer lexer', () => {
+        it('empty predicate /[a=b]/', () => {
+            const text = '/[a=b]/'
+            const tokens = arr(defaultTokenizer(text));
+            console.log(tokens);
+            //expect(tokens).to.deep.equal([]);
+        });
+        it('no arguments in defaultTokenizer', () => {
+            const tokens = arr(defaultTokenizer());
+            expect(tokens).to.deep.equal([]);
+        });
+        it('empty path should return ""', () => {
+            const text = '';
+            const tokens = arr(defaultTokenizer(text, 0, 0));
+            expect(tokens).to.deep.equal([ { token: '\u0001', start: 0, end: 0, value: '' } ]);
+        });
         it('lexer "/normal/and/simple/path"', () => {
             const text = '/normal/and/simple/path';
             const tokens = arr(defaultTokenizer(text, 0, text.length - 1));
