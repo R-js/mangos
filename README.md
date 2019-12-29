@@ -18,7 +18,14 @@ An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. 
 
 ## JValidator
 
-An extreemly intuitive `JOI like` (but easier to use) JS validator, validates arrays and scalar values, including **the ability to internally cross reference data within Javascript objects**, extend existing validators, add new features to the validator dictionary and many more. [#TLDR](packages/validator/README.md)
+An extreemly intuitive `JOI like` (but easier to use) JS validator, with the following advantages:
+
+- Easy to extend collection of build in validators with novice features
+- Ability to reference cross reference data within an object being validated
+- Compose validators via chaining "dot" notation aka `V.IfFalsy(123).integer(4).optional`
+- adding a validator via chaining to an existing validator creates a new validator instance: `V.float().integer()` is a different validator then `V.floatt()`.
+
+[Full Api Doc](packages/validator/README.md)
 
 #### install
 
@@ -130,7 +137,7 @@ const checkOrderItem = V.object({
      id:                  V.integer(1),                       // postive nonzero integer
      category:            V.enum('food','electronics'),       // the category value must exist in retailOutlets.name
      item:                V.string(1, 30),                    // must be a string of non-zero length and max length 30,
-     shop:'radioshack'    V.ref('/retailOutlets/name').exist  // the category value must exist in retailOutlets.name
+     shop:                V.ref('/retailOutlets/name').exist  // the category value must exist in retailOutlets.name
 }).closed;                                                    // no other property names are allowed
 ```
 
@@ -140,10 +147,10 @@ const checkOrderItem = V.object({
 const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
 
 const checkSingleCustomer = V.object({
-    name:         V.string(1),          // non empty string
-    deliveryAddress:  checkAddress      // a previously defined validator (step 1)
-    orderItems: V.any(checkOrderItem)   // every element of "orderItem" but be validated by checkOrderItems validator (defined in step2)
-}).closed;                              // no other properties allowed in the object
+    name:             V.string(1),            // non empty string
+    deliveryAddress:  checkAddress            // a previously defined validator (step 1)
+    orderItems:       V.any(checkOrderItem)   // every element of "orderItem" but be validated by checkOrderItems validator (defined in step2)
+}).closed;                                    // no other properties allowed in the object
 ```
 
 #### step 4: define `retailOutlets` validator
@@ -172,8 +179,9 @@ const [result, errors] = checkData( data );        // data as defined in the USE
 //-> result will be the same as data, if sanitizers are used (not used in this example) result will have been sanitized
 ```
 
-For full Api documentation, [read more](packages/validator/README.md)  
 
+
+[License MIT](LICENSE);
 
 Thinking about contributing? Read [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTIBUTING_GUIDELINES.md)
 
