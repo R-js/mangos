@@ -1,12 +1,42 @@
 {
-  "name": "@mangos/jpath",
-  "version": "1.0.0",
-  "description": "👷 under construction release data jan 2020",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
   "author": "jacob.bogers <jkfbogers@gmail.com>",
-  "license": "MIT"
+  "dependencies": {
+    "clone": "^2.1.2"
+  },
+  "description": "JPath is an XPath slicer/optic JS objects",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "rimraf": "^3.0.0"
+  },
+  "keywords": [
+    "data",
+    "data-wrangling",
+    "javascript",
+    "traversal",
+    "fold",
+    "json",
+    "lens",
+    "optics",
+    "functional",
+    "counterculture",
+    "focal point"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "@mangos/jpath",
+  "nyc": {
+    "instrument": true,
+    "reporter": [
+      "html",
+      "text"
+    ]
+  },
+  "scripts": {
+    "coverage": "nyc mocha",
+    "test": "mocha"
+  },
+  "version": "0.0.1"
 }
