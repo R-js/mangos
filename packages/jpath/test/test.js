@@ -165,8 +165,12 @@ describe('jspath', function () {
         it('empty predicate /[a=b]/', () => {
             const text = '/[a=b]/'
             const tokens = arr(defaultTokenizer(text));
-            console.log(tokens);
-            //expect(tokens).to.deep.equal([]);
+            expect(tokens).to.deep.equal([ 
+                { token: '\u000f', start: 0, end: 0, value: '/' },
+                { value: 'a', token: '\u0000x08', start: 2, end: 2 },
+                { value: 'b', token: '\u0000x08', start: 4, end: 4 },
+                { token: '\u000f', start: 6, end: 6, value: '/' } 
+            ]);
         });
         it('no arguments in defaultTokenizer', () => {
             const tokens = arr(defaultTokenizer());

@@ -13,5 +13,14 @@
             "internalConsoleOptions": "openOnSessionStart",
             "stopOnEntry": false
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "jpath",
+            "program": "${workspaceFolder}/packages/jpath/node_modules/mocha/bin/_mocha",
+            "cwd": "${workspaceFolder}/packages/jpath",
+            "internalConsoleOptions": "openOnSessionStart",
+            "stopOnEntry": false
+        },
     ]
 }
