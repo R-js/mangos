@@ -21,7 +21,7 @@ An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. 
 An extreemly intuitive `JOI like` (but easier to use) JS validator, with the following advantages:
 
 - Easy to extend collection of build in validators with novice features
-- Ability to cross reference data (think foreign keys) within an object being validated
+  - Ability to cross reference data (think foreign keys) within an object being validated
 - Compose validators via chaining "dot" notation aka `V.IfFalsy(123).integer(4).optional`
 - adding a validator via chaining to an existing validator creates a new validator instance: `V.float().integer()` is a different validator then `V.float()`.
 
@@ -171,7 +171,7 @@ const { V } = require('@mangos/jsvalidator');      // included for clarity, do t
 
 const checkData = V.object({
     retailOutlets:      V.any(checkOutlet),        // checkOutlet is defined in step 4
-    customers: V.any(checkSingleCustomer)          // checkSingleCustomer is defined in step 3
+    customers:          V.any(checkSingleCustomer) // checkSingleCustomer is defined in step 3
 }).closed;                                         // no other properties allowed in the object
 
 const [result, errors] = checkData( data );        // data as defined in the USE CASE
