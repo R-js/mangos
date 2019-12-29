@@ -1,0 +1,12 @@
+{
+  "name": "@mangos/jpath",
+  "version": "1.0.0",
+  "description": "👷 under construction release data jan 2020",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "jacob.bogers <jkfbogers@gmail.com>",
+  "license": "MIT"
+}

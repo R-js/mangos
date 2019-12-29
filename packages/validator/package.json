@@ -7,9 +7,23 @@
     "test": "mocha",
     "coverage": "nyc mocha"
   },
-  "keywords": [],
+  "keywords": [
+    "data",
+    "data-wrangling",
+    "validation",
+    "javascript",
+    "schema",
+    "isomorphism",
+    "traversal",
+    "fold",
+    "json",
+    "lens",
+    "optics",
+    "functional",
+    "counterculture"
+  ],
   "author": "jacob.bogers <jkfbogers@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
