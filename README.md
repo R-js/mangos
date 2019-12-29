@@ -101,7 +101,7 @@ When looking at the `data` object, we notice address information being used in `
 We can specifiy an _address_ validator and re-use it several times when
 
 ```javascript
-const { V } = require('@mangos/jsvalidator');      // included for clarity do this only once
+const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
 
 const checkAddress = V.object({
     streetname: V.string(4,50),                    // string must be between 4 and 50 characters in length
@@ -110,7 +110,7 @@ const checkAddress = V.object({
     state:      V.regexp(/^[A-Z]{2}$/).optional    // US "state" is a string of exactly length 2, the state property is an optional property
 }).closed;
 
-// test it 
+// test it
 const [result, error] = checkAddress({
      streetName:'E Main St, New Holland',
      zip:'PA 17557',
@@ -121,54 +121,58 @@ const [result, error] = checkAddress({
 //-> "result" will be the same as the input data, (in some cases sanitation could have taken place)  
 ```
 
-
-const outlets = V.object({
-    retailOutlets: V.any(outlet)    // each individual item in "retailOutlets" array must comply with the "outlet" validator 
-}).open                             // other object properties may exist, but will not be validated
-
-
-const [result, error] = outlets(data); //
-//-> error will be undefined,
-//-> result will be the same as data
-```
-
-Any validator returns an array `[result, error]`, `result` might be a sanatized data, or equal to `data` input.
-If the `error` is NOT `undefined`, this means the validation failed. `error` will be an `Error` instance.
-
-#### step 2: create a validator for `customers.orderItems` nested object
+#### step 2: Validate `customer.orderItems`
 
 ```javascript
+const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
 
 const checkOrderItem = V.object({
-    id:         V.integer(1),                                   // a non-zero positive integer
-    category:   V.enum(['food', 'electronics', 'clothing']),    // must be one of the 3 enums
-    item:       V.string(1),                                    // any string of nonzero length,
-    shop:       V.ref('../retailOutlets/name'),                 // internal reference, shop must be listed in "/retailOUtlets/name"
-}).closed;
-
+     id:                  V.integer(1),                       // postive nonzero integer
+     category:            V.enum('food','electronics'),       // the category value must exist in retailOutlets.name
+     item:                V.string(1, 30),                    // must be a string of non-zero length and max length 30,
+     shop:'radioshack'    V.ref('/retailOutlets/name').exist  // the category value must exist in retailOutlets.name
+}).closed;                                                    // no other property names are allowed
 ```
 
-#### step 3: create a validator for `customers.deliveryAddress` property
-
-**Note:** in step 1 we defined the address components for `retailOutlets` in a more realistic example one would seperate
-_address information_ into an isolated validation object so it can be re-used in other objects defining address information.
+#### step 3: Validate `customers`
 
 ```javascript
+const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
 
-const checkdeliveryAddress = V.object({
-     zip: 'NY 11236',
-            streetName: 'Devonshire Dr.Brooklyn',
-            houseNumber: 72
-      
-   }).closed
-        },
-        
-}).closed;
-
+const checkSingleCustomer = V.object({
+    name:         V.string(1),          // non empty string
+    deliveryAddress:  checkAddress      // a previously defined validator (step 1)
+    orderItems: V.any(checkOrderItem)   // every element of "orderItem" but be validated by checkOrderItems validator (defined in step2)
+}).closed;                              // no other properties allowed in the object
 ```
 
+#### step 4: define `retailOutlets` validator
 
+```javascript
+const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
 
+const checkOutlet = V.object({
+    name:           V.string(1),                  // non-empty string
+    address:        checkAddress                  // re-use previously defined address validator from "step 1".
+}).closed;                                        // no other properties allowed in the object
+```
+
+#### step 5: putting it all together
+
+```javascript
+const { V } = require('@mangos/jsvalidator');      // included for clarity, do this only once
+
+const checkData = V.object({
+    retailOutlets:      V.any(checkOutlet),        // checkOutlet is defined in step 4
+    customers: V.any(checkSingleCustomer)          // checkSingleCustomer is defined in step 3
+}).closed;                                         // no other properties allowed in the object
+
+const [result, errors] = checkData( data );        // data as defined in the USE CASE
+//-> errors will be undefined or an array of errors specifiying a single validation failure
+//-> result will be the same as data, if sanitizers are used (not used in this example) result will have been sanitized
+```
+
+For full Api documentation, [read more](packages/validator/README.md)  
 
 
 Thinking about contributing? Read [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTIBUTING_GUIDELINES.md)

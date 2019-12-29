@@ -1,6 +1,6 @@
 module.exports = function createStringLengthRangeCheck(m, n) {
-    m = m === undefined || m === null ? 0 : m;
-    n = n === undefined || n === null ? Infinity : n;
+    m = (m === undefined || m === null) ? 0 : m;
+    n = (n === undefined || n === null) ? Infinity : n;
     if (typeof n !== 'number') {
             const type = typeof n;
             throw new TypeError(`upper boundery n:<${type}>${n} MUST be of type number`);
