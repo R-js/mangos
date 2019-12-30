@@ -1,5 +1,5 @@
 const { tokens } = require('./tokenizer');
-const isObject = require('../isObject');
+const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
 /*
     PATHPART: '\x01',
     SLASH: '\x0f',
@@ -24,10 +24,6 @@ function getValue(object, selector, cursor){
     while (cursor < selector.length && selector[cursor].token in predicates){
         clauses.push(selector[cursor]);
         cursor++;
-    }
-    // there should be 2
-    if (clauses.length !== 2){
-        return undefined;
     }
     // first clause is a property-name clause
     const cl1 = clauses[0];

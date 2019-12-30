@@ -4,4 +4,5 @@
 --exit
 --bail
 --timeout 0
-test/test.js
+test/lexer.test.js
+test/objectslice.test.js

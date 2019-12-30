@@ -23,12 +23,11 @@ const {
     from: arr
 } = Array;
 
-describe('jspath', function () {
-    describe('predicateElementTokenizer lexer', () => {
-      
+describe('lexer', () => {
+    describe('predicateElementTokenizer', () => {
         it('error no closing \\/ on the end of a regexp', () => {
             const text = '\\/\[a-z]';
-            const tokens = arr(predicateElementTokenizer(text, 0, text.length ? text.length - 1: 0));
+            const tokens = arr(predicateElementTokenizer(text, 0, text.length ? text.length - 1 : 0));
             expect(tokens).to.deep.equal([{
                 error: 'no closing "/" found to end the regular expression \\/[a-z]',
                 token: '\u0000x07',
@@ -41,10 +40,15 @@ describe('jspath', function () {
             const text = 'sometoken=';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal(
-                [ { value: 'sometoken', token: '\u0000x08', start: 0, end: 8 } ]
-        );
+                [{
+                    value: 'sometoken',
+                    token: '\u0000x08',
+                    start: 0,
+                    end: 8
+                }]
+            );
         });
-        it('lexer "hello-world"', () => {
+        it('"hello-world"', () => {
             const text = 'hello-world';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([{
@@ -54,7 +58,7 @@ describe('jspath', function () {
                 end: 10
             }]);
         });
-        it('lexer "/^[a-z]{3}$/"', () => {
+        it(`"${'\\/^[a-z]{3}$\\/'}"`, () => {
             const text = '\\/^[a-z]{3}$\\/';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([{
@@ -64,7 +68,7 @@ describe('jspath', function () {
                 end: 13
             }])
         });
-        it('lexer first part of "/^[a-z]{3}$/=somevalue"', () => {
+        it('first part of "/^[a-z]{3}$/=somevalue"', () => {
             const text = '\\/^[a-z]{3}$\\/=somevalue';
             const tokens = arr(predicateElementTokenizer(text, 0, text.length - 1));
             expect([{
@@ -74,7 +78,7 @@ describe('jspath', function () {
                 end: 13
             }]).to.deep.equal(tokens);
         });
-        it('lexer second part of "\\/^[a-z]{3}$\\/=somevalue"', () => {
+        it('second part of "\\/^[a-z]{3}$\\/=somevalue"', () => {
             const text = '\\/^[a-z]{3}$\\/=somevalue';
             const tokens = arr(predicateElementTokenizer(text, text.indexOf('=') + 1, text.length - 1));
             expect([{
@@ -85,23 +89,23 @@ describe('jspath', function () {
             }]).to.deep.equal(tokens);
         });
     });
-    describe('predicateTokenizer lexer', () => {
-        it('empty predicate aka []',()=>{
+    describe('predicateTokenizer', () => {
+        it('empty predicate aka []', () => {
             const text = '[]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([]);
         });
-        it('empty predicate aka []',()=>{
+        it('empty predicate aka []', () => {
             const text = '[=]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([]);
         });
-        it('partial predicate aka [=b] should error',()=>{
+        it('partial predicate aka [=b] should error', () => {
             const text = '[=b]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([]);
         });
-        it('partial predicate aka [a=] should error',()=>{
+        it('partial predicate aka [a=] should error', () => {
             const text = '[a=]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([]);
@@ -161,15 +165,34 @@ describe('jspath', function () {
             ]);
         });
     });
-    describe('defaultTokenizer lexer', () => {
+    describe('defaultTokenizer', () => {
         it('empty predicate /[a=b]/', () => {
             const text = '/[a=b]/'
             const tokens = arr(defaultTokenizer(text));
-            expect(tokens).to.deep.equal([ 
-                { token: '\u000f', start: 0, end: 0, value: '/' },
-                { value: 'a', token: '\u0000x08', start: 2, end: 2 },
-                { value: 'b', token: '\u0000x08', start: 4, end: 4 },
-                { token: '\u000f', start: 6, end: 6, value: '/' } 
+            expect(tokens).to.deep.equal([{
+                    token: '\u000f',
+                    start: 0,
+                    end: 0,
+                    value: '/'
+                },
+                {
+                    value: 'a',
+                    token: '\u0000x08',
+                    start: 2,
+                    end: 2
+                },
+                {
+                    value: 'b',
+                    token: '\u0000x08',
+                    start: 4,
+                    end: 4
+                },
+                {
+                    token: '\u000f',
+                    start: 6,
+                    end: 6,
+                    value: '/'
+                }
             ]);
         });
         it('no arguments in defaultTokenizer', () => {
@@ -179,7 +202,12 @@ describe('jspath', function () {
         it('empty path should return ""', () => {
             const text = '';
             const tokens = arr(defaultTokenizer(text, 0, 0));
-            expect(tokens).to.deep.equal([ { token: '\u0001', start: 0, end: 0, value: '' } ]);
+            expect(tokens).to.deep.equal([{
+                token: '\u0001',
+                start: 0,
+                end: 0,
+                value: ''
+            }]);
         });
         it('lexer "/normal/and/simple/path"', () => {
             const text = '/normal/and/simple/path';
@@ -234,8 +262,6 @@ describe('jspath', function () {
                 }
             ]);
         });
-    });
-    describe('path tokenizer', () => {
         it('tokenize path "/favicons/android/path', () => {
             const path = '/favicons/android/path';
             const tokens1 = getTokens(path);
@@ -314,18 +340,10 @@ describe('jspath', function () {
                 ]
             );
         });
-        it('tokenize non root- paths "favicons/", "favicons", "", "../...././/./\\//" tokenize empty path ""', () => {
-            const path1 = 'favicons/';
-            const path2 = 'favicons';
-            const path3 = '';
-            const path4 = '../...././/./\\//';
-
-            const tokens1 = getTokens(path1);
-            const tokens2 = getTokens(path2);
-            const tokens3 = getTokens(path3);
-            const tokens4 = getTokens(path4);
-
-            expect(tokens1).to.deep.equal([{
+        it('"favicons/"', () => {
+            const path = 'favicons/';
+            const tokens = getTokens(path);
+            expect(tokens).to.deep.equal([{
                     token: '\u0001',
                     start: 0,
                     end: 7,
@@ -338,86 +356,88 @@ describe('jspath', function () {
                     value: '/'
                 }
             ]);
-
-            expect(tokens2).to.deep.equal([{
+        });
+        it('"favicons"', () => {
+            const path = 'favicons';
+            const tokens = getTokens(path);
+            expect(tokens).to.deep.equal([{
                 token: '\u0001',
                 start: 0,
                 end: 7,
                 value: 'favicons'
             }]);
-            expect(tokens3).to.deep.equal([]);
-            expect(tokens4).to.deep.equal([{
-                    token: '\u0003',
-                    start: 0,
-                    end: 1,
-                    value: '..'
-                },
-                {
-                    token: '\u000f',
-                    start: 2,
-                    end: 2,
-                    value: '/'
-                },
-                {
-                    token: '\u0001',
-                    start: 3,
-                    end: 6,
-                    value: '....'
-                },
-                {
-                    token: '\u000f',
-                    start: 7,
-                    end: 7,
-                    value: '/'
-                },
-                {
-                    token: '\u0004',
-                    start: 8,
-                    end: 8,
-                    value: '.'
-                },
-                {
-                    token: '\u000f',
-                    start: 9,
-                    end: 9,
-                    value: '/'
-                },
-                {
-                    token: '\u000f',
-                    start: 10,
-                    end: 10,
-                    value: '/'
-                },
-                {
-                    token: '\u0004',
-                    start: 11,
-                    end: 11,
-                    value: '.'
-                },
-                {
-                    token: '\u000f',
-                    start: 12,
-                    end: 12,
-                    value: '/'
-                },
-                {
-                    token: '\u0001',
-                    start: 13,
-                    end: 14,
-                    value: '\\/'
-                },
-                {
-                    token: '\u000f',
-                    start: 15,
-                    end: 15,
-                    value: '/'
-                }
+        });
+        it(`"${'../...././/./\\//'}"`, () => {
+            const path =  '../...././/./\\//';
+            const tokens = getTokens(path);
+            expect(tokens).to.deep.equal([{
+                token: '\u0003',
+                start: 0,
+                end: 1,
+                value: '..'
+            },
+            {
+                token: '\u000f',
+                start: 2,
+                end: 2,
+                value: '/'
+            },
+            {
+                token: '\u0001',
+                start: 3,
+                end: 6,
+                value: '....'
+            },
+            {
+                token: '\u000f',
+                start: 7,
+                end: 7,
+                value: '/'
+            },
+            {
+                token: '\u0004',
+                start: 8,
+                end: 8,
+                value: '.'
+            },
+            {
+                token: '\u000f',
+                start: 9,
+                end: 9,
+                value: '/'
+            },
+            {
+                token: '\u000f',
+                start: 10,
+                end: 10,
+                value: '/'
+            },
+            {
+                token: '\u0004',
+                start: 11,
+                end: 11,
+                value: '.'
+            },
+            {
+                token: '\u000f',
+                start: 12,
+                end: 12,
+                value: '/'
+            },
+            {
+                token: '\u0001',
+                start: 13,
+                end: 14,
+                value: '\\/'
+            },
+            {
+                token: '\u000f',
+                start: 15,
+                end: 15,
+                value: '/'
+            }
             ]);
         });
     });
-    describe('objectSlice', () => {
-        it(`slice an array`, () => {
-
-        });
-    });
+  
 });

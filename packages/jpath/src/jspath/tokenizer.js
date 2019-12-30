@@ -22,7 +22,6 @@ const tokens = Object.freeze({
     CURRENT: '\x04',
     PREDICATE_ELT_REGEXP: '\0x07',
     PREDICATE_ELT_LITERAL: '\0x08',
-
 });
 
 // there should be a list of "absorbers" things like
@@ -76,20 +75,16 @@ const predicateElementAbsorber = {
                 return;
             }
         }
-        // all of it till the end
-        if (end >= start) {
-            yield {
+        
+        yield {
                 value: str.slice(start, end + 1),
                 token: tokens.PREDICATE_ELT_LITERAL,
                 start,
                 end
             };
-        }
         return;
     }
 };
-
-
 
 const predicateAbsorber = {
     name: 'clause',
