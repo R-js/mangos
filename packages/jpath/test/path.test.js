@@ -94,8 +94,8 @@ describe('path', () => {
         it('execute curried version "/customers/name"', () => {
             const copy = clone(data);
             const slice = jpath('/customers/name');
-            const result = slice({});
-            console.log(result);
+            const result = slice();
+            expect(result).to.deep.equal([]);
         });
     });
     describe('normal operation',()=>{
