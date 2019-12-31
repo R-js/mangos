@@ -6,3 +6,4 @@
 --timeout 0
 test/lexer.test.js
 test/objectslice.test.js
+test/path.test.js

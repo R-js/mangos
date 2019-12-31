@@ -45,25 +45,24 @@ As online orders are submitted, you would need to validate the incomming JSON wa
 ```javascript
 // fictisous example ordering info
 const data = {
-    retailOutlets:[
-        {
-            name:'radioshack', // normally use an ID of the store
+    retailOutlets: [{
+            name: 'radioshack', // normally use an ID of the store
             address: {
-                streetName:'E Main St, New Holland',
-                zip:'PA 17557',
-                houseNr:331
+                streetName: 'E Main St, New Holland',
+                zip: 'PA 17557',
+                houseNr: 331
             }
         },
         {
-            name:'wallmart',
+            name: 'wallmart',
             address: {
                 streetName: 'NJ-23 Riverdale',
-                zip:'NJ 07457',
-                houseNr:48,
+                zip: 'NJ 07457',
+                houseNr: 48,
                 state: 'NJ'
             }
         }
-    ]
+    ],
     customers: [{
         name: 'Ms Betty DavenPort',
         deliveryAddress: {
@@ -75,19 +74,27 @@ const data = {
                 id: 11184,
                 category: 'food',
                 item: 'apples',
-                shop: 'WalMart',            // references /retailOutlets/name
+                shop: 'WalMart', // references /retailOutlets/name
             },
             {
                 id: 14114,
                 category: 'electronics',
                 item: 'AAA batteries',
-                shop: 'radioshack'          // references /retailOutlets/name
+                shop: 'radioshack' // references /retailOutlets/name
             },
             {
                 id: 11945,
                 category: 'electronics',
                 item: 'AC Charger',
-                shop:'radioshack'           // references /retailOutlets/name
+                shop: 'radioshack' // references /retailOutlets/name
+            },
+            {
+                id: 11945,
+                category: 'electronics',
+                item: {
+                    name: 'electric shaver'
+                },
+                shop: 'radioshack' // references /retailOutlets/name
             }
         ]
     }]

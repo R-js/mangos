@@ -20,8 +20,8 @@ module.exports = function jpath(path, data = undefined) {
         return objectSlice(data, tokens);
     }
     // curried version
-    return function slice(data){
-        return objectSlice(data, tokens);
+    return function slice(_data = {}){
+        return objectSlice(_data, tokens);
     }
 };
 
