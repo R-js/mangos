@@ -37,5 +37,10 @@
     "coverage": "nyc mocha",
     "test": "mocha"
   },
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/R-js/mangos.git",
+    "directory": "packages/jpath"
+  }
 }
