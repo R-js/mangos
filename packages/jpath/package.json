@@ -39,8 +39,8 @@
   },
   "version": "0.0.1",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/R-js/mangos.git",
+    "type": "git",
+    "url": "https://github.com/R-js/mangos.git",
     "directory": "packages/jpath"
   }
 }

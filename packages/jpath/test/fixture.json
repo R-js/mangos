@@ -1,0 +1,266 @@
+{
+    "articles": [
+        {
+            "author": null,
+            "content": "[[getSimpleString(data.title)]]\r\n[[getSimpleString(data.description)]]\r\n[[getSimpleString(data.videoCountText)]]",
+            "description": "Enjoy the videos and music you love, upload original content, and share it all with friends, family, and the world on YouTube.",
+            "publishedAt": "2020-01-08T18:01:10Z",
+            "source": {
+                "id": null,
+                "name": "Youtube.com"
+            },
+            "title": "The A-Side Live Chat: Conor McGregor vs. Donald Cerrone, Kamaru Usman and Jorge Masvidal's comments - MMAFightingonSBN",
+            "url": "https://www.youtube.com/watch?v=etQTeeJu-Yw",
+            "urlToImage": null
+        },
+        {
+            "author": "Chris Welch",
+            "content": "VP Dave Limp sticks to a friendly tone and says Sonos should focus on competing\r\nAmazon executive Dave Limp\r\nGrant Hindsley / AFP via Getty Images\r\nYesterday morning, The New York Timesbroke the news that Sonos is suing Google. Under the belief that Google st… [+6871 chars]",
+            "description": "Sonos has accused Google and Amazon of stealing its technology and trying to put a squeeze on the company’s business with similar, less expensive products. The Verge spoke to Amazon executive Dave Limp about the situation.",
+            "publishedAt": "2020-01-08T18:00:11Z",
+            "source": {
+                "id": "the-verge",
+                "name": "The Verge"
+            },
+            "title": "Amazon’s hardware boss responds to Sonos accusations of stolen technology - The Verge",
+            "url": "https://www.theverge.com/2020/1/8/21056851/amazon-dave-limp-interview-sonos-google-response",
+            "urlToImage": "https://cdn.vox-cdn.com/thumbor/8E_ma-9JfvnjFizIcjMY5qjVWKg=/0x55:2500x1364/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/19586681/1036646908.jpg.jpg"
+        },
+        {
+            "author": "Jordan Culver",
+            "content": "Aboriginal officials in Australia have approved the killing of up to 10,000 camels as a region battling scorching heat and a long drought deals with animals searching for water. \r\nOfficials in the Anangu Pitjantjatjara Yankunytjatjara (APY) Lands in northwest… [+3602 chars]",
+            "description": "Aboriginal officials in the Anangu Pitjantjatjara Yankunytjatjara Lands in Australia agreed to an “aerial cull” of nearly 10,000 feral camels.",
+            "publishedAt": "2020-01-08T18:00:00Z",
+            "source": {
+                "id": "usa-today",
+                "name": "USA Today"
+            },
+            "title": "Australian Aboriginal officials approve killing up to 10,000 feral camels - USA TODAY",
+            "url": "https://www.usatoday.com/story/news/world/2020/01/07/10-000-thirsty-australian-feral-camels-could-killed-during-drought/2838234001/?utm_source=google&utm_medium=amp&utm_campaign=speakable",
+            "urlToImage": "https://www.gannett-cdn.com/presto/2020/01/08/USAT/b88f8193-8ffa-40ac-9dc3-807387ad34d8-GettyImages-471322153.jpg?crop=3007,1691,x1,y269&width=1600&height=800&fit=bounds"
+        },
+        {
+            "author": "",
+            "content": "Former Nissan Chairman Carlos Ghosn addresses a news conference Wednesday in Beirut, during which he explained his reasons for dodging trial in Japan. The 65-year-old former auto executive, who is accused of financial misconduc, vowed to clear his name in his… [+4549 chars]",
+            "description": "The ex-Nissan boss said he had a choice: \"You're going to die in Japan, or you're going to have to get out.\" It was Ghosn's first public comment since fleeing financial misconduct charges for Beirut.",
+            "publishedAt": "2020-01-08T17:53:00Z",
+            "source": {
+                "id": null,
+                "name": "Npr.org"
+            },
+            "title": "Carlos Ghosn, Ex-Nissan Boss, Defends Escape From Japan: 'I Fled Injustice' - NPR",
+            "url": "https://www.npr.org/2020/01/08/794505920/ghosn-defends-his-escape-from-japan-no-way-i-was-going-to-be-treated-fairly",
+            "urlToImage": "https://media.npr.org/assets/img/2020/01/08/gettyimages-1192544993_wide-3211608dfaff236226161e40b5a9e03de961a525.jpg?s=1400"
+        },
+        {
+            "author": "Carmen Reinicke",
+            "content": "Reuters\r\nTesla is starting 2020 with a record: It's now the most valuable US automaker ever.\r\nThe Elon Musk-led automaker's recent stock rally pushed its market value to nearly $85 billion at Tuesday's close, surpassing the $80.8 billion set by Ford in 1999. … [+1929 chars]",
+            "description": "Tesla is now the highest-valued automaker in US history (TSLA)",
+            "publishedAt": "2020-01-08T17:47:31Z",
+            "source": {
+                "id": "business-insider",
+                "name": "Business Insider"
+            },
+            "title": "Tesla is now the highest-valued automaker in US history (TSLA) - Business Insider",
+            "url": "https://markets.businessinsider.com/news/stocks/tesla-stock-price-rally-most-valuable-us-car-maker-history-2020-1-1028804022",
+            "urlToImage": "https://images.markets.businessinsider.com/image/5e15feeef4423113aa1e3067-1365/screen-shot-2019-07-18-at-111611-am.png"
+        },
+        {
+            "author": "William Feuer",
+            "content": "Meg Whitman and Jeffrey Katzenberg revealed the final details of their streaming service Quibi Wednesday. The service will launch on April 6 for $4.99 per month with ads or $7.99 per month for an ad-free version.\r\nWhitman, Quibi's CEO, unveiled the service du… [+3626 chars]",
+            "description": "Quibi will launch on April 6 and debut 175 shows in its first year.",
+            "publishedAt": "2020-01-08T17:35:00Z",
+            "source": {
+                "id": "cnbc",
+                "name": "CNBC"
+            },
+            "title": "Quibi streaming service will cost $5 a month with ads, or $8 without - CNBC",
+            "url": "https://www.cnbc.com/2020/01/08/ces-2020-meg-whitman-debuts-quibi-streaming-service.html",
+            "urlToImage": "https://image.cnbcfm.com/api/v1/image/106326872-1578504390849rts2sbq2.jpg?v=1578504470"
+        },
+        {
+            "author": "Jacey Fortin",
+            "content": "The Boeing 737-800, operated by Ukraine International Airlines, left the international airport in Tehran at 6:12 a.m. for Kyiv, the Ukrainian capital, and abruptly ceased the automatic transmission of flight data two to three minutes later. It remained in the… [+1059 chars]",
+            "description": "Initial statements from Iran and Ukraine were contradictory, and the cause of the crash remains unclear. The plane’s black box could help, but Iranian officials may not turn it over to Boeing.",
+            "publishedAt": "2020-01-08T17:08:00Z",
+            "source": {
+                "id": "the-new-york-times",
+                "name": "The New York Times"
+            },
+            "title": "The Ukraine Plane Crash in Iran: Black Boxes and Other Questions - The New York Times",
+            "url": "https://www.nytimes.com/2020/01/08/world/middleeast/boeing-plane-crash.html",
+            "urlToImage": "https://static01.nyt.com/images/2020/01/08/us/politics/08xp-plane/08xp-plane-facebookJumbo-v2.jpg"
+        },
+        {
+            "author": null,
+            "content": "An MRI on the back of Los Angeles Lakers star Anthony Davis came back negative for a serious injury and he will travel with the team on its upcoming road trip.\r\nThe Lakers say that Davis has a gluteus maximus contusion. The Lakers play at Dallas on Friday and… [+1471 chars]",
+            "description": "An MRI on Anthony Davis' back after he took a scary fall Tuesday night was negative, and he will travel with the team.",
+            "publishedAt": "2020-01-08T16:57:58Z",
+            "source": {
+                "id": null,
+                "name": "Espn.com"
+            },
+            "title": "MRI negative on Lakers' Anthony Davis after bad fall - ESPN",
+            "url": "https://www.espn.com/nba/story/_/id/28446487/mri-negative-lakers-anthony-davis-bad-fall",
+            "urlToImage": "https://a4.espncdn.com/combiner/i?img=%2Fphoto%2F2020%2F0108%2Fr649767_1296x729_16%2D9.jpg"
+        },
+        {
+            "author": "Alain Sherter",
+            "content": "Leading U.S. stock indexes opened largely flat on Wednesday as investors shrugged off concerns about an escalation in hostilities between the U.S. and Iran.\r\nThe S&amp;P 500, Dow and Nasdaq all rose after the U.S. markets opened on Wednesday morning, reversin… [+3599 chars]",
+            "description": "Financial markets edged up in early trading as investors bet that Washington and Tehran would contain the conflict.",
+            "publishedAt": "2020-01-08T16:49:00Z",
+            "source": {
+                "id": "cbs-news",
+                "name": "CBS News"
+            },
+            "title": "Iran attack: Stocks remain steady despite Iran missile attack - CBS News",
+            "url": "https://www.cbsnews.com/news/iran-attack-stocks-remain-steady-after-iran-missile-attack/",
+            "urlToImage": "https://cbsnews1.cbsistatic.com/hub/i/r/2019/10/11/c3682481-4a26-4c70-9301-8a8b557a2d5f/thumbnail/1200x630/7f6790414b7d258268266b3ec51b6b67/2019-10-10t180918z-1676342469-rc1f826fbe80-rtrmadp-3-usa-trade-china-markets.jpg"
+        },
+        {
+            "author": "Nicole Lyn Pesce",
+            "content": "Heres another reason to try a Dry January. \r\nThe number of Americans drinking themselves to death has more than doubled over the last two decades, according to a sobering new report. \r\nResearchers from the National Institute on Alcohol Abuse and Alcoholism an… [+4921 chars]",
+            "description": "Alarming new report finds alcohol factored in nearly 1 million deaths between 1999 and 2017.",
+            "publishedAt": "2020-01-08T16:43:00Z",
+            "source": {
+                "id": null,
+                "name": "Marketwatch.com"
+            },
+            "title": "The number of Americans drinking themselves to death has more than doubled - MarketWatch",
+            "url": "https://www.marketwatch.com/story/the-number-of-americans-drinking-themselves-to-death-has-more-than-doubled-2020-01-08",
+            "urlToImage": "http://s.marketwatch.com/public/resources/MWimages/MW-HX982_spille_ZG_20200108104637.jpg"
+        },
+        {
+            "author": null,
+            "content": "TOI 1338 b is silhouetted by its host stars. TESS only detects transits from the larger star. Credit: NASA’s Goddard Space Flight Center/Chris Smith\r\nAstronomers announced Monday (January 6, 2020) the first discovery made by NASA’s TESS mission of a two-star … [+4266 chars]",
+            "description": "Astronomers announced Monday (January 6, 2020) the first discovery made by NASA's TESS mission of a two-star planetary system. Led by researchers at NASA's Goddard Space Flight Center and San Diego State University, with other collaborators, the telescope sat…",
+            "publishedAt": "2020-01-08T16:29:46Z",
+            "source": {
+                "id": null,
+                "name": "Scitechdaily.com"
+            },
+            "title": "Real-Life Star Wars: Two New ‘Tatooine’ Planetary Systems Pinpointed by Astronomers [Video] - SciTechDaily",
+            "url": "https://scitechdaily.com/real-life-star-wars-two-new-tatooine-planetary-systems-pinpointed-by-astronomers-video/",
+            "urlToImage": "https://scitechdaily.com/images/TOI-1338-b-Silhouetted-by-Host-Stars.jpg"
+        },
+        {
+            "author": null,
+            "content": "KELLOGG, Idaho An avalanche at an Idaho ski resort killed at least two people Tuesday, and rescuers dug out five others who had minor injuries, officials said.\r\nSilver Mountain Resort confirmed the death and injuries in a Facebook post, saying \"5 individuals … [+1532 chars]",
+            "description": "An avalanche at an Idaho ski resort killed two people Tuesday, and rescuers dug out five others who had minor injuries, officials said.",
+            "publishedAt": "2020-01-08T16:28:07Z",
+            "source": {
+                "id": "usa-today",
+                "name": "USA Today"
+            },
+            "title": "At least 2 dead, 5 rescued from snow after avalanche at Idaho ski resort - USA TODAY",
+            "url": "https://www.usatoday.com/story/news/nation/2020/01/08/avalanche-idaho-ski-resort-1-dead-5-rescued-silver-mountain/2842304001/?utm_source=google&utm_medium=amp&utm_campaign=speakable",
+            "urlToImage": "https://www.gannett-cdn.com/presto/2020/01/08/PREN/5d242743-4733-4091-867a-8f82d9699816-AP20007751898921.jpg?crop=2994,1685,x5,y0&width=1600&height=800&fit=bounds"
+        },
+        {
+            "author": "Brian Fung, CNN",
+            "content": null,
+            "description": "The US Army is warning Americans about a wave of \"fraudulent text messages\" falsely telling Americans they have been drafted into military service.",
+            "publishedAt": "2020-01-08T16:27:00Z",
+            "source": {
+                "id": "cnn",
+                "name": "CNN"
+            },
+            "title": "US Army warns about fake text messages about military draft - CNN",
+            "url": "https://www.cnn.com/2020/01/08/politics/us-army-fake-text-messages-military-draft-trnd/index.html",
+            "urlToImage": "https://cdn.cnn.com/cnnnext/dam/assets/200105104544-02-us-troops-deployment-super-tease.jpg"
+        },
+        {
+            "author": "Jeremy Herb and Alex Rogers, CNN",
+            "content": "(CNN)Senate Majority Leader Mitch McConnell on Wednesday made clear he will not change course in the Senate's impeachment trial as the impasse with House Speaker Nancy Pelosi over the impeachment articles drags on.\r\nMcConnell reiterated on the Senate floor We… [+3761 chars]",
+            "description": "Senate Majority Leader Mitch McConnell on Wednesday made clear he will not change course in the Senate's impeachment trial as the impasse with House Speaker Nancy Pelosi over the impeachment articles drags on.",
+            "publishedAt": "2020-01-08T15:53:00Z",
+            "source": {
+                "id": "cnn",
+                "name": "CNN"
+            },
+            "title": "McConnell on impeachment: 'There will be no haggling with the House over Senate procedure' - CNN",
+            "url": "https://www.cnn.com/2020/01/08/politics/mitch-mcconnell-nancy-pelosi-impeachment-fight/index.html",
+            "urlToImage": "https://cdn.cnn.com/cnnnext/dam/assets/190620125031-nancy-pelosi-mitch-mcconnell-split-super-tease.jpg"
+        },
+        {
+            "author": "Staff report",
+            "content": "ESPN's top broadcast team of Chris Fowler and Kirk Herbstreit will call the College Football Playoff national championship game Monday featuring No. 1 LSU and No. 3 Clemson.\r\nEarlier this week, the duo took some time to answer questions about the mega matchup… [+36012 chars]",
+            "description": "ESPN's top broadcast team of Chris Fowler and Kirk Herbstreit will call the College Football Playoff national championship game Monday featuring No. 1 LSU and No. 3 Clemson.",
+            "publishedAt": "2020-01-08T15:44:00Z",
+            "source": {
+                "id": null,
+                "name": "Theadvocate.com"
+            },
+            "title": "LSU vs Clemson Q&A with ESPN: What they see on film, Joe Burrow vs. Trevor Lawrence, more - The Advocate",
+            "url": "https://www.theadvocate.com/baton_rouge/sports/lsu/article_d3050112-322d-11ea-b95a-ab895a69ae66.html",
+            "urlToImage": "https://bloximages.newyork1.vip.townnews.com/theadvocate.com/content/tncms/assets/v3/editorial/c/a8/ca8f48a4-9968-11e7-96a3-2f43f81abb5b/59baacb38ab1d.image.jpg?resize=1161%2C630"
+        },
+        {
+            "author": "Dominic Patten, Dominic Patten",
+            "content": "The mother of one of Harvey Weinstein’s former attorneys and one of America’s most well-known lawyers was the object of the Oscar-winning producer’s legal derision on the third day of his rape trial in New York City this morning.\r\n“I am not trying to attack M… [+8216 chars]",
+            "description": "The mother of one of Harvey Weinstein’s former attorneys and one of America’s most well-known lawyers was the object of the Oscar-winning producer’s legal derision on the third day of his rape tria…",
+            "publishedAt": "2020-01-08T15:42:00Z",
+            "source": {
+                "id": null,
+                "name": "Deadline.com"
+            },
+            "title": "Harvey Weinstein Wants Gloria Allred Banned From NYC Rape Trial Courtroom; Jury Selection Continues - Deadline",
+            "url": "https://deadline.com/2020/01/harvey-weinstein-rape-trial-gloria-allred-ban-attempt-day-3-jury-selection-1202824473/",
+            "urlToImage": "https://pmcdeadline2.files.wordpress.com/2020/01/weinstein-jan-8-2.jpg?w=1024"
+        },
+        {
+            "author": "Alex Gangitano",
+            "content": "Former Deputy Attorney General Rod RosensteinRod Rosenstein2019 in Photos: 35 pictures in politics Rosenstein, Sessions discussed firing Comey in late 2016 or early 2017: FBI notesJustice Dept releases another round of summaries from Mueller probeMORE was nam… [+2078 chars]",
+            "description": "Former Deputy Attorney General Rod Rosenstein was named a partner at law and lobbying firm King &...",
+            "publishedAt": "2020-01-08T15:34:37Z",
+            "source": {
+                "id": "the-hill",
+                "name": "The Hill"
+            },
+            "title": "Rod Rosenstein joins law and lobbying firm | TheHill - The Hill",
+            "url": "https://thehill.com/business-a-lobbying/477300-rod-rosenstein-joins-law-and-lobbying-firm",
+            "urlToImage": "https://thehill.com/sites/default/files/rosensteinrod_050919gn8_lead.jpg"
+        },
+        {
+            "author": "",
+            "content": "A satellite photo from the commercial company Planet shows damage to at least five structures at the Ain al-Assad air base in Iraq.\r\nPlanet/MIIS\r\nSatellite photos taken Wednesday show that an Iranian missile strike has caused extensive damage at the Ain al-As… [+1758 chars]",
+            "description": "At least five structures were damaged in the attack on the base in Anbar province, which apparently was precise enough to hit individual buildings. There have been no reports of casualties.",
+            "publishedAt": "2020-01-08T15:30:00Z",
+            "source": {
+                "id": null,
+                "name": "Npr.org"
+            },
+            "title": "Iran Missile Attack: Satellite Images Show Damage From Apparent Precision Strike - NPR",
+            "url": "https://www.npr.org/2020/01/08/794517031/satellite-photos-reveal-extent-of-damage-at-al-assad-air-base",
+            "urlToImage": "https://media.npr.org/assets/img/2020/01/08/ain-assad-2_wide-e01028baec721346fd7fcf6af819f99c0f02fd18.png?s=1400"
+        },
+        {
+            "author": "",
+            "content": "Any NFL team that introduces a head coach is likely to talk and think highly of its new hire, but the Carolina Panthers are on another level with Matt Rhule, who this week left his post at Baylor to succeed Ron Rivera in Charlotte.\r\nFirst, reports indicated t… [+1427 chars]",
+            "description": "Talk about setting the bar high for the new guy",
+            "publishedAt": "2020-01-08T15:16:00Z",
+            "source": {
+                "id": null,
+                "name": "Cbssports.com"
+            },
+            "title": "Panthers owner: New coach Matt Rhule can build team for '30 or 40 years,' be Carolina's Chuck Noll - CBS Sports",
+            "url": "https://www.cbssports.com/nfl/news/panthers-owner-new-coach-matt-rhule-can-build-team-for-30-or-40-years-be-carolinas-chuck-noll/",
+            "urlToImage": "https://sportshub.cbsistatic.com/i/r/2018/05/25/3fa27844-50b6-46ce-a7aa-7341121a6189/thumbnail/1200x675/34ee59158bf70278eed6543218d82674/usatsi-10368111.jpg"
+        },
+        {
+            "author": "Donald G. McNeil Jr.",
+            "content": "In another important way, however, the United States is not following Australias lead. The A(H3N2) strain of influenza was dominant there last year, while most American cases this season have been caused by a very different strain, called B Victoria. (B strai… [+1216 chars]",
+            "description": "Almost as many people are falling ill as did two years ago, in what was a particularly severe flu season. But this season’s virus is unusual, and it’s too early to tell how dangerous.",
+            "publishedAt": "2020-01-08T14:30:00Z",
+            "source": {
+                "id": "the-new-york-times",
+                "name": "The New York Times"
+            },
+            "title": "The Flu Season May Yet Turn Ugly, C.D.C. Warns - The New York Times",
+            "url": "https://www.nytimes.com/2020/01/08/health/flu-season-severity.html",
+            "urlToImage": "https://static01.nyt.com/images/2020/01/08/science/08FLU/08FLU-facebookJumbo.jpg"
+        }
+    ],
+    "status": "ok",
+    "totalResults": 38
+}
