@@ -31,7 +31,7 @@ function getValue(object, selector, cursor) {
         return object[instr.value];
     }
     const clauses = [];
-    while (cursor < selector.length) {
+    while (cursor < selector.length && selector[cursor].token in predicates) {
         clauses.push(selector[cursor]);
         cursor++;
     }
@@ -73,7 +73,7 @@ function step(selector, cursor) {
     if (!(instr.token in predicates)) {
         return cursor + 1;
     }
-    while (cursor < selector.length) {
+    while (cursor < selector.length && selector[cursor].token in predicates) {
         cursor++;
     }
     return cursor;
@@ -89,15 +89,20 @@ function objectSlice(object, selector, cursor = 0, parent) {
     switch (instr.token) {
         case tokens.PARENT:
             if (parent !== undefined) {
-                const { d: parentNode, prevParentFn } = parent();
+                const { d: parentNode, p: prevParentFn } = parent();
                 const rcSub = objectSlice(parentNode, selector, next, prevParentFn);
                 rc.push(...rcSub);
                 break;
             }
+            else {
+                const rcSub = objectSlice(object, selector, next, parent);
+                rc.push(...rcSub);
+            }
+            break;
         // fall through
         case tokens.CURRENT:
         case tokens.SLASH:
-            const rcSub = objectSlice(object, selector, next);
+            const rcSub = objectSlice(object, selector, next, parent);
             rc.push(...rcSub);
             break;
         case tokens.PREDICATE_ELT_REGEXP:
@@ -113,13 +118,15 @@ function objectSlice(object, selector, cursor = 0, parent) {
                     break;
                 }
                 for (const item of value) {
-                    const rcSub = objectSlice(item, selector, next, object, createParent(item, parent));
+                    const _parent = (instr.token in predicates) ? (parent ? parent(0).p : undefined) : createParent(item, parent);
+                    const rcSub = objectSlice(item, selector, next, _parent);
                     rc.push(...rcSub);
                 }
                 break;
             }
             if (isObject(value)) {
-                const rcSub = objectSlice(value, selector, next, createParent(value, parent));
+                const _parent = (instr.token in predicates) ? (parent ? parent(0).p : undefined) : createParent(value, parent);
+                const rcSub = objectSlice(value, selector, next, _parent);
                 rc.push(...rcSub);
                 break;
             }
