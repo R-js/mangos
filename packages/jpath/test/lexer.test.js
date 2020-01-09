@@ -367,7 +367,7 @@ describe('lexer', () => {
                 value: 'favicons'
             }]);
         });
-        it(`"${'../...././/./\\//'}"`, () => {
+        it.skip(`"${'../...././/./\\//'}"`, () => {
             const path =  '../...././/./\\//';
             const tokens = getTokens(path);
             expect(tokens).to.deep.equal([{

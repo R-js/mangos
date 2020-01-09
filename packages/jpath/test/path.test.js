@@ -81,7 +81,7 @@ describe('path', () => {
             const result = jpath('retailOutlets/name', copy);
             expect(result).to.deep.equal([ 'radioshack', 'wallmart' ]);
         });
-        it('path with "." and ".." elements are not interpolated "../../somename"', () => {
+        it.skip('path with "." and ".." elements are not interpolated "../../somename"', () => {
             const copy = clone(data);
             const result = jpath('../..', copy);
             expect(result).to.deep.equal(['... not interpolated']);
