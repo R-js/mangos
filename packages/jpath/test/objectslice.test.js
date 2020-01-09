@@ -14,7 +14,7 @@ const {
 
 const clone = require('clone');
 
-const objectSlice = require('../src/jspath/objectSlice');
+const { objectSlice } = require('../src/jspath/objectSlice');
 const {
     getTokens
 } = require('../src/jspath/tokenizer');
