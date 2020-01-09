@@ -1,4 +1,4 @@
-const objectSlice = require('./jspath/objectSlice');
+const { objectSlice } = require('./jspath/objectSlice');
 const { getTokens, tokens } = require('./jspath/tokenizer');
 
 module.exports = function jpath(path, data = undefined) {

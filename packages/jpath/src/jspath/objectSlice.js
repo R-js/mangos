@@ -79,7 +79,7 @@ function step(selector, cursor) {
     return cursor;
 }
 
-module.exports = function objectSlice(object, selector, cursor = 0, parent) {
+function objectSlice(object, selector, cursor = 0, parent) {
     if (selector.length === cursor) {
         return [object];
     }
@@ -134,3 +134,8 @@ module.exports = function objectSlice(object, selector, cursor = 0, parent) {
     }
     return rc;
 }
+
+module.exports = {
+    objectSlice,
+    createParent
+};
