@@ -76,6 +76,10 @@ const data = {
 
 describe('path', () => {
     describe('edge cases and errors', () => {
+        it('non string path should throw error',()=>{
+            const errGen = () => jpath(1234);
+            expect(errGen).to.throw('path should be a string');
+        });
         it('empty path ""', () => {
             const copy = clone(data);
             const result = jpath('retailOutlets/name', copy);

@@ -9,7 +9,7 @@ Support this repo by ⭐ starring it.
 
 **Table of Contents**
 - [mangos](#mangos)
-  - [JPath](#jpath)
+  - [JXPath](#jpath)
   - [JValidator](#jvalidator)
 
 ## JPath
