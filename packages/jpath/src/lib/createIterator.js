@@ -13,7 +13,7 @@ module.exports = function createIterator(iterator, cursor = 0) {
                     cursor++;
                     return rc;
                 }
-                return { valude: undefined, done: true };
+                return { value: undefined, done: true };
             }
             cursor++;
             return rc;

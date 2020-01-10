@@ -1,13 +1,13 @@
 const chaiAsPromised = require('chai-as-promised');
 const {
     describe,
-    it,
-    before,
-    after
+    it
 } = require('mocha');
+
 const chai = require('chai');
 chai.should();
 chai.use(chaiAsPromised);
+
 const {
     expect
 } = chai;
@@ -24,7 +24,6 @@ const createIterator = require('../src/lib/createIterator');
 const {
     from: arr
 } = Array;
-
 
 // fictisous example ordering info
 const data = {
@@ -46,47 +45,47 @@ const data = {
         }
     }
     ],
-    customers: [{
-        name: 'Ms Betty DavenPort',
-        deliveryAddress: {
-            zip: 'NY 11236',
-            streetName: 'Devonshire Dr.Brooklyn',
-            houseNumber: 72
-        },
-        orderItems: [{
-            id: 11184,
-            category: 'food',
-            item: 'apples',
-            shop: 'WalMart', // references /retailOutlets/name
-        },
+    customers: [
         {
-            id: 14114,
-            category: 'electronics',
-            item: 'AAA batteries',
-            shop: 'radioshack' // references /retailOutlets/name
-        },
-        {
-            id: 11945,
-            category: 'electronics',
-            item: 'AC Charger',
-            shop: 'radioshack' // references /retailOutlets/name
-        },
-        {
-            id: 11945,
-            category: 'electronics',
-            item: {
-                name: 'electric shaver'
+            name: 'Ms Betty DavenPort',
+            deliveryAddress: {
+                zip: 'NY 11236',
+                streetName: 'Devonshire Dr.Brooklyn',
+                houseNumber: 72
             },
-            shop: 'radioshack' // references /retailOutlets/name
-        }
-        ]
-    }]
+            orderItems: [{
+                id: 11184,
+                category: 'food',
+                item: 'apples',
+                shop: 'WalMart', // references /retailOutlets/name
+            },
+            {
+                id: 14114,
+                category: 'electronics',
+                item: 'AAA batteries',
+                shop: 'radioshack' // references /retailOutlets/name
+            },
+            {
+                id: 11945,
+                category: 'electronics',
+                item: 'AC Charger',
+                shop: 'radioshack' // references /retailOutlets/name
+            },
+            {
+                id: 11945,
+                category: 'electronics',
+                item: {
+                    name: 'electric shaver'
+                },
+                shop: 'radioshack' // references /retailOutlets/name
+            }
+            ]
+        }]
 };
 
 const getTokens = p => createIterator(defaultTokenizer(p));
 
 describe('objectSlice', () => {
-
     describe('slice path in data array', () => {
         it('slice string data "retailOutlets/name"', () => {
             const copy = clone(data);
@@ -183,8 +182,33 @@ describe('objectSlice', () => {
             const arr = Array.from(defaultTokenizer('/customers/orderItems'));
             arr[arr.length - 1].token = 0xff;
             const iterator = createIterator(arr);
-            const genErr = () =>objectSlice(copy, iterator);
+            const genErr = () => objectSlice(copy, iterator);
             expect(genErr).to.throw('token is invvalid {"token":255,"start":11,"end":20,"value":"orderItems"}')
+        });
+        it('the name of the customers with shopping items from wallmart', () => {
+            const copy = clone(data);
+            copy.customers.push({
+                name: 'Mr Jimmy Hoffa',
+                deliveryAddress: {
+                    zip: 'NE 12012',
+                    streetName: 'somehere in the desert',
+                    houseNumber: '6 feet under'
+                },
+                orderItems: [{
+                    id: 1256,
+                    category: 'clothing',
+                    item: 'bullitProof Vest',
+                    shop: 'WalMart', // references /retailOutlets/name
+                }]
+            });
+            const iterator = createIterator(defaultTokenizer('/customers/orderItems/[shop=radioshack]/../name'));
+            const result = objectSlice(copy, iterator);
+            expect(result).to.deep.equal(['Ms Betty DavenPort',
+                'Ms Betty DavenPort',
+                'Ms Betty DavenPort']);
+            const iterator2 = createIterator(defaultTokenizer('/customers/orderItems/[shop=WalMart]/../name'));
+            const result2 = objectSlice(copy, iterator2);
+            expect(result2).to.deep.equal(['Ms Betty DavenPort', 'Mr Jimmy Hoffa']);
         });
     });
 });
