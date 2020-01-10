@@ -1,7 +1,7 @@
 {
   "author": "jacob.bogers <jkfbogers@gmail.com>",
   "dependencies": {
-    "clone": "^2.1.2"
+    "clone": "2.1.2"
   },
   "description": "jvalidator a very intuitive and extendable JS validator for JS objects and scalars",
   "devDependencies": {
@@ -36,14 +36,14 @@
       "text"
     ]
   },
+  "repository": {
+    "directory": "packages/validator",
+    "type": "git",
+    "url": "https://github.com/R-js/mangos.git"
+  },
   "scripts": {
     "coverage": "nyc mocha",
     "test": "mocha"
   },
-  "version": "0.0.1",
-  "repository": {
-    "type" : "git",
-    "url" : "https://github.com/R-js/mangos.git",
-    "directory": "packages/validator"
-  }
+  "version": "0.0.1"
 }
