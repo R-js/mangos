@@ -1,19 +1,20 @@
-const { objectSlice } = require('./jspath/objectSlice');
-const { getTokens, tokens } = require('./jspath/tokenizer');
+const { objectSlice } = require('./lib/objectSlice');
+const { defaultTokenizer } = require('./lib/tokenizer');
+const createIterator = require('./lib/createIterator');
 
 module.exports = function jpath(path, data = undefined) {
-    const tokens = getTokens(path);
-    if (tokens.length === 0) {
-        throw new Error(`Could not tokenize path ${path}`);
+    if (typeof path !== 'string'){
+        throw new Error(`path should be a string`);
     }
-    // we see . and .. as literals in pathpart
-  
-    if (data !== undefined){
-        return objectSlice(data, tokens);
+    if (path.trim() === ''){
+        throw new Error(`path cannot be empty or just spaces`);
     }
-    // curried version
-    return function slice(_data = {}){
-        return objectSlice(_data, tokens);
+    const iterator = createIterator(defaultTokenizer(path.trim()));
+    if (data){
+        return objectSlice(data, iterator);
+    }
+    return function(data){
+        return objectSlice(data, iterator.fork());
     }
 };
 

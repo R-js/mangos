@@ -14,10 +14,12 @@ const {
 
 const clone = require('clone');
 
-const { objectSlice } = require('../src/jspath/objectSlice');
+const { objectSlice } = require('../src/lib/objectSlice');
 const {
-    getTokens
-} = require('../src/jspath/tokenizer');
+    defaultTokenizer
+} = require('../src/lib/tokenizer');
+
+const createIterator = require('../src/lib/createIterator');
 
 const {
     from: arr
@@ -27,22 +29,22 @@ const {
 // fictisous example ordering info
 const data = {
     retailOutlets: [{
-            name: 'radioshack', // normally use an ID of the store
-            address: {
-                streetName: 'E Main St, New Holland',
-                zip: 'PA 17557',
-                houseNr: 331
-            }
-        },
-        {
-            name: 'wallmart',
-            address: {
-                streetName: 'NJ-23 Riverdale',
-                zip: 'NJ 07457',
-                houseNr: 48,
-                state: 'NJ'
-            }
+        name: 'radioshack', // normally use an ID of the store
+        address: {
+            streetName: 'E Main St, New Holland',
+            zip: 'PA 17557',
+            houseNr: 331
         }
+    },
+    {
+        name: 'wallmart',
+        address: {
+            streetName: 'NJ-23 Riverdale',
+            zip: 'NJ 07457',
+            houseNr: 48,
+            state: 'NJ'
+        }
+    }
     ],
     customers: [{
         name: 'Ms Betty DavenPort',
@@ -52,42 +54,45 @@ const data = {
             houseNumber: 72
         },
         orderItems: [{
-                id: 11184,
-                category: 'food',
-                item: 'apples',
-                shop: 'WalMart', // references /retailOutlets/name
+            id: 11184,
+            category: 'food',
+            item: 'apples',
+            shop: 'WalMart', // references /retailOutlets/name
+        },
+        {
+            id: 14114,
+            category: 'electronics',
+            item: 'AAA batteries',
+            shop: 'radioshack' // references /retailOutlets/name
+        },
+        {
+            id: 11945,
+            category: 'electronics',
+            item: 'AC Charger',
+            shop: 'radioshack' // references /retailOutlets/name
+        },
+        {
+            id: 11945,
+            category: 'electronics',
+            item: {
+                name: 'electric shaver'
             },
-            {
-                id: 14114,
-                category: 'electronics',
-                item: 'AAA batteries',
-                shop: 'radioshack' // references /retailOutlets/name
-            },
-            {
-                id: 11945,
-                category: 'electronics',
-                item: 'AC Charger',
-                shop: 'radioshack' // references /retailOutlets/name
-            },
-            {
-                id: 11945,
-                category: 'electronics',
-                item: {
-                    name: 'electric shaver'
-                },
-                shop: 'radioshack' // references /retailOutlets/name
-            }
+            shop: 'radioshack' // references /retailOutlets/name
+        }
         ]
     }]
 };
+
+const getTokens = p => createIterator(defaultTokenizer(p));
 
 describe('objectSlice', () => {
 
     describe('slice path in data array', () => {
         it('slice string data "retailOutlets/name"', () => {
             const copy = clone(data);
-            const path = getTokens('retailOutlets/name');
-            const result = objectSlice(copy, path);
+            const path = 'retailOutlets/name';
+            const iterator = createIterator(defaultTokenizer(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal(['radioshack', 'wallmart']);
         });
         it('slice string data "retailOutlets/address/[state=NJ]"', () => {
@@ -146,39 +151,40 @@ describe('objectSlice', () => {
             const path = getTokens('/customers/orderItems');
             const result = objectSlice(copy, path);
             expect(result).to.deep.equal([{
-                    id: 11184,
-                    category: 'food',
-                    item: 'apples',
-                    shop: 'WalMart'
+                id: 11184,
+                category: 'food',
+                item: 'apples',
+                shop: 'WalMart'
+            },
+            {
+                id: 14114,
+                category: 'electronics',
+                item: 'AAA batteries',
+                shop: 'radioshack'
+            },
+            {
+                id: 11945,
+                category: 'electronics',
+                item: 'AC Charger',
+                shop: 'radioshack'
+            },
+            {
+                id: 11945,
+                category: 'electronics',
+                item: {
+                    name: 'electric shaver'
                 },
-                {
-                    id: 14114,
-                    category: 'electronics',
-                    item: 'AAA batteries',
-                    shop: 'radioshack'
-                },
-                {
-                    id: 11945,
-                    category: 'electronics',
-                    item: 'AC Charger',
-                    shop: 'radioshack'
-                },
-                {
-                    id: 11945,
-                    category: 'electronics',
-                    item: {
-                        name: 'electric shaver'
-                    },
-                    shop: 'radioshack'
-                }
+                shop: 'radioshack'
+            }
             ]);
         });
         it('reject invalid token "/customers/orderItems "', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/orderItems');
-            path[path.length - 1].token = 0xff;
-            const resultfn = () => objectSlice(copy, path);
-            expect(resultfn).to.throw('selector is an incorrect token {"token":255,"start":11,"end":20,"value":"orderItems"}');
+            const arr = Array.from(defaultTokenizer('/customers/orderItems'));
+            arr[arr.length - 1].token = 0xff;
+            const iterator = createIterator(arr);
+            const genErr = () =>objectSlice(copy, iterator);
+            expect(genErr).to.throw('token is invvalid {"token":255,"start":11,"end":20,"value":"orderItems"}')
         });
     });
 });

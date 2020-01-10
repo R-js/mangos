@@ -17,7 +17,7 @@ const {
     predicateTokenizer,
     defaultTokenizer,
     getTokens
-} = require('../src/jspath/tokenizer');
+} = require('../src/lib/tokenizer');
 
 const {
     from: arr

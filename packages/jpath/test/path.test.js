@@ -81,15 +81,10 @@ describe('path', () => {
             const result = jpath('retailOutlets/name', copy);
             expect(result).to.deep.equal(['radioshack', 'wallmart']);
         });
-        it('path with "." and ".." elements are not interpolated "../../somename"', () => {
-            const copy = clone(data);
-            const result = jpath('customers/orderItems/item/[name=electric shaver]/../../../', copy);
-            console.log(result);
-        });
         it('no path should raise an error', () => {
             const copy = clone(data);
             const result = () => jpath('', copy);
-            expect(result).to.throw('Could not tokenize path');
+            expect(result).to.throw('path cannot be empty or just spaces');
         });
         it('execute curried version "/customers/name"', () => {
             const copy = clone(data);
@@ -98,6 +93,7 @@ describe('path', () => {
             expect(result).to.deep.equal([]);
         });
     });
+
     describe('normal operation', () => {
         it('get "/customers/name"', () => {
             const copy = clone(data);
@@ -111,31 +107,4 @@ describe('path', () => {
             expect(result).to.deep.equal(['Ms Betty DavenPort']);
         });
     });
-    describe('createParent function test', () => {
-
-    });
-    /*
-    
-    function init(){
-   
-        const p1 = createParent(data);
-        const p2 = createParent(data.child, p1);
-        const p3 = createParent(data.child.child2, p2);
-        const p3s = createParent(data.child.child2sibble[0], p2);
-        const p4 = createParent(data.child.child2.child3, p3);
-    
-        const log = p => console.log(JSON.stringify(p));
-        //
-        log(p4());
-        log(p4(1));
-        log(p4(2));
-        log(p4(3));
-        log(p4(4));
-        //
-        console.log('sibble');
-        log(p3s());
-        log(p3s(1));
-        log(p3s(2));
-        log(p3s(3));
-    }*/
 });
