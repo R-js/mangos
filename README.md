@@ -12,7 +12,7 @@ Support this repo by ⭐ starring it.
   - [JXPath](#jpath)
   - [JValidator](#jvalidator)
 
-## JPath
+## JXPath
 
 An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/jpath/README.md)
 
@@ -21,76 +21,114 @@ An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. 
 - predicates can contain literals and regular expressions, 
     - example: _get all persons where the first name starts with Jane_ would look like `/persons/[firstName=\\/^Jane\\/]`.
 
-#### JPath install
+### JXPath install
 
 ```bash
-npm install @mangos/jpath
+npm install @mangos/jxpath
 ```
 
-##### USE CASE slice the newsfeed from https://newsapi.org/
+### USE CASE querying order info of customers 
 
-There is a snippet of the database (as a JS object) of the most trending messages of the last 10 min 08-JAN-2020 5:47pm from `https://newsapi.org/`.
+Below is an exmaple snippet of a database in JSON/. Eventually JXPath slices JS Objects, so hidrate via `require(...)` or `JSON.parse`.
+
+_Note: Imagine the more data in places  you see `...` in the snippet below._
 
 ```json
 {
-    "articles": [
+    "customers": [
         {
-            "author": "Carmen Reinicke",
-            "content": "Reuters\r\nTesla is starting 2020 with a record: It's now the most valuable US automaker ever.\r\nThe Elon Musk-led automaker's recent stock rally pushed its market value to nearly $85 billion at Tuesday's close, surpassing the $80.8 billion set by Ford in 1999. … [+1929 chars]",
-            "description": "Tesla is now the highest-valued automaker in US history (TSLA)",
-            "publishedAt": "2020-01-08T17:47:31Z",
-            "source": {
-                "id": "business-insider",
-                "name": "Business Insider"
-            },
-            "title": "Tesla is now the highest-valued automaker in US history (TSLA) - Business Insider",
-            "url": "https://markets.businessinsider.com/news/stocks/tesla-stock-price-rally-most-valuable-us-car-maker-history-2020-1-1028804022",
-            "urlToImage": "https://images.markets.businessinsider.com/image/5e15feeef4423113aa1e3067-1365/screen-shot-2019-07-18-at-111611-am.png"
+            "id": "1",
+            "email": "tammy.bryant@internalmail",
+            "name": "Tammy Bryant",
+            "orders": [
+                {   
+                    "date":"04-FEB-2018 13.20.22",
+                    "orderId": 1,
+                    "store": {
+                        "id": 1,
+                        "name": "Online",
+                        "web": "https://www.example.com",
+                    },
+                    "order_status":"cancelled",
+                    "quanitity": 35,
+                    "unit_price": 42.01
+                },
+                {   
+                    "date":"04-FEB-2018 13.25.31",
+                    "orderId": 2,
+                    "item": "Pasteries Alexandertorte",
+                    "store": {
+                        "id": 1,
+                        "name": "Oberweissen Pie Bakery",
+                        "web": "https://www.backery-r-us.com",
+                        "address":{
+                            "city":"seattle",
+                            "1501 Fourth Avenue Suite 1000",
+                            "state": "Seattle WA 98101"
+                        }
+                    },
+                    "order_status":"cancelled",
+                    "quanitity": 35,
+                    "unit_price": 42.01
+                }
+                ...
+                ...
+            ]
         },
         {
-            "author": "Carmen Reinicke",
-            "content": "Reuters\r\nTesla is starting 2020 with a record: It's now the most valuable US automaker ever.\r\nThe Elon Musk-led automaker's recent stock rally pushed its market value to nearly $85 billion at Tuesday's close, surpassing the $80.8 billion set by Ford in 1999. … [+1929 chars]",
-            "description": "Tesla is now the highest-valued automaker in US history (TSLA)",
-            "publishedAt": "2020-01-08T17:47:31Z",
-            "source": {
-                "id": "business-insider",
-                "name": "Business Insider"
-            },
-            "title": "Tesla is now the highest-valued automaker in US history (TSLA) - Business Insider",
-            "url": "https://markets.businessinsider.com/news/stocks/tesla-stock-price-rally-most-valuable-us-car-maker-history-2020-1-1028804022",
-            "urlToImage": "https://images.markets.businessinsider.com/image/5e15feeef4423113aa1e3067-1365/screen-shot-2019-07-18-at-111611-am.png"
+            "id": "2",
+            "email": "roy.white@internalmail",
+            "name": "Roy White"
+            ...
+            ...
         },
         {
-            "author": "",
-            "content": "Former Nissan Chairman Carlos Ghosn addresses a news conference Wednesday in Beirut, during which he explained his reasons for dodging trial in Japan. The 65-year-old former auto executive, who is accused of financial misconduc, vowed to clear his name in his… [+4549 chars]",
-            "description": "The ex-Nissan boss said he had a choice: \"You're going to die in Japan, or you're going to have to get out.\" It was Ghosn's first public comment since fleeing financial misconduct charges for Beirut.",
-            "publishedAt": "2020-01-08T17:53:00Z",
-            "source": {
-                "id": null,
-                "name": "Npr.org"
-            },
-            "title": "Carlos Ghosn, Ex-Nissan Boss, Defends Escape From Japan: 'I Fled Injustice' - NPR",
-            "url": "https://www.npr.org/2020/01/08/794505920/ghosn-defends-his-escape-from-japan-no-way-i-was-going-to-be-treated-fairly",
-            "urlToImage": "https://media.npr.org/assets/img/2020/01/08/gettyimages-1192544993_wide-3211608dfaff236226161e40b5a9e03de961a525.jpg?s=1400"
-        },
-        {
-            "author": null,
-            "content": "An MRI on the back of Los Angeles Lakers star Anthony Davis came back negative for a serious injury and he will travel with the team on its upcoming road trip.\r\nThe Lakers say that Davis has a gluteus maximus contusion. The Lakers play at Dallas on Friday and… [+1471 chars]",
-            "description": "An MRI on Anthony Davis' back after he took a scary fall Tuesday night was negative, and he will travel with the team.",
-            "publishedAt": "2020-01-08T16:57:58Z",
-            "source": {
-                "id": null,
-                "name": "Espn.com"
-            },
-            "title": "MRI negative on Lakers' Anthony Davis after bad fall - ESPN",
-            "url": "https://www.espn.com/nba/story/_/id/28446487/mri-negative-lakers-anthony-davis-bad-fall",
-            "urlToImage": "https://a4.espncdn.com/combiner/i?img=%2Fphoto%2F2020%2F0108%2Fr649767_1296x729_16%2D9.jpg"
+            "id": "25",
+            "email": "walter.turner@internalmail",
+            "name": "Walter Turner"
+            ...
+            ...
         },
     ]
 }
 ```
 
+Lets ask some simple questions and see how to to use JXPath to slice and dice the JSON/JS Object
 
+### Q1: show me the name of customers that have orders that are cancelled
+
+**Answer:**
+
+```javascript
+    const jxpath = require('@mangos/jxpath');
+
+    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/../name'); 
+    //-> [ 'Tammy Bryant' ]
+```
+
+### Q2: show me the email of customers that have cancelled orders from online retailers
+
+```javascript
+    const jxpath = require('@mangos/jxpath');
+    
+    // using regular expression /.*/  "/" delimited by "\\" hence \\/.*\\/
+
+    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/store/[web=\\/.*\\/]/../../email');
+    //-> [ 'tammy.bryant@internalmail' ]
+```
+
+### Q3: give me all customer names
+
+```javascript
+    const jxpath = require('@mangos/jxpath');
+    
+    // using regular expression /.*/  "/" delimited by "\\" hence \\/.*\\/
+
+    const resultArray = jxpath('/customers/name');
+    //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
+```
+
+[Full Api Doc](packages/jxpath/README.md)
 
 
 #### JValidator, Everything & the kitchen sink, example
