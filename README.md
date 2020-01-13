@@ -122,8 +122,6 @@ Lets ask some simple questions and see how to to use JXPath to slice and dice th
 ```javascript
     const jxpath = require('@mangos/jxpath');
     
-    // using regular expression /.*/  "/" delimited by "\\" hence \\/.*\\/
-
     const resultArray = jxpath('/customers/name');
     //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
 ```
