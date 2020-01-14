@@ -14,7 +14,7 @@ JS Objects (unlike XML) dont have attributes or namespaces, or comments `<!-- >`
 ## Query langauge
 
 The JXPath query langauge (like XPath) uses a _path like_ syntax to indentify and navigate nodes in a JS object. 
-Query _"path"_ elements are seperated by `/` token and predicates are enclosed between `/[` a `]/` tokens.
+Query _"path"_ elements are seperated by `/` token and predicates are enclosed between `/[`  `]/` tokens.
 
 JXPath alaws returns a array of values/objects, if nothing was selected by the query the array will be empty.
 
