@@ -9,12 +9,12 @@ Support this repo by ⭐ starring it.
 
 **Table of Contents**
 - [mangos](#mangos)
-  - [JXPath](#jpath)
+  - [JXPath](#jxpath)
   - [JValidator](#jvalidator)
 
 ## JXPath
 
-An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/jpath/README.md)
+An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/jxpath/README.md)
 
 - Slices through complex JS objects with optional predicates
     - example: _get all the firstName of all persons who live in new york city_ would like like `/persons/[city=new york]/firstName]`.
@@ -29,71 +29,71 @@ npm install @mangos/jxpath
 
 ### USE CASE querying order info of customers 
 
-Below is an exmaple snippet of a database in JSON/. Eventually JXPath slices JS Objects, so hidrate via `require(...)` or `JSON.parse`.
+Below is an exmaple snippet of a database in JSON hidrated (via `require(...)` or `JSON.parse`)  as a JS object. Eventually JXPath slices JS Objects.
 
 _Note: Imagine the more data in places  you see `...` in the snippet below._
 
-```json
-{
-    "customers": [
-        {
-            "id": "1",
-            "email": "tammy.bryant@internalmail",
-            "name": "Tammy Bryant",
-            "orders": [
-                {   
-                    "date":"04-FEB-2018 13.20.22",
-                    "orderId": 1,
-                    "store": {
-                        "id": 1,
-                        "name": "Online",
-                        "web": "https://www.example.com",
-                    },
-                    "order_status":"cancelled",
-                    "quanitity": 35,
-                    "unit_price": 42.01
+```javascript
+const data = {
+    'customers': [
+    {
+        id: 1,
+        email: 'tammy.bryant@internalmail',
+        name: 'Tammy Bryant',
+        orders: [
+            {   
+                date: '04-FEB-2018 13.20.22',
+                orderId: 1,
+                store: {
+                    id: 1,
+                    name: 'Online',
+                    web: 'https://www.example.com',
                 },
-                {   
-                    "date":"04-FEB-2018 13.25.31",
-                    "orderId": 2,
-                    "item": "Pasteries Alexandertorte",
-                    "store": {
-                        "id": 1,
-                        "name": "Oberweissen Pie Bakery",
-                        "web": "https://www.backery-r-us.com",
-                        "address":{
-                            "city":"seattle",
-                            "1501 Fourth Avenue Suite 1000",
-                            "state": "Seattle WA 98101"
-                        }
-                    },
-                    "order_status":"cancelled",
-                    "quanitity": 35,
-                    "unit_price": 42.01
-                }
-                ...
-                ...
-            ]
-        },
-        {
-            "id": "2",
-            "email": "roy.white@internalmail",
-            "name": "Roy White"
+                order_status: 'cancelled',
+                quanitity: 35,
+                unit_price: 42.01
+            },
+            {   
+                date:'04-FEB-2018 13.25.31',
+                orderId: 2,
+                item: 'Pasteries Alexandertorte',
+                store: {
+                    id: 1,
+                    name: 'Oberweissen Pie Bakery',
+                    web: 'https://www.backery-r-us.com',
+                    address:{
+                        city:'seattle',
+                        street: '1501 Fourth Avenue Suite 1000',
+                        state: 'Seattle WA 98101'
+                    }
+                },
+                order_status: 'cancelled',
+                quanitity: 35,
+                unit_price: 42.01
+            }
             ...
             ...
-        },
-        {
-            "id": "25",
-            "email": "walter.turner@internalmail",
-            "name": "Walter Turner"
-            ...
-            ...
-        },
-    ]
-}
+        ]
+    },
+    {
+        id: 2,
+        email: 'roy.white@internalmail',
+        name: 'Roy White'
+        ...
+        ...
+    },
+    {
+        id: 25,
+        email: 'walter.turner@internalmail',
+        name: 'Walter Turner'
+        ...
+        ...
+    },
+]
+
 ```
 
-Lets ask some simple questions and see how to to use JXPath to slice and dice the JSON/JS Object
+Lets ask some simple questions/queries and see how to to use JXPath to slice and dice the JSON/JS Object
 
 ### Q1: show me the name of customers that have orders that are cancelled
 
