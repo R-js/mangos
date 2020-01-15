@@ -1,6 +1,8 @@
 
 # JXPath
 
+[release notes](CHANGELOG.md)
+
 ```bash
 npm install @mangos/jxpath
 ```
@@ -9,7 +11,7 @@ _Part of the [mangos](https://github.com/R-js/mangos) monorepo of data wrangling
 
 JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
 
-JS Objects (unlike XML) dont have attributes or namespaces, or comments `<!-- >`. This means JXPath only handles `string` property names who's values that can be any propery R-value.
+JS Objects (unlike XML) dont have attributes or namespaces, or comments `<!-- >`. This means JXPath only handles `string` property names who's values that can be any JS R-value.
 
 ## Query langauge
 
@@ -33,15 +35,30 @@ const data = {
     employees: [ 
         {
             firstName: 'Tammy',
-            lastName: 'Brant'
+            lastName: 'Brant',
+            address: {
+                zip: 'AL 36104'
+                city: 'Calumet City',
+                street: '837 West St.'
+            }
         },
         {
             firtName: 'Roy',
-            lastName: 'White'
+            lastName: 'White',
+            address: {
+                zip: 'AL 36487',
+                city: 'Tullahoma',
+                street: '843 Golden Star Avenue'
+            }
         },
         {
             firtName: 'James',
-            lastName: 'Kirk'
+            lastName: 'Kirk',
+            address: {
+                zip: 'FL 32301',
+                city: 'Jackson Heights',
+                street: '572 Myrtle Avenue'
+            }
         }
     ]
 };
@@ -89,8 +106,18 @@ A regexp of `/^Tamm[a-z]$/` would need to be escaped as `\\/^Tamm[a-z]$\\/`. You
         
 ## Predicate _parent_ query selector
 
+A parent selector is the two dots `..` as it is in JXPath.
+
+* A path of `/employees/address/[zip=\\/^AL\\/]/../firtName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
 
 
+[License MIT](LICENSE);
+
+We appreceate any feedback, with new ideas, to enhance this tool suite. File an issue [here](issues)
+
+Before contributing, please read our contributing [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTRIBUTING_GUIDELINES.md).
+
+[issues]: https://github.com/R-js/mangos/issues
 
 
 
