@@ -93,6 +93,9 @@ Using the previous JS object:
     }
 ]
 ``` 
+**Note: result array items, are never copies (unless they are scalar values ofc), alteration (adding/removing properties, changing property values)
+of the object above is will be visible in the main data object.**
+
 A path of `/manager/[firstName=Big]/lastName` will return the result `[ 'Boss' ]`.
 
 ## Predicate _regular expression_ query selector
