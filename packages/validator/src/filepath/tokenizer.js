@@ -24,7 +24,7 @@ Any other character that the target file system does not allow.
 const tokens = {
     SEP: '\x01', //  '\\' or '/' token
     ROOT_POSIX: '\0x02',
-    ROOT_CMD: '\0x03', //like '[driveletter]:\' or [driveletter]:/
+    LOCAL_FS_ROOT: '\0x03', //like '[driveletter]:\' or [driveletter]:/
     ROOT_SERVER: '0x04',
     // dir \\servername\volume\ 
     // dir //localhost/volume/  (note beingins with "//")
@@ -49,26 +49,15 @@ const tokens = {
 };
 
 
-function find(str, start, end, ...chars) {
-    if (!chars.length) return undefined;
-    for (let i = start; i <= end; i++) {
-        if (chars.includes(str[i])) {
-            return i;
-        }
-    }
-    return undefined;
-}
-
 function lookAhead(str, fn, start, length = str.length - start) {
     let i = start;
     for (; i < str.length; i++) {
         if (i >= (start + length)) {
             break;
         }
-        if (fn(str[i])) {
-            continue;
+        if (!fn(str[i])) {
+            break;
         }
-
     }
     i--;
     // so i is at the place where conditions have failed
@@ -79,7 +68,7 @@ function lookAhead(str, fn, start, length = str.length - start) {
     });
 }
 
-function validSep(s){
+function validSep(s) {
     return s === '\\' || s === '/';
 }
 // generator
@@ -89,16 +78,25 @@ function* UNCRootAbsorber(str, start, end) {
     if (length < 2) {
         return; // abort
     }
-    if (str[i + length] === '?' && validSep(str[i + length + 1]) ) { // found long unc 
-        i = i + length + 1;
-        // optionally absorb the string 'unc\\'
-        //                               12345 
-        if (str.slice(i + 1, i + 4).toLowerCase() === 'unc' && validSep(str[i+4])) {
+    let long = false;
+    let unc;
+    const s0 = str[i + length];
+    const sep0 = str[i + length + 1];
+    const UNC = str.slice(i + length + 2, i + length + 5).toLowerCase();
+    const sep1 = str[i + length + 5];
+    if ((s0 === '.' || s0 === '?') && validSep(sep0)) { // the "." is an alias for "?"
+        long = true;
+        if (UNC === 'unc' && validSep(sep1)) {
+            unc = 'UNC\\';
+        }
+    }
+    if (long) {
+        if (unc) {
             yield {
                 value: '\\\\?\\UNC\\',
                 token: tokens.ROOT_LONG_UNC,
                 start,
-                end: i + 4
+                end: start + 7
             };
             return;
         }
@@ -106,18 +104,31 @@ function* UNCRootAbsorber(str, start, end) {
             value: '\\\\?\\',
             token: tokens.ROOT_LONG_UNC,
             start,
-            end: i
+            end: start + 3
         };
         return;
     }
-    // found short unc
     yield {
         value: '\\\\',
         token: tokens.ROOT_SHORT_UNC,
         start,
-        end: i
+        end: start + 1
     };
     return;
+}
+
+// generator
+function* UNIXCRootAbsorber(str, start, end) {
+    if (str[tart] === '/' && validSep(str[start + 1]) === false){
+        yield {
+            value: '/',
+            token: tokens.ROOT_POSIX,
+            start,
+            end: start
+        };
+        return
+    };
+    return
 }
 
 
@@ -128,7 +139,9 @@ function createTokenizer(fn) {
 }
 
 const uncTokenizer = createTokenizer(UNCRootAbsorber);
+const unxRootTokenizer = createTokenizer(UNIXCRootAbsorber);
 
 module.exports = {
-    uncTokenizer
+    uncTokenizer,
+    unxRootTokenizer
 };

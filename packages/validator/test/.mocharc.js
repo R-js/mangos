@@ -3,16 +3,17 @@
 module.exports = {
     diff: true,
     bail: true,
-    sort: true,
+    sort: false,
     exit: true,
     'full-trace': true,
     recursive: true,
     extension: ['js'],
     opts: false,
+    bail: true,
+    'check-leaks': true,
     package: './package.json',
     //slow: 75,
     timeout: 0,
-    ui: 'bdd',
-    'watch-files': ['test/filepath.js'],
-    'watch-ignore': []
+    color: true,
+    ui: 'bdd'
 };
