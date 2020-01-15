@@ -13,6 +13,8 @@ JXPath is an adaption of XPath query language for XML, but applied to JS objects
 
 JS Objects (unlike XML) dont have attributes or namespaces, or comments `<!-- >`. This means JXPath only handles `string` property names who's values that can be any JS R-value.
 
+_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+
 ## Query langauge
 
 The JXPath query langauge (like XPath) uses a _path like_ syntax to indentify and navigate nodes in a JS object. 
