@@ -1,9 +1,0 @@
---full-trace
---recursive
---sort
---exit
---bail
---timeout 0
-test/lexer.test.js
-test/objectslice.test.js
-test/path.test.js

@@ -1,6 +1,7 @@
 'use strict';
 //from https://en.wikipedia.org/wiki/Path_(computing)
-/* allowed chars in filepath names
+/* 
+allowed chars in filepath names
 https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#win32-device-namespaces
 The following reserved characters:
 
@@ -58,66 +59,76 @@ function find(str, start, end, ...chars) {
     return undefined;
 }
 
-function* UNCLongShortAbsorber(prefix, str, start, end) {
-    let root;
-    // root long unc
-    const realPrefix = prefix.replace(/\\/g, '/');
-    const realPrefix2 = prefix.replace(/\//g, '\\');
-    const prefixLength = realPrefix2.length;
-    root = str.slice(start, start + prefixLength);
-    if (!(root === realPrefix || root === realPrefix2)) {
-        return undefined;
+function lookAhead(str, fn, start, length = str.length - start) {
+    let i = start;
+    for (; i < str.length; i++) {
+        if (i >= (start + length)) {
+            break;
+        }
+        if (fn(str[i])) {
+            continue;
+        }
+
     }
-    let noserver = false;
-    let p1;
-    if (start+prefixLength >= end){
-        noserver = true;
+    i--;
+    // so i is at the place where conditions have failed
+    return ({
+        end: i,
+        start,
+        length: i - start + 1
+    });
+}
+
+function validSep(s){
+    return s === '\\' || s === '/';
+}
+// generator
+function* UNCRootAbsorber(str, start, end) {
+    let i = start;
+    const { length } = lookAhead(str, validSep, start, 2, end);
+    if (length < 2) {
+        return; // abort
     }
-    if (!noserver){
-         p1 = find(str, start + prefixLength, end, '\\', '/');
-    }
-    if (p1 === start+prefixLength){
-        noserver = true;
-    }
-    p1 = p1 || end + 1;
-    if (noserver) {
+    if (str[i + length] === '?' && validSep(str[i + length + 1]) ) { // found long unc 
+        i = i + length + 1;
+        // optionally absorb the string 'unc\\'
+        //                               12345 
+        if (str.slice(i + 1, i + 4).toLowerCase() === 'unc' && validSep(str[i+4])) {
+            yield {
+                value: '\\\\?\\UNC\\',
+                token: tokens.ROOT_LONG_UNC,
+                start,
+                end: i + 4
+            };
+            return;
+        }
         yield {
-            error: `missing "servername" part in "${realPrefix}/servername/mount" for unc long name`,
+            value: '\\\\?\\',
+            token: tokens.ROOT_LONG_UNC,
             start,
-            end,
-            token: tokens.ROOT_LONG_UNC
+            end: i
         };
         return;
     }
-    const serverName = str.slice(start + prefixLength, p1);
-    // find mount
-    let nomount = false;
-    if (p1 >= end) {
-        nomount = true;
-    }
-    let p2 = find(str, p1 + 1, end, '\\', '/');
-    if (p2 === p1 + 1) {
-        nomount = true;
-    }
-    p2 = p2 || end + 1;
-    if (nomount) {
-        yield {
-            error: `missing "drive mount" part in "${realPrefix}/servername/mount" for unc long name`,
-            start,
-            end,
-            token: tokens.ROOT_LONG_UNC
-        };
-        return;
-    }
-    const mount = str.slice(p1 + 1, p2);
+    // found short unc
     yield {
-        start: start,
-        end: p2 - 1,
-        value: `//?/UNC/${serverName}/${mount}`
+        value: '\\\\',
+        token: tokens.ROOT_SHORT_UNC,
+        start,
+        end: i
     };
+    return;
 }
 
 
+function createTokenizer(fn) {
+    return function* tokenize(str = '', start = 0, end = str.length - 1) {
+        yield* fn(str, start, end);
+    }
+}
+
+const uncTokenizer = createTokenizer(UNCRootAbsorber);
+
 module.exports = {
-    UNCLongShortAbsorber
+    uncTokenizer
 };

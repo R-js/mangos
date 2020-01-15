@@ -1,7 +1,6 @@
 const { tokens } = require('./tokenizer');
 const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
 
-
 /*
     PATHPART: '\x01',
     SLASH: '\x0f',
