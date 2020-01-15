@@ -14,20 +14,19 @@ Support this repo by ⭐ starring it.
 
 ## JXPath
 
-An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [#TLDR](packages/jxpath/README.md)
+An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [Api docs](packages/jxpath/README.md)
 
 - Slices through complex JS objects with optional predicates
     - example: _get all the firstName of all persons who live in new york city_ would like like `/persons/[city=new york]/firstName]`.
 - predicates can contain literals and regular expressions, 
     - example: _get all persons where the first name starts with Jane_ would look like `/persons/[firstName=\\/^Jane\\/]`.
 
-### JXPath install
-
+Install with:
 ```bash
 npm install @mangos/jxpath
 ```
 
-### USE CASE querying order info of customers 
+### JXPath query examples
 
 Below is an exmaple snippet of a database in JSON hidrated (via `require(...)` or `JSON.parse`)  as a JS object. Eventually JXPath slices JS Objects.
 
@@ -129,9 +128,6 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 [Full Api Doc](packages/jxpath/README.md)
 
 
-#### JValidator, Everything & the kitchen sink, example
-
-
 ## JValidator
 
 An extreemly intuitive `JOI like` (but easier to use) JS validator, with the following advantages:
@@ -143,15 +139,12 @@ An extreemly intuitive `JOI like` (but easier to use) JS validator, with the fol
 
 [Full Api Doc](packages/validator/README.md)
 
-#### JValidator install
-
+Install:
 ```bash
 npm install @mangos/jvalidator
 ```
 
-#### JValidator, Everything & the kitchen sink, example
-
-##### USE CASE
+### Extensive example
 
 Lets say you opened up your online shoppingsite as an white-label API (SAAS) so that 2nd party whole-sellers/retailers can use your platform
 ebay like website.
@@ -220,7 +213,7 @@ const data = {
 
 **note:** there is an internal referential constraint between `/retailOutlets/name` and `/customers/orderItems/shop`
 
-#### Modular approach
+### Modular approach
 
 This exercise will show the modular re-use of `jvalidator` validators wich individually validate slices of the data structure and finally making a final validator capable of validating the whole `data` object.
 
@@ -302,10 +295,10 @@ const [result, errors] = checkData( data );        // data as defined in the USE
 //-> result will be the same as data, if sanitizers are used (not used in this example) result will have been sanitized
 ```
 
-
-
 [License MIT](LICENSE);
 
-Thinking about contributing? Read [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTIBUTING_GUIDELINES.md)
+We appreceate any feedback, with new ideas, to enhance this tool suite. File an issue [here](issues)
+
+Before contributing, please read our contributing [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTRIBUTING_GUIDELINES.md).
 
 [issues]: https://github.com/R-js/mangos/issues
