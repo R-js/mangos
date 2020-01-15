@@ -11,17 +11,18 @@ const {
 } = chai;
 
 const {
-    uncTokenizer
+    uncTokenizer,
+    unxRootTokenizer
 } = require('../src/filepath/tokenizer');
 
 describe('filepath', () => {
     describe('unc lexer', () => {
-        describe('errors',()=>{
-            it('unc "/./some/"', ()=>{
+        describe('errors', () => {
+            it('unc "/./some/"', () => {
                 const answer = Array.from(uncTokenizer('/./some/'));
                 expect(answer).to.deep.equal([]);
             });
-            it('unc "/"', ()=>{
+            it('unc "/"', () => {
                 const answer = Array.from(uncTokenizer('\\'));
                 expect(answer).to.deep.equal([]);
             });
@@ -41,6 +42,17 @@ describe('filepath', () => {
             const answer = Array.from(uncTokenizer(path));
             expect(answer).to.deep.equal([{ value: '\\\\', token: '\u0000x07', start: 0, end: 1 }]);
         });
-   
     });
-})
+    describe('posix root lexer', () => {
+        describe('errors', () => {
+            it('empty path', () => {
+                const answer = Array.from(unxRootTokenizer(''));
+                expect(answer).to.deep.equal([]);
+            });
+        });
+        it('posix "/"', () => {
+            const answer = Array.from(unxRootTokenizer('something'));
+            expect(answer).to.deep.equal([]);
+        });
+    });
+});

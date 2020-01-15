@@ -119,7 +119,7 @@ function* UNCRootAbsorber(str, start, end) {
 
 // generator
 function* UNIXCRootAbsorber(str, start, end) {
-    if (str[tart] === '/' && validSep(str[start + 1]) === false){
+    if (str[start] === '/' && validSep(str[start + 1]) === false){
         yield {
             value: '/',
             token: tokens.ROOT_POSIX,
