@@ -128,7 +128,7 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 [Full Api Doc](packages/jxpath/README.md)
 
 
-## JValidator
+## JValidator 👷(under construction, release 2020 jan)
 
 An extreemly intuitive `JOI like` (but easier to use) JS validator, with the following advantages:
 
