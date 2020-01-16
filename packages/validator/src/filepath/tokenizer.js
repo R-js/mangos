@@ -45,9 +45,8 @@ const tokens = {
     // dir "\\?\Volume{c7586f73-3a1f-4dd4-b069-ed096296d352}\" (will not work in powershell)
     CURRENT: '\0x08', //  '.'
     PARENT: '\0x09', // '..'
-    PATHPATH: '\0x0a',
+    PATHPART: '\0x0a', // gheneral path slice, could be anything
 };
-
 
 function lookAhead(str, fn, start, length = str.length - start) {
     let i = start;
@@ -72,7 +71,7 @@ function validSep(s) {
     return s === '\\' || s === '/';
 }
 // generator
-function* UNCRootAbsorber(str, start, end) {
+function* uncTokenizer(str = '', start = 0, end = str.length - 1) {
     let i = start;
     const { length } = lookAhead(str, validSep, start, 2, end);
     if (length < 2) {
@@ -118,8 +117,8 @@ function* UNCRootAbsorber(str, start, end) {
 }
 
 // generator
-function* UNIXCRootAbsorber(str, start, end) {
-    if (str[start] === '/' && validSep(str[start + 1]) === false){
+function* unxRootTokenizer(str = '', start = 0, end = str.length - 1) {
+    if (str[start] === '/' && validSep(str[start + 1]) === false) {
         yield {
             value: '/',
             token: tokens.ROOT_POSIX,
@@ -131,17 +130,57 @@ function* UNIXCRootAbsorber(str, start, end) {
     return
 }
 
+const dA = 'A'.charCodeAt(0);
+const dZ = 'Z'.charCodeAt(0);
+const da = 'a'.charCodeAt(0);
+const dz = 'z'.charCodeAt(0);
 
-function createTokenizer(fn) {
-    return function* tokenize(str = '', start = 0, end = str.length - 1) {
-        yield* fn(str, start, end);
+function* lfsRootTokenizer(str = '', start = 0, end = str.length - 1) {
+    const drive = str[start].charCodeAt(0);
+
+    if (((drive => dA && drive <= dZ) || (drive => da && drive <= dz)) && str[start + 1] === ':' && validSep(str[start + 2])) {
+        yield ({
+            value: str.slice(start, start + 2),
+            token: tokens.LOCAL_FS_ROOT,
+            start,
+            end: start + 2
+        });
+    }
+    return;
+}
+
+function* sepSlicer(str = '', start = 0, end = str.length - 1) {
+    const length = str.length;
+    // clamp
+    end = Math.min(str.length -1, Math.max(end,0));
+    let i = start;
+    for (; i <= end; i++){
+        if (validSep(str[i])){
+            yield {
+                value: str[i],
+                token: tokens.SEP,
+                start :i,
+                end: i
+            };
+        }
     }
 }
 
-const uncTokenizer = createTokenizer(UNCRootAbsorber);
-const unxRootTokenizer = createTokenizer(UNIXCRootAbsorber);
+/*
+< (less than)
+> (greater than)
+: (colon)
+" (double quote)
+/ (forward slash)
+\ (backslash)
+| (vertical bar or pipe)
+? (question mark)
+* (asterisk)
+*/
 
 module.exports = {
     uncTokenizer,
-    unxRootTokenizer
+    unxRootTokenizer,
+    lfsRootTokenizer,
+    sepSlicer
 };

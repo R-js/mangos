@@ -12,7 +12,9 @@ const {
 
 const {
     uncTokenizer,
-    unxRootTokenizer
+    unxRootTokenizer,
+    lfsRootTokenizer,
+    sepSlicer
 } = require('../src/filepath/tokenizer');
 
 describe('filepath', () => {
@@ -52,6 +54,33 @@ describe('filepath', () => {
         });
         it('posix "/"', () => {
             const answer = Array.from(unxRootTokenizer('something'));
+            expect(answer).to.deep.equal([]);
+        });
+    });
+    describe('lfs root lexer', () => {
+        describe('errors', () => {
+            it('empty path', () => {
+                const answer = Array.from(unxRootTokenizer(''));
+                expect(answer).to.deep.equal([]);
+            });
+            it('lfs "c:something"', () => {
+                const answer = Array.from(lfsRootTokenizer('c:something'));
+                expect(answer).to.deep.equal([]);
+            });
+        });
+        it('lfs "c:\\something"', () => {
+            const answer = Array.from(lfsRootTokenizer('c:\\something'));
+            expect(answer).to.deep.equal([ { value: 'c:', token: '\u0000x03', start: 0, end: 2 } ]);
+        });
+    });
+    describe('sep lexer', () => {
+        it('find / or \ in  "c:\\something\\path2/path3"', () => {
+            const answer = Array.from(sepSlicer('c:\\something\\path2/path3', 3));
+            expect(answer).to.deep.equal([ { value: '\\', token: '\u0001', start: 12, end: 12 },
+            { value: '/', token: '\u0001', start: 18, end: 18 } ]);
+        });
+        it('find / or \ in empty ""', () => {
+            const answer = Array.from(sepSlicer());
             expect(answer).to.deep.equal([]);
         });
     });
