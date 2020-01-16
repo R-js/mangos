@@ -24,7 +24,6 @@ require('./features/function');
 require('./features/regexp');
 require('./features/any');
 require('./features/ifFalsy');
-require('./features/filename');
 
 function createValidatorFactory() {
     function createHandler(propContext, parentAssembler) {

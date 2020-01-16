@@ -8,7 +8,13 @@ const {
     formatPath
 } = require('../jspath/tokenizer');
 
-const ifArrayNotZero = require('../if-length-zero');
+const isLenZero = require('../isLenZero');
+
+function IfNotZeroLen(data){
+    if (!isLenZero(data)){
+        return data;
+    }
+}
 
 features.set('object', {
     factory: 2,
@@ -83,9 +89,9 @@ features.set('object', {
                 if (errors.length){
                     // are we nested object?
                     if (ctx.location.length){
-                        return [undefined, ifArrayNotZero(errors), undefined];
+                        return [undefined, IfNotZeroLen(errors), undefined];
                     }
-                    return [undefined, ifArrayNotZero(errors), undefined];
+                    return [undefined, IfNotZeroLen(errors), undefined];
                 }
                 return [data, undefined, undefined];
             }
