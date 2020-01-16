@@ -7,7 +7,7 @@ The following reserved characters:
 
 < (less than)
 > (greater than)
-: (colon)
+: (colon)  (only when specifying a device in windows)
 " (double quote)
 / (forward slash)
 \ (backslash)
@@ -25,10 +25,11 @@ const tokens = {
     SEP: '\x01', //  '\\' or '/' token
     ROOT_POSIX: '\0x02',
     LOCAL_FS_ROOT: '\0x03', //like '[driveletter]:\' or [driveletter]:/
-    ROOT_SERVER: '0x04',
+    ROOT_SERVER: '0x04', // FIX: REMOVE THIS, IS ACTUALLY SHORT_UNC
+    // is actually short_unc
     // dir \\servername\volume\ 
     // dir //localhost/volume/  (note beingins with "//")
-    ROOT_LONG_UNC: '\0x05', // no interpolation of "." and ".."
+     ROOT_LONG_UNC: '\0x05', //no interpolation of "." and ".."
     // extended with server\drive
     //dir \\.\UNC\localhost\c$\bin will list the content of bin (works but should not allow it?)
     //dir \\?\UNC\localhost\c$\bin will only show the directory "bin" (not its content)
