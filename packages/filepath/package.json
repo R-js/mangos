@@ -1,12 +1,39 @@
 {
-  "name": "filepath",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": "jacob.bogers <jkfbogers@gmail.com>",
+  "description": "filepath parses UNC (long and short and cmd aliases) local filesystem path, and unix paths, checks for invalid path characters",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1"a
   },
-  "keywords": [],
-  "author": "jacob.bogers <Jacob.Bogers@doclerholding.com>",
-  "license": "ISC"
+  "keywords": [
+    "filepath",
+    "unc",
+    "posix pathname",
+    "universal naming convention",
+    "local file system",
+    "lfs",
+    "device path"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "@mangos/filepath",
+  "nyc": {
+    "instrument": true,
+    "reporter": [
+      "html",
+      "text"
+    ]
+  },
+  "repository": {
+    "directory": "packages/filepath",
+    "type": "git",
+    "url": "https://github.com/R-js/mangos.git"
+  },
+  "scripts": {
+    "coverage": "nyc mocha",
+    "test": "mocha"
+  },
+  "version": "0.0.1"
 }
