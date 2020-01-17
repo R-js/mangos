@@ -1,5 +1,5 @@
 const { objectSlice } = require('./lib/objectSlice');
-const { defaultTokenizer } = require('./lib/tokenizer');
+const { pathAbsorber } = require('./lib/tokenizer');
 const createIterator = require('./lib/createIterator');
 
 module.exports = function jpath(path, data = undefined) {
@@ -9,7 +9,7 @@ module.exports = function jpath(path, data = undefined) {
     if (path.trim() === ''){
         throw new Error(`path cannot be empty or just spaces`);
     }
-    const iterator = createIterator(defaultTokenizer(path.trim()));
+    const iterator = createIterator(pathAbsorber(path.trim()));
     if (data){
         return objectSlice(data, iterator);
     }

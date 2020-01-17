@@ -16,7 +16,7 @@ const clone = require('clone');
 
 const { objectSlice } = require('../src/lib/objectSlice');
 const {
-    defaultTokenizer
+    pathAbsorber
 } = require('../src/lib/tokenizer');
 
 const createIterator = require('../src/lib/createIterator');
@@ -83,14 +83,13 @@ const data = {
         }]
 };
 
-const getTokens = p => createIterator(defaultTokenizer(p));
 
 describe('objectSlice', () => {
     describe('slice path in data array', () => {
         it('slice string data "retailOutlets/name"', () => {
             const copy = clone(data);
             const path = 'retailOutlets/name';
-            const iterator = createIterator(defaultTokenizer(path));
+            const iterator = createIterator(pathAbsorber(path));
             const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal(['radioshack', 'wallmart']);
         });
@@ -179,7 +178,7 @@ describe('objectSlice', () => {
         });
         it('reject invalid token "/customers/orderItems "', () => {
             const copy = clone(data);
-            const arr = Array.from(defaultTokenizer('/customers/orderItems'));
+            const arr = Array.from(pathAbsorber('/customers/orderItems'));
             arr[arr.length - 1].token = 0xff;
             const iterator = createIterator(arr);
             const genErr = () => objectSlice(copy, iterator);
@@ -201,12 +200,12 @@ describe('objectSlice', () => {
                     shop: 'WalMart', // references /retailOutlets/name
                 }]
             });
-            const iterator = createIterator(defaultTokenizer('/customers/orderItems/[shop=radioshack]/../name'));
+            const iterator = createIterator(pathAbsorber('/customers/orderItems/[shop=radioshack]/../name'));
             const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal(['Ms Betty DavenPort',
                 'Ms Betty DavenPort',
                 'Ms Betty DavenPort']);
-            const iterator2 = createIterator(defaultTokenizer('/customers/orderItems/[shop=WalMart]/../name'));
+            const iterator2 = createIterator(pathAbsorber('/customers/orderItems/[shop=WalMart]/../name'));
             const result2 = objectSlice(copy, iterator2);
             expect(result2).to.deep.equal(['Ms Betty DavenPort', 'Mr Jimmy Hoffa']);
         });

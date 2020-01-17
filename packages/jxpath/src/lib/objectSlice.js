@@ -6,13 +6,14 @@ const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
     SLASH: '\x0f',
     PARENT: '\x03',
     CURRENT: '\x04',
-    //PREDICATE: '\0x05',
-    //PREDICATE_ELT: '\0x06',
     PREDICATE_ELT_REGEXP: '\0x07',
-    PREDICATE_ELT_LITERAL: '\0x08'
+    PREDICATE_ELT_LITERAL: '\0x08',
+    EQUAL_TOKEN: '\0x09',
+    BRACKET_OPEN: '\0x0a',
+    BRACKET_CLOSE: '\0x0b',
 */
 
-const predicates = { [tokens.PREDICATE_ELT_REGEXP]: 1, [tokens.PREDICATE_ELT_LITERAL]: 1 };
+const predicates = { [tokens.BRACKET_CLOSE]: 1, [tokens.BRACKET_OPEN]: 1, [tokens.EQUAL_TOKEN]:1, [tokens.PREDICATE_ELT_LITERAL]:1, [tokens.PREDICATE_ELT_REGEXP]:1   };
 
 function createParent(object, prevParent) {
     return (n = 0) => {
@@ -71,17 +72,32 @@ function flatterMap(array) {
 
 function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined)) {
 
-    const { value: instr, done } = iterator.next();
+    let instr;
+    let done;
+    {
+         const { value , done: done2 } = iterator.next();
+         instr = value;
+         done = done2;
+    }
     if (done) {
         return [opaque];
     }
-    // slash and current
+    // absorb itslash and current
     if (instr.token === tokens.SLASH || instr.token === tokens.CURRENT) {
-        return objectSlice(opaque, iterator, parentFn);
+        while (true) {
+            const { done: done2 } = iterator.next(p => p.value.token === tokens.SLASH || instr.token === tokens.CURRENT);
+            if (done2) {
+                break;
+            }
+        }
+        {
+            const { value , done: done2 } = iterator.next();
+            instr = value;
+            done = done2;
+        }
     }
     // predicates 
     if (instr.token in predicates) {
-        const clauses = [instr];
         while (true) {
             const { value: instr2, done: done2 } = iterator.next(p => p.value.token in predicates);
             if (done2) {
