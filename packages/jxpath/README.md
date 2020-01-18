@@ -111,7 +111,7 @@ Because the Path `/` seperator is used to delimit a regular expression aswell, i
 
 A parent selector is the two dots `..` as it is in JXPath.
 
-* A path of `/employees/address/[zip=/^AL/]/../firtName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
+* A path of `/employees/address/[zip=/^AL/]/../firstName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
 
 ## Feedback
 
