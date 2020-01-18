@@ -95,8 +95,9 @@ describe('objectSlice', () => {
         });
         it('slice string data "retailOutlets/address/[state=NJ]"', () => {
             const copy = clone(data);
-            const path = getTokens('retailOutlets/address/[state=NJ]');
-            const result = objectSlice(copy, path);
+            const path = 'retailOutlets/address/[state=NJ]';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal([{
                 streetName: 'NJ-23 Riverdale',
                 zip: 'NJ 07457',
@@ -106,14 +107,16 @@ describe('objectSlice', () => {
         });
         it('slice string data "/customers/deliveryAddress/zip"', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/deliveryAddress/zip');
-            const result = objectSlice(copy, path);
+            const path = '/customers/deliveryAddress/zip';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal(['NY 11236']);
         });
-        it('slice string data "/customers/orderItems/[id=\\/111\\/]"', () => {
+        it('slice string data "/customers/orderItems/[id=/111/]"', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/orderItems/[id=\\/111\\/]');
-            const result = objectSlice(copy, path);
+            const path = '/customers/orderItems/[id=/111/]';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal([{
                 id: 11184,
                 category: 'food',
@@ -121,10 +124,11 @@ describe('objectSlice', () => {
                 shop: 'WalMart'
             }]);
         });
-        it('slice string data "/customers/orderItems/[\\/.*\\/=\\/111\\/]"', () => {
+        it('slice string data "/customers/orderItems/[/.*/=/111/]"', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/orderItems/[\\/.*\\/=\\/111\\/]');
-            const result = objectSlice(copy, path);
+            const path = '/customers/orderItems/[/.*/=/111/]';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal([{
                 id: 11184,
                 category: 'food',
@@ -132,22 +136,19 @@ describe('objectSlice', () => {
                 shop: 'WalMart'
             }]);
         });
-        it('dont select anything "/customers/orderItems/[=\\/111\\/]"', () => {
-            const copy = clone(data);
-            const path = getTokens('/customers/orderItems/[=\\/111\\/]');
-            const result = objectSlice(copy, path);
-            expect(result).to.deep.equal([]);
-        });
+       
         it('not select anything "/customers/orderItems/[nonexistingKey=\\/111\\/]"', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/orderItems/[\\/nonexistingKey\\/=\\/111\\/]');
-            const result = objectSlice(copy, path);
+            const path = '/customers/orderItems/[/nonexistingKey/=/111/]';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal([]);
         });
         it('test flatmapping a path that is an actual array "/customers/orderItems"', () => {
             const copy = clone(data);
-            const path = getTokens('/customers/orderItems');
-            const result = objectSlice(copy, path);
+            const path = '/customers/orderItems';
+            const iterator = createIterator(pathAbsorber(path));
+            const result = objectSlice(copy, iterator);
             expect(result).to.deep.equal([{
                 id: 11184,
                 category: 'food',

@@ -209,6 +209,12 @@ describe('lexer', () => {
                 { token: '\u000f', value: '/', start: 36, end: 36 },
                 { token: '\u0001', start: 37, end: 45, value: 'firstName' }]);
             });
+            it('path gives errors "/customers/orderItems/[=/111/]"', () => {
+                const path = '/customers/orderItems/[=/111/]';
+                const tokens = Array.from(pathAbsorber(path));
+                const errors = tokens.filter(f=>f.error).map(m=>m.error).join('|');
+                expect(errors).to.equal('no L value at all|no "=" token found to seperate L-exp and R-exp predicates')
+            });
         });
     });
 });

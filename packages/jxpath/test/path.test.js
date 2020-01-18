@@ -74,7 +74,7 @@ const data = {
     }]
 };
 
-describe.skip('path', () => {
+describe('path', () => {
     describe('edge cases and errors', () => {
         it('non string path should throw error',()=>{
             const errGen = () => jpath(1234);

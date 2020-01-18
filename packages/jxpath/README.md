@@ -103,17 +103,15 @@ A path of `/manager/[firstName=Big]/lastName` will return the result `[ 'Boss' ]
 Predicates have the general pattern `/[key=value]/`; both `key` and `value` can be regular expressions
 Because the Path `/` seperator is used to delimit a regular expression aswell, it must be escaped when using it with a regexp predicate
 
-A regexp of `/^Tamm[a-z]$/` would need to be escaped as `\\/^Tamm[a-z]$\\/`. You cannot use modifier flags in regexp (aka `i`, `g`, etc)
 
-
-* A path of `/employees/[firstName=\\/(Tammy|Roy)\\/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
-* A path of `/employees/[\\/Name$\\/=\\/.*\\/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
+* A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
+* A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
         
 ## Predicate _parent_ query selector
 
 A parent selector is the two dots `..` as it is in JXPath.
 
-* A path of `/employees/address/[zip=\\/^AL\\/]/../firtName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
+* A path of `/employees/address/[zip=/^AL/]/../firtName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
 
 ## Feedback
 

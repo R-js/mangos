@@ -20,6 +20,7 @@ module.exports = function createIterator(iterator, cursor = 0) {
         },
         fork() {
             return createIterator(arr, cursor);
-        }
+        },
+        [Symbol.iterator]: function() { return this }
     });
 }

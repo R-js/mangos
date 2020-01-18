@@ -110,9 +110,9 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 ```javascript
     const jxpath = require('@mangos/jxpath');
     
-    // using regular expression /.*/  "/" delimited by "\\" hence \\/.*\\/
+    // using regular expression /.*/  
 
-    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/store/[web=\\/.*\\/]/../../email');
+    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/.*/]/../../email');
     //-> [ 'tammy.bryant@internalmail' ]
 ```
 

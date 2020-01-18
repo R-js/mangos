@@ -1,4 +1,6 @@
-const { tokens } = require('./tokenizer');
+const {
+    tokens
+} = require('./tokenizer');
 const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
 
 /*
@@ -13,28 +15,39 @@ const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
     BRACKET_CLOSE: '\0x0b',
 */
 
-const predicates = { [tokens.BRACKET_CLOSE]: 1, [tokens.BRACKET_OPEN]: 1, [tokens.EQUAL_TOKEN]:1, [tokens.PREDICATE_ELT_LITERAL]:1, [tokens.PREDICATE_ELT_REGEXP]:1   };
+const predicates = {
+    [tokens.BRACKET_CLOSE]: 1,
+    [tokens.BRACKET_OPEN]: 1,
+    [tokens.EQUAL_TOKEN]: 1,
+    [tokens.PREDICATE_ELT_LITERAL]: 1,
+    [tokens.PREDICATE_ELT_REGEXP]: 1
+};
 
 function createParent(object, prevParent) {
     return (n = 0) => {
-        if (n === 0) return { d: object, p: prevParent };
-        if (prevParent === undefined) return { d: object, p: prevParent }; // clamp this object as it is root
+        if (n === 0) return {
+            d: object,
+            p: prevParent
+        };
+        if (prevParent === undefined) return {
+            d: object,
+            p: prevParent
+        }; // clamp this object as it is root
         return prevParent(n - 1);
     }
 }
 
 function approve(opaque, clauses) {
-    const [cl1, cl2] = clauses;
+    const [, firstPred, , secondPred, ]  = clauses;
     if (!isObject(opaque)) {
         return undefined;
     }
     const valueCollect = [];
-    if (cl1.token === tokens.PREDICATE_ELT_LITERAL) {
-        valueCollect.push(opaque[cl1.value]);
-    }
-    else {// can be more then one or 
+    if (firstPred.token === tokens.PREDICATE_ELT_LITERAL) {
+        valueCollect.push(opaque[firstPred.value]);
+    } else { // can be more then one or 
         for (const [key, keyValue] of Object.entries(opaque)) {
-            if (cl1.value.test(key)) {
+            if (firstPred.value.test(key)) {
                 if (!isObject(keyValue)) {
                     valueCollect.push(keyValue);
                 }
@@ -42,15 +55,14 @@ function approve(opaque, clauses) {
         }
     }
     // second clause filters on key value
-    if (cl2.token === tokens.PREDICATE_ELT_LITERAL) {
-        if (valueCollect.includes(cl2.value)) {
+    if (secondPred.token === tokens.PREDICATE_ELT_LITERAL) {
+        if (valueCollect.includes(secondPred.value)) {
             return opaque; // the object is selected
         }
         return undefined; // return nothing
-    }
-    else {
+    } else {
         for (const keyValue of valueCollect) {
-            if (cl2.value.test(keyValue)) {
+            if (secondPred.value.test(keyValue)) {
                 return opaque;
             }
         }
@@ -73,11 +85,13 @@ function flatterMap(array) {
 function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined)) {
 
     let instr;
-    let done;
-    {
-         const { value , done: done2 } = iterator.next();
-         instr = value;
-         done = done2;
+    let done; {
+        const {
+            value,
+            done: done2
+        } = iterator.next();
+        instr = value;
+        done = done2;
     }
     if (done) {
         return [opaque];
@@ -85,26 +99,41 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
     // absorb itslash and current
     if (instr.token === tokens.SLASH || instr.token === tokens.CURRENT) {
         while (true) {
-            const { done: done2 } = iterator.next(p => p.value.token === tokens.SLASH || instr.token === tokens.CURRENT);
+            const {
+                done: done2
+            } = iterator.next(p => p.value.token === tokens.SLASH || instr.token === tokens.CURRENT);
             if (done2) {
                 break;
             }
-        }
-        {
-            const { value , done: done2 } = iterator.next();
+        } {
+            const {
+                value,
+                done: done2
+            } = iterator.next();
             instr = value;
             done = done2;
         }
     }
     // predicates 
     if (instr.token in predicates) {
+        const clauses = [];
+        clauses.push(instr);
         while (true) {
-            const { value: instr2, done: done2 } = iterator.next(p => p.value.token in predicates);
+            const {
+                value: instr2,
+                done: done2
+            } = iterator.next(p => {
+                if (p.value.token in predicates) {
+                    return true;
+                }
+                return false;
+            });
             if (done2) {
                 break;
             }
             clauses.push(instr2);
         }
+        // test for errors, if errors basicly throw errors
         if (approve(opaque, clauses)) {
             return objectSlice(opaque, iterator, parentFn);
         }
@@ -121,8 +150,8 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
                 const pancaked = flatterMap(newOpaque);
                 const collect = [];
                 for (opaqueSingle of pancaked) {
-                     const rcSub = objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn));
-                     collect.push(...rcSub);
+                    const rcSub = objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn));
+                    collect.push(...rcSub);
                 }
                 return collect;
             }
@@ -130,12 +159,14 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
         }
         return [];
     }
-
     // parent
     // get the previours object and parentFn
     // pathpart
     if (instr.token === tokens.PARENT) {
-        const { d, p } = parentFn();
+        const {
+            d,
+            p
+        } = parentFn();
         return objectSlice(d, iterator, p);
     }
     throw new Error(`token is invvalid ${JSON.stringify(instr)}`);
