@@ -55,7 +55,7 @@ const data = {
             }
         },
         {
-            firtName: 'Roy',
+            firstName: 'Roy',
             lastName: 'White',
             address: {
                 zip: 'AL 36487',
@@ -64,7 +64,7 @@ const data = {
             }
         },
         {
-            firtName: 'James',
+            firstName: 'James',
             lastName: 'Kirk',
             address: {
                 zip: 'FL 32301',
