@@ -14,21 +14,107 @@ Support this repo by ⭐ starring it.
 
 ## JXPath
 
-An easy and intuitive _XPath_ analog to slice 🔪 and dice Javascript objects. [Api docs](packages/jxpath/README.md)
+JXPath is an adaption of XPath, but applied to JS objects.
 
-- Slices through complex JS objects with optional predicates
-    - example: _get all the firstName of all persons who live in new york city_ would like like `/persons/[city=new york]/firstName]`.
-- predicates can contain literals and regular expressions, 
-    - example: _get all persons where the first name starts with Jane_ would look like `/persons/[firstName=\\/^Jane\\/]`.
+### Differences with XPath
 
-Install with:
+JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
+
 ```bash
 npm install @mangos/jxpath
 ```
 
+### Differences with json-path
+
+`jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
+
+## Query operators overview
+
+| operator         | jxpath          | example                                                 |
+| ---------------- | --------------- | ------------------------------------------------------- |
+| `/../`           | parent selector | `/persons/adress/[zip=/$FL/]/../firstName`              |
+| `/[key=value]/`  | predicate       | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]` |
+| `/literal text/` | exact selector  | `/persons/adress/city`                                  |
+
+**Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
+
+Query _"path"_ elements are seperated by `/` token and predicates are enclosed between `/[`  `]/` tokens.
+
+JXPath alaws returns a array of values/objects, if nothing was selected by the query the array will be empty.
+
+JXPath navigates through arrays and objects agnosticly.
+
+Look the the following JS object:
+
+```javascript
+const data = {
+    manager: {
+        firstName: 'Big',
+        lastName: 'Boss'
+    }
+    employees: [ 
+        {
+            firstName: 'Tammy',
+            lastName: 'Brant',
+            address: {
+                zip: 'AL 36104'
+                city: 'Calumet City',
+                street: '837 West St.'
+            }
+        },
+        {
+            firtName: 'Roy',
+            lastName: 'White',
+            address: {
+                zip: 'AL 36487',
+                city: 'Tullahoma',
+                street: '843 Golden Star Avenue'
+            }
+        },
+        {
+            firtName: 'James',
+            lastName: 'Kirk',
+            address: {
+                zip: 'FL 32301',
+                city: 'Jackson Heights',
+                street: '572 Myrtle Avenue'
+            }
+        }
+    ]
+};
+const  path =  // see examples below
+const jxpath = require('@mangos/jxpath');
+const result = jxpath( path , data);
+//-> result , see below
+```
+
+The `/employees/` is an array of objects, and `/manager` is single nested object, JXPath query treats them both agnosticly.
+
+## Predicate `[..]` query selector
+
+Predicates have the general pattern `/[key=value]/`; both `key` and `value` can be regular expressions
+
+### regular expression predicates
+
+* A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
+* A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
+* A path of `/manager/[/Name$/=/^B/]` will return the object value `manager` since both `firstName` and `lastName` match the left side expression and both values start with the capital letter `B`.
+
+### literal predicates
+
+* A path of `/manager/firstName` returns the result `[ 'Big' ]`.
+* A path of `/employees/firstName` returns the result `[ 'Tammy', 'Roy', 'James' ]`.
+* A path of `/employees/non-existant-path` returns an empty result `[]`.
+
+## Parent selector
+
+A parent selector is the two dots `..` as it is in XPath.
+
+* A path of `/employees/address/[zip=/^AL/]/../firstName` will give back the result `[ 'Tammy', 'Roy' ]`, aka all first names of employees having a zipcode starting with `AL`.
+
 ### JXPath query examples
 
-Below is an exmaple snippet of a database in JSON hidrated (via `require(...)` or `JSON.parse`)  as a JS object. Eventually JXPath slices JS Objects.
+Below is an exmaple snippet of a database as a JS object.
 
 _Note: Imagine the more data in places  you see `...` in the snippet below._
 
@@ -100,7 +186,6 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-
     const resultArray = jxpath('/customers/orders/[order_status=cancelled]/../name'); 
     //-> [ 'Tammy Bryant' ]
 ```
@@ -109,7 +194,6 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-    
     // using regular expression /.*/  
 
     const resultArray = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/.*/]/../../email');
@@ -120,7 +204,6 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-    
     const resultArray = jxpath('/customers/name');
     //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
 ```
@@ -208,7 +291,6 @@ const data = {
         ]
     }]
 };
-
 ```
 
 **note:** there is an internal referential constraint between `/retailOutlets/name` and `/customers/orderItems/shop`

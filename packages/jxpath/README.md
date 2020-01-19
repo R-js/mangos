@@ -1,28 +1,38 @@
 
 # JXPath
 
-[release notes](CHANGELOG.md)
+_Part of the [mangos](https://github.com/R-js/mangos) monorepo of data wrangling tools._
+
+JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
+
+_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+
+
+### Differences with XPath
+
+JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
 
 ```bash
 npm install @mangos/jxpath
 ```
 
-_Part of the [mangos](https://github.com/R-js/mangos) monorepo of data wrangling tools._
+### Differences with json-path
 
-JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
+We do have a parent operater `/../` unavailable in json-path, in json-path the `/../` this is a recursive descent operator
 
-JS Objects (unlike XML) dont have attributes or namespaces, or comments `<!-- >`. This means JXPath only handles `string` property names who's values that can be any JS R-value.
+## Query operators overview
 
-_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+| operator         | jxpath         | example                                                 |
+| ---------------- | --------------- | ------------------------------------------------------- |
+| `..`             | parent operator | `/persons/adress/[zip=/$FL/]/../firstName`              |
+| `[key=value]`    | predicate       | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]` |
+| `/literal text/` | exact selector  | `/persons/adress/city`                                  |
 
-## Query langauge
+**Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
-The JXPath query langauge (like XPath) uses a _path like_ syntax to indentify and navigate nodes in a JS object. 
 Query _"path"_ elements are seperated by `/` token and predicates are enclosed between `/[`  `]/` tokens.
 
 JXPath alaws returns a array of values/objects, if nothing was selected by the query the array will be empty.
-
-## _Literal_ query selector
 
 JXPath navigates through arrays and objects agnosticly.
 
@@ -64,61 +74,41 @@ const data = {
         }
     ]
 };
-
+const  path =  // see examples below
 const jxpath = require('@mangos/jxpath');
-const result = jxpath( path , data); // -> example of paths are given below
+const result = jxpath( path , data);
 //-> result , see below
 ```
+
+The `/employees/` is an array of objects, and `/manager` is single nested object, JXPath query treats them both agnosticly.
+
+## Predicate `[..]` query selector
+
+Predicates have the general pattern `/[key=value]/`; both `key` and `value` can be regular expressions
+
+### regular expression predicates
+
+* A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
+* A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
+* A path of `/manager/[/Name$/=/^B/]` will return the object value `manager` since both `firstName` and `lastName` match the left side expression and both values start with the capital letter `B`.
+
+### literal predicates
 
 * A path of `/manager/firstName` returns the result `[ 'Big' ]`.
 * A path of `/employees/firstName` returns the result `[ 'Tammy', 'Roy', 'James' ]`.
 * A path of `/employees/non-existant-path` returns an empty result `[]`.
 
-`/employees/` is an array of objects and `manager` is a nested object, JXPath query treats them both agnosticly.
+## Parent selector
 
+A parent selector is the two dots `..` as it is in XPath.
 
-## Predicate _literal_ query selector
-
-Predictes within a query _path_ can be used so omit/select intermediate JS object nodes.
-
-Using the previous JS object:
-
-- A path of `/manager/[firstName=Big]` will return the result 
-
-```javascript
-[
-    {
-        firstName: 'Big',
-        lastName: 'Boss'
-    }
-]
-``` 
-**Note: result array items, are never copies (unless they are scalar values ofc), alteration (adding/removing properties, changing property values)
-of the object above is will be visible in the main data object.**
-
-A path of `/manager/[firstName=Big]/lastName` will return the result `[ 'Boss' ]`.
-
-## Predicate _regular expression_ query selector
-
-Predicates have the general pattern `/[key=value]/`; both `key` and `value` can be regular expressions
-Because the Path `/` seperator is used to delimit a regular expression aswell, it must be escaped when using it with a regexp predicate
-
-
-* A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
-* A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
-        
-## Predicate _parent_ query selector
-
-A parent selector is the two dots `..` as it is in JXPath.
-
-* A path of `/employees/address/[zip=/^AL/]/../firtName` will give back the result `[ 'Tammy', 'Roy', `, aka all first names of employees having a zipcode starting with `AL`.
+* A path of `/employees/address/[zip=/^AL/]/../firstName` will give back the result `[ 'Tammy', 'Roy', ]`, aka all first names of employees having a zipcode starting with `AL`.
 
 ## Feedback
 
 We appreceate any feedback, with new ideas, to enhance this tool suite. File an issue [here](https://github.com/R-js/mangos/issues)
 
 Before contributing, please read our contributing [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTRIBUTING_GUIDELINES.md).
-
 
 ## [License](LICENSE)
 
@@ -129,8 +119,3 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-
-
-
-
