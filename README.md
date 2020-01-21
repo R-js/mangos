@@ -26,15 +26,17 @@ npm install @mangos/jxpath
 
 ### Differences with json-path
 
-`jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
+- `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
+- `jspath` has full regular expression to select for both property names and property values
 
 ## Query operators overview
 
-| operator         | jxpath          | example                                                 |
-| ---------------- | --------------- | ------------------------------------------------------- |
-| `/../`           | parent selector | `/persons/adress/[zip=/$FL/]/../firstName`              |
-| `/[key=value]/`  | predicate       | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]` |
-| `/literal text/` | exact selector  | `/persons/adress/city`                                  |
+| operator            | jxpath           | example                                                        |
+| ------------------- | ---------------- | -------------------------------------------------------------- |
+| `..`                | parent selector  | `/persons/adress/[zip=/$FL/]/../firstName`                     |
+| `[key=value]`       | predicate        | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
+| `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[[/name$/=Mr Dubois]` |
+| `literal_text`      | exact selector   | `/persons/adress/city`                                         |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
