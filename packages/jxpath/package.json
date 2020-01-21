@@ -44,5 +44,5 @@
     "coverage": "nyc mocha",
     "test": "mocha"
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

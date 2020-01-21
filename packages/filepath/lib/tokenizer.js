@@ -67,6 +67,7 @@ Identifies the path.
 
 Continue tomorrow here: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#identifying-the-path
 
+
 */
 const tokens = {
     SEP: '\x01', // done
@@ -76,8 +77,6 @@ const tokens = {
     DDP_ROOT: '\0x05',
     
 };
-
-DOS device paths
 
 
 function lookAheadUntill(str, fn, start, length = str.length - start) {
