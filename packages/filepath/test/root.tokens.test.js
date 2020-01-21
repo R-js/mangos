@@ -17,8 +17,8 @@ const {
     sepSlicer
 } = require('../lib/tokenizer');
 
-describe.skip('filepath', () => {
-    describe('unc lexer', () => {
+describe.skip('roottokens', () => {
+    describe('unc', () => {
         describe('errors', () => {
             it('unc "/./some/"', () => {
                 const answer = Array.from(uncTokenizer('/./some/'));

@@ -7,6 +7,8 @@ features.set('function', {
     fn: functionCheck
 });
 
+// TODO: seperate out function arguments
+
 function functionCheck(m) {
         return function checkFn(fn) {
                 if (!isFunction(fn)) {

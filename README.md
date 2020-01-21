@@ -27,7 +27,7 @@ npm install @mangos/jxpath
 ### Differences with json-path
 
 - `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
-- `jspath` has full regular expression to select for both property names and property values
+- `jxpath` has full regular expression to select for both property names and property values
 
 ## Query operators overview
 
