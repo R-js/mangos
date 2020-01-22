@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         /*{
             "type": "node",
             "request": "launch",
@@ -19,6 +20,15 @@
             "name": "jxpath",
             "program": "${workspaceFolder}/packages/jxpath/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/packages/jxpath",
+            "internalConsoleOptions": "openOnSessionStart",
+            "stopOnEntry": false
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "filepath",
+            "program": "${workspaceFolder}/packages/filepath/node_modules/mocha/bin/_mocha",
+            "cwd": "${workspaceFolder}/packages/filepath",
             "internalConsoleOptions": "openOnSessionStart",
             "stopOnEntry": false
         },
