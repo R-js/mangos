@@ -16,18 +16,38 @@ The following reserved characters:
 * (asterisk)
 Integer value zero, sometimes referred to as the ASCII NUL character.
 
-Characters whose integer representations are in the range from 1 through 31, except for alternate data streams where these characters are allowed. For more information about file streams, see File Streams.
+Characters whose integer representations are in the range from 1 through 31,
+ except for alternate data streams where these characters are allowed. For more information about file streams,
+  see File Streams.
+
+CON,
+PRN,
+AUX,
+NUL,
+COM1,
+COM2,
+COM3,
+COM4,
+COM5,
+COM6,
+COM7,
+COM8,
+COM9,
+LPT1,
+LPT2,
+LPT3,
+LPT4,
+LPT5,
+LPT6,
+LPT7,
+LPT8,
+LPT9.
 
 Any other character that the target file system does not allow.
 */
 
-uncTokenizer,
-unxRootTokenizer,
-lfsRootTokenizer,
-sepSlicer
-
 // nomenclature
-// TDP = [T]raditional [D]os [P]ath
+//* TDP = [T]raditional [D]os [P]ath
 // examples:
 //      C:\Documents\Newsletters\Summer2018.pdf             An absolute file path from the root of drive C:
 //      \Program Files\Custom Utilities\StringFinder.exe    An absolute path from the root of the current drive.
@@ -67,151 +87,216 @@ Identifies the path.
 
 Continue tomorrow here: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#identifying-the-path
 
-
 */
 const tokens = {
     SEP: '\x01', // done
     POSIX_ROOT: '\0x02', // done
-    TDP_ROOT: '\0x03',
-    UNC_ROOT: '\0x04',
-    DDP_ROOT: '\0x05',
-    
+    TDP_ROOT: '\0x03', // traditional dos path
+    UNC_ROOT: '\0x04', // unc root
+    DDP_ROOT: '\0x05', // dos device path root
+    PATHELT: '\0x06',
+    PARENT: '\0x07',
+    CURRENT: '\0x08'
 };
 
+const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 
-function lookAheadUntill(str, fn, start, length = str.length - start) {
-    let i = start;
-    for (; i < str.length; i++) {
-        if (i >= (start + length)) {
-            break;
-        }
-        if (!fn(str[i])) {
-            break;
-        }
+function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
+    const checkFrom = str.slice(start, end + 1);
+    const match = checkFrom.match(regexpLD);
+    if (Array.isArray(match)) {
+        return match[0];
     }
-    i--;
-    // so i is at the place where conditions have failed
+}
+
+const forbiddenRegExp = new RegExp(`[<>:"/\\|?*<\u0000}]`);
+
+function isInValidMSDirecotryName(str = '', start = 0, end = str.length - 1) {
+    return forbiddenRegExp.test(str.slice(start, end + 1));
+}
+
+function lookSuccessive(str, fn, start, end = str.length - 1) {
+    let i = start;
+    let len = 0;
+    for (; i <= end; i++) {
+        if (fn(str[i])) {
+            len++;
+            continue;
+        }
+        break;
+    }
+    if (len === 0) {
+        return;
+    }
+    // return range
     return ({
-        end: i,
+        end: i - 1,
         start,
-        length: i - start + 1
     });
 }
 
 function validSep(s) {
     return s === '\\' || s === '/';
 }
-// generator, unc
-function* uncRootAbsorber(str = '', start = 0, end = str.length - 1) {
+
+
+
+// hard to infer , '\\' tokens are actually legal in linux xfs, etx4, etc
+function* posixAbsorber(str = '', start = 0, end = str.length - 1) {
+
+    const selectorPosix = [{
+            fn: (str, start, end) => lookSuccessive(str, s => s !== '/', start, end),
+            t: tokens.PATHELT
+        },
+        {
+            fn: (str, start, end) => lookSuccessive(str, s => s === '/', start, end),
+            t: tokens.SEP
+        }
+    ];
+
+    // "/" start with "/" or '\' tokens should be converted to "/"
     let i = start;
-    const { length } = lookAheadUntill(str, validSep, start, 2, end);
-    if (length < 2) {
-        return; // abort
-    }
-    let long = false;
-    let unc;
-    const s0 = str[i + length];
-    const sep0 = str[i + length + 1];
-    const UNC = str.slice(i + length + 2, i + length + 5).toLowerCase();
-    const sep1 = str[i + length + 5];
-    if ((s0 === '.' || s0 === '?') && validSep(sep0)) { // the "." is an alias for "?"
-        long = true;
-        if (UNC === 'unc' && validSep(sep1)) {
-            unc = 'UNC\\';
-        }
-    }
-    if (long) {
-        if (unc) {
-            yield {
-                value: '\\\\?\\UNC\\',
-                token: tokens.ROOT_LONG_UNC,
-                start,
-                end: start + 7
-            };
-            return;
-        }
+    const root = lookSuccessive(str, s => s === '/', start, end);
+    if (root) {
         yield {
-            value: '\\\\?\\',
-            token: tokens.ROOT_LONG_UNC,
-            start,
-            end: start + 3
+            token: tokens.POSIX_ROOT,
+            start: start,
+            end: root.end,
+            value: str.slice(start, root.end + 1)
+        }
+        i = root.end + 1;
+    }
+    let toggle = 0;
+    while (i <= end) {
+        // find pathpart
+        let token;
+        const result = selectorPosix[toggle].fn(str, i, end);
+        if (result) {
+            const value = str.slice(i, result.end + 1);
+            token = selectorPosix[toggle].t;
+            if (value === '..') {
+                token = tokens.PARENT;
+            }
+            if (value === '.') {
+                token = tokens.CURRENT;
+            }
+            yield {
+                token,
+                start: result.start,
+                end: result.end,
+                value
+            }
+            i = result.end + 1;
+
+        }
+        toggle = (++toggle % 2);
+    }
+}
+
+function* tdpAbsorber(str = '', start = 0, end = str.length - 1) {
+
+    const selectorTDP = [{
+            fn: (str, start, end) => lookSuccessive(str, s => !validSep(s), start, end),
+            t: tokens.PATHELT
+        },
+        {
+            fn: (str, start, end) => lookSuccessive(str, s => validSep(s), start, end),
+            t: tokens.SEP
+        }
+    ];
+
+
+    let i = start;
+    let drive = str.slice(i, i + 2).toLowerCase();
+    if (drive[0] >= 'a' && drive[0] <= 'z' && drive[i + 1] === ':') {
+        yield {
+            token: tokens.TDP_ROOT,
+            value: `${drive}`,
+            start: i,
+            end: i + 1
         };
+        i = start + 2;
+    }
+    let toggle = 0;
+    while (i <= end) {
+        let token;
+        const result = selectorTDP[toggle].fn(str, i, end);
+        if (result) {
+            const value = str.slice(i, result.end + 1);
+            token = selectorTDP[toggle].t;
+            if (value === '..') {
+                token = tokens.PARENT;
+            }
+            if (value === '.') {
+                token = tokens.CURRENT;
+            }
+            const rc = {
+                token,
+                start: result.start,
+                end: result.end,
+                value
+            }
+            if (toggle === 0) {
+                const ldn = hasLegacyDeviceName(value);
+                const errors = [];
+                if (ldn) {
+                    errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
+                }
+                if (isInValidMSDirecotryName(value)) {
+                    errors.push(`name contains invalid characters`);
+                }
+                if (errors.length) {
+                    rc.error = errors.join('|');
+                }
+            }
+            yield rc;
+            i = result.end + 1;
+
+        }
+        toggle = (++toggle % 2);
+    }
+
+}
+
+function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
+    const selectorTDP = [
+        {
+            fn: (str, start, end) => lookSuccessive(str, s => !validSep(s), start, end),
+            t: tokens.PATHELT
+        },
+        {
+            fn: (str, start, end) => lookSuccessive(str, s => validSep(s), start, end),
+            t: tokens.SEP
+        }
+    ];
+
+    // \\system07\C$\    servername: system07 (of fully qualified netbios,  IP/FQDN address ipv4/ipv6
+    //                   c$: shared name
+    // \\Server2\Share\Test\Foo.txt
+    //                        servername: Server2
+    //                        shared name: Share
+
+    if (str.slice(start, start+2) === '\\\\' && str[start+2] !== ''){
         return;
     }
-    yield {
-        value: '\\\\',
-        token: tokens.ROOT_SHORT_UNC,
-        start,
-        end: start + 1
-    };
-    return;
-}
-
-// generator
-function* unxRootTokenizer(str = '', start = 0, end = str.length - 1) {
-    if (str[start] === '/' && validSep(str[start + 1]) === false) {
+    if ()
+    let drive = str.slice(i, i + 2).toLowerCase();
+    if (drive[0] >= 'a' && drive[0] <= 'z' && drive[i + 1] === ':') {
         yield {
-            value: '/',
-            token: tokens.ROOT_POSIX,
-            start,
-            end: start
+            token: tokens.TDP_ROOT,
+            value: `${drive}`,
+            start: i,
+            end: i + 1
         };
-        return
-    };
-    return
-}
-
-const dA = 'A'.charCodeAt(0);
-const dZ = 'Z'.charCodeAt(0);
-const da = 'a'.charCodeAt(0);
-const dz = 'z'.charCodeAt(0);
-
-function* lfsRootTokenizer(str = '', start = 0, end = str.length - 1) {
-    const drive = str[start].charCodeAt(0);
-
-    if (((drive => dA && drive <= dZ) || (drive => da && drive <= dz)) && str[start + 1] === ':' && validSep(str[start + 2])) {
-        yield ({
-            value: str.slice(start, start + 2),
-            token: tokens.LOCAL_FS_ROOT,
-            start,
-            end: start + 2
-        });
+        i = start + 2;
     }
-    return;
+
 }
 
-function* sepSlicer(str = '', start = 0, end = str.length - 1) {
-    const length = str.length;
-    // clamp
-    end = Math.min(str.length -1, Math.max(end,0));
-    let i = start;
-    for (; i <= end; i++){
-        if (validSep(str[i])){
-            yield {
-                value: str[i],
-                token: tokens.SEP,
-                start :i,
-                end: i
-            };
-        }
-    }
-}
+function* ddpAbsorber(str = '', start = 0, end = str.length - 1) {}
 
-/*
-< (less than)
-> (greater than)
-: (colon)
-" (double quote)
-/ (forward slash)
-\ (backslash)
-| (vertical bar or pipe)
-? (question mark)
-* (asterisk)
-*/
 
 module.exports = {
-    uncTokenizer,
-    unxRootTokenizer,
-    lfsRootTokenizer,
-    sepSlicer
+    posixAbsorber,
+    tdpAbsorber
 };

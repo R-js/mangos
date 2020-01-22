@@ -11,77 +11,69 @@ const {
 } = chai;
 
 const {
-    uncTokenizer,
-    unxRootTokenizer,
-    lfsRootTokenizer,
-    sepSlicer
+    posixAbsorber,
+    tdpAbsorber
 } = require('../lib/tokenizer');
 
-describe.skip('filepath', () => {
-    describe('unc lexer', () => {
-        describe('errors', () => {
-            it('unc "/./some/"', () => {
-                const answer = Array.from(uncTokenizer('/./some/'));
-                expect(answer).to.deep.equal([]);
-            });
-            it('unc "/"', () => {
-                const answer = Array.from(uncTokenizer('\\'));
-                expect(answer).to.deep.equal([]);
-            });
+describe('filepath', () => {
+    describe('posixAbsorber', () => {
+        it('empty path ""', () => {
+            const answer = Array.from(posixAbsorber(''));
+            console.log(answer);
+        });
+        it('path "/"', () => {
+            const answer = Array.from(posixAbsorber('/'));
+            console.log(answer);
+        });
+        it('path "////////"', () => {
+            const answer = Array.from(posixAbsorber('////////'));
+            console.log(answer);
+        });
+        it('path "something////////something else"', () => {
+            const answer = Array.from(posixAbsorber('something////////something else'));
+            console.log(answer);
+        });
+        it('path ".././////../.....///\\\\c:/"',()=>{
+            const answer = Array.from(posixAbsorber('.././////../.....///\\\\c:/'));
+            console.log(answer);
+        });
+        it('path "//?/UNC/Server1/share1/file.txt" is legal posix',()=>{
+            const answer = Array.from(posixAbsorber('//?/UNC/Server1/share1/file.txt'));
+            console.log(answer);
         })
-        it('unc long root "//?/UNC/"', () => {
-            const path = '\\\\?\\UNC\\';
-            const answer = Array.from(uncTokenizer(path));
-            expect(answer).to.deep.equal([{ value: '\\\\?\\UNC\\', token: '\u0000x05', start: 0, end: 7 }]);
-        });
-        it('unc long root "//?/"', () => {
-            const path = '\\\\?\\';
-            const answer = Array.from(uncTokenizer(path));
-            expect(answer).to.deep.equal([{ value: '\\\\?\\', token: '\u0000x05', start: 0, end: 3 }]);
-        });
-        it('unc short root "//"', () => {
-            const path = '\\\\';
-            const answer = Array.from(uncTokenizer(path));
-            expect(answer).to.deep.equal([{ value: '\\\\', token: '\u0000x07', start: 0, end: 1 }]);
-        });
     });
-    describe('posix root lexer', () => {
-        describe('errors', () => {
-            it('empty path', () => {
-                const answer = Array.from(unxRootTokenizer(''));
-                expect(answer).to.deep.equal([]);
-            });
+    describe('tdp (traditional dos path) Absorber', () => {
+        it('path "c:',()=>{
+            const answer = Array.from(tdpAbsorber('c:'));
+            console.log(answer);
         });
-        it('posix "/"', () => {
-            const answer = Array.from(unxRootTokenizer('something'));
-            expect(answer).to.deep.equal([]);
+        it('path "c://',()=>{
+            const answer = Array.from(tdpAbsorber('c://'));
+            console.log(answer);
+        })
+        it('path "c:\\',()=>{
+            const answer = Array.from(tdpAbsorber('c:\\'));
+            console.log(answer);
         });
-    });
-    describe('lfs root lexer', () => {
-        describe('errors', () => {
-            it('empty path', () => {
-                const answer = Array.from(unxRootTokenizer(''));
-                expect(answer).to.deep.equal([]);
-            });
-            it('lfs "c:something"', () => {
-                const answer = Array.from(lfsRootTokenizer('c:something'));
-                expect(answer).to.deep.equal([]);
-            });
+        it('path "somepathelement',()=>{
+            const answer = Array.from(tdpAbsorber('somepathelement'));
+            console.log(answer);
         });
-        it('lfs "c:\\something"', () => {
-            const answer = Array.from(lfsRootTokenizer('c:\\something'));
-            expect(answer).to.deep.equal([ { value: 'c:', token: '\u0000x03', start: 0, end: 2 } ]);
+        it('path "c:somepath\\anothersub\\/file.txt"',()=>{
+            const answer = Array.from(tdpAbsorber('c:somepath\\anothersub\\/file.txt"'));
+            console.log(answer);
         });
-    });
-    describe('sep lexer', () => {
-        it('find / or \ in  "c:\\something\\path2/path3"', () => {
-            const answer = Array.from(sepSlicer('c:\\something\\path2/path3', 3));
-            expect(answer).to.deep.equal([ { value: '\\', token: '\u0001', start: 12, end: 12 },
-            { value: '/', token: '\u0001', start: 18, end: 18 } ]);
+        it('path contains legacy device names "c:\\someotherCON.txt\\/file.tx"',()=>{
+            const answer = Array.from(tdpAbsorber('c:\\someotherCON.txt\\/file.txt'));
+            console.log(answer);
         });
-        it('find / or \ in empty ""', () => {
-            const answer = Array.from(sepSlicer());
-            expect(answer).to.deep.equal([]);
+        it('path contains legacy device names "..\\.\\...\\file.txt"',()=>{
+            const answer = Array.from(tdpAbsorber('..\\.\\...\\file.txt'));
+            console.log(answer);
         });
-    });
+        it('path contains invalid chars "..\\.\\?!{..\\file.txt"',()=>{
+            const answer = Array.from(tdpAbsorber('..\\.\\?!{..\\file.txt'));
+            console.log(answer);
+        })
+    })
 });
