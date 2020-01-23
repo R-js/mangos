@@ -259,44 +259,70 @@ function* tdpAbsorber(str = '', start = 0, end = str.length - 1) {
 }
 
 function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
-    const selectorTDP = [
-        {
-            fn: (str, start, end) => lookSuccessive(str, s => !validSep(s), start, end),
-            t: tokens.PATHELT
-        },
-        {
-            fn: (str, start, end) => lookSuccessive(str, s => validSep(s), start, end),
-            t: tokens.SEP
-        }
-    ];
-
     // \\system07\C$\    servername: system07 (of fully qualified netbios,  IP/FQDN address ipv4/ipv6
     //                   c$: shared name
     // \\Server2\Share\Test\Foo.txt
     //                        servername: Server2
     //                        shared name: Share
 
-    if (str.slice(start, start+2) === '\\\\' && str[start+2] !== ''){
-        return;
-    }
-    if ()
-    let drive = str.slice(i, i + 2).toLowerCase();
-    if (drive[0] >= 'a' && drive[0] <= 'z' && drive[i + 1] === ':') {
-        yield {
-            token: tokens.TDP_ROOT,
-            value: `${drive}`,
-            start: i,
-            end: i + 1
-        };
-        i = start + 2;
+    /* 2 "//" or 2 "\\"" are also ok in MS Windows */
+    // regexp this
+    const regexp = /^(\/\/|\\\\)([^\\\/]+)(\/|\\)([^\\\/]+)(\/|\\)/;
+
+    const match = str.match(regexp);
+    if (match === null) {
+        return; // nothing to do here
     }
 
+    const server = match[2];
+    const share = match[4];
+    const sep2 = '\\\\';
+    const sep = '\\';
+    const endUnc = match[0].length - 1;
+
+    yield {
+        token: tokens.UNC_ROOT,
+        value: `\\\\${server}\\${share}${sep}`, // delimter at the end makes my IDE (vscode) do weird stuff
+        start,
+        end: endUnc
+    };
+    // at this point is should be just a normal dos parsing
+    yield* tdpAbsorber(str, endUnc + 1, end);
 }
 
-function* ddpAbsorber(str = '', start = 0, end = str.length - 1) {}
+function getRecords
+
+function* ddpAbsorber(str = '', start = 0, end = str.length - 1) {
+
+    const regExpOrderedMap = [
+        //  \\?\UNC\Server\Share\
+        //  \\.\UNC\Server\Share\
+        ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)/i],
+
+        // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\ 
+        // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
+        ['ddpwithVolumeUUID', /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[A-Fa-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)/i],
+
+        // example  \\?\C:\
+        // example  \\.\C:\
+        ['ddpwithTDP', /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)/i]
+    ];
+
+    for (const [pk, regexp] of regExpOrderedMap) {
+        const match = str.match(regexp);
+        if (match === null) {
+            continue; 
+        }
+        yield getRecord(pk, match);
+        yield* tdpAbsorber(str, endUnc + 1, end);
+        break;
+    }
+}
 
 
 module.exports = {
     posixAbsorber,
-    tdpAbsorber
+    tdpAbsorber,
+    uncAbsorber,
+    ddpAbsorber
 };
