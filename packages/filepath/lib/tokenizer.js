@@ -1,4 +1,5 @@
 'use strict';
+const clone = require('clone');
 //from https://en.wikipedia.org/wiki/Path_(computing)
 /* 
 allowed chars in filepath names
@@ -99,6 +100,13 @@ const tokens = {
     CURRENT: '\0x08'
 };
 
+const rootTokens = {
+    POSIX_ROOT: '\0x02', // done
+    TDP_ROOT: '\0x03', // traditional dos path
+    UNC_ROOT: '\0x04', // unc root
+    DDP_ROOT: '\0x05' // dos device path root
+};
+
 const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 
 function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
@@ -159,7 +167,7 @@ function* posixAbsorber(str = '', start = 0, end = str.length - 1) {
     const root = lookSuccessive(str, s => s === '/', start, end);
     if (root) {
         yield {
-            token: tokens.POSIX_ROOT,
+            token: rootTokens.POSIX_ROOT,
             start: start,
             end: root.end,
             value: str.slice(start, root.end + 1)
@@ -210,7 +218,7 @@ function* tdpAbsorber(str = '', start = 0, end = str.length - 1) {
     let drive = str.slice(i, i + 2).toLowerCase();
     if (drive[0] >= 'a' && drive[0] <= 'z' && drive[i + 1] === ':') {
         yield {
-            token: tokens.TDP_ROOT,
+            token: rootTokens.TDP_ROOT,
             value: `${drive}`,
             start: i,
             end: i + 1
@@ -243,7 +251,7 @@ function* tdpAbsorber(str = '', start = 0, end = str.length - 1) {
                     errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
                 }
                 if (isInValidMSDirecotryName(value)) {
-                    errors.push(`name contains invalid characters`);
+                    errors.push(`name "${value}" contains invalid characters`);
                 }
                 if (errors.length) {
                     rc.error = errors.join('|');
@@ -281,7 +289,7 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
     const endUnc = match[0].length - 1;
 
     yield {
-        token: tokens.UNC_ROOT,
+        token: rootTokens.UNC_ROOT,
         value: `\\\\${server}\\${share}${sep}`, // delimter at the end makes my IDE (vscode) do weird stuff
         start,
         end: endUnc
@@ -290,31 +298,61 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
     yield* tdpAbsorber(str, endUnc + 1, end);
 }
 
-function getRecords
+const regExpOrderedMap = [
+    //  \\?\UNC\Server\Share\
+    //  \\.\UNC\Server\Share\
+    ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)/i],
+
+    // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\ 
+    // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
+    ['ddpwithVolumeUUID', /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)/i],
+
+    // example  \\?\C:\
+    // example  \\.\C:\
+    ['ddpwithTDP', /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)/i]
+];
+
+const mathMapFns = {
+    ddpwithVolumeUUID(match){
+        return {
+            token: rootTokens.DDP_ROOT,
+            value: '\\\\?\\'+match[4]+'\\',
+            start: 0,
+            end: match[0].length-1
+        };
+    },
+    ddpwithUNC(match){
+        return {
+            token: rootTokens.DDP_ROOT,
+            value: '\\\\?\\UNC\\'+match[6]+'\\'+match[8]+'\\',
+            start: 0,
+            end: match[0].length-1
+        };
+    },
+    ddpwithTDP(match){
+        return {
+            token: rootTokens.DDP_ROOT,
+            value: '\\\\?\\'+match[6]+'\\'+match[8]+'\\',
+            start: 0,
+            end: match[0].length-1
+        }
+    }
+};
 
 function* ddpAbsorber(str = '', start = 0, end = str.length - 1) {
-
-    const regExpOrderedMap = [
-        //  \\?\UNC\Server\Share\
-        //  \\.\UNC\Server\Share\
-        ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)/i],
-
-        // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\ 
-        // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
-        ['ddpwithVolumeUUID', /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[A-Fa-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)/i],
-
-        // example  \\?\C:\
-        // example  \\.\C:\
-        ['ddpwithTDP', /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)/i]
-    ];
-
     for (const [pk, regexp] of regExpOrderedMap) {
         const match = str.match(regexp);
         if (match === null) {
             continue; 
         }
-        yield getRecord(pk, match);
-        yield* tdpAbsorber(str, endUnc + 1, end);
+        const record = mathMapFns[pk] && mathMapFns[pk](match);
+        if (!record){
+            continue;
+        }
+        record.start += start;
+        record.end += start;
+        yield record;
+        yield* tdpAbsorber(str, record.end + 1, end);
         break;
     }
 }
@@ -324,5 +362,7 @@ module.exports = {
     posixAbsorber,
     tdpAbsorber,
     uncAbsorber,
-    ddpAbsorber
+    ddpAbsorber,
+    tokens,
+    rootTokens
 };

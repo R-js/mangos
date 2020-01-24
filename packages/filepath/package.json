@@ -35,5 +35,8 @@
     "coverage": "nyc mocha",
     "test": "mocha"
   },
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "clone": "^2.1.2"
+  }
 }
