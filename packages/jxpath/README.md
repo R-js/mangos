@@ -7,14 +7,13 @@ JXPath is an adaption of XPath query language for XML, but applied to JS objects
 
 _Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
 
+```bash
+npm install @mangos/jxpath
+```
 
 ### Differences with XPath
 
 JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
-
-```bash
-npm install @mangos/jxpath
-```
 
 ### Differences with json-path
 

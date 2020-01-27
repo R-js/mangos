@@ -12,17 +12,19 @@ Support this repo by ⭐ starring it.
   - [JXPath](#jxpath)
   - [JValidator](#jvalidator)
 
-## JXPath
+# JXPath
 
-JXPath is an adaption of XPath, but applied to JS objects.
+[Full APi doc](packages/jxpath/README.md)
 
-### Differences with XPath
-
-JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
+JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
 
 ```bash
 npm install @mangos/jxpath
 ```
+
+### Differences with XPath
+
+JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
 
 ### Differences with json-path
 
@@ -33,10 +35,10 @@ npm install @mangos/jxpath
 
 | operator            | jxpath           | example                                                        |
 | ------------------- | ---------------- | -------------------------------------------------------------- |
+| `literal_text`      | exact selector   | `/persons/adress/city`                                         |
 | `..`                | parent selector  | `/persons/adress/[zip=/$FL/]/../firstName`                     |
 | `[key=value]`       | predicate        | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
 | `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[[/name$/=Mr Dubois]` |
-| `literal_text`      | exact selector   | `/persons/adress/city`                                         |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
