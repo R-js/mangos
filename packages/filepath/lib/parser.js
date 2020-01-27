@@ -21,7 +21,7 @@ const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
 function lexPath(path = '', ...args){
     if (typeof path === 'string'){
-        const fr = possibilities(path);
+        const fr = inferPathType(path);
         const ns = allNamespaces.find( v => v in fr);
         if (!ns){
             return  [];
@@ -95,15 +95,29 @@ function resolve(_from, to) {
     return { path: working };
 }
 
-function possibilities(path, options = {}) {
+function defaultOptions(options = {}){
     if (Object.keys(options).filter(f => allNamespaces.includes(f)).length === 0) {
+        let platform;
+        // node?
+        if (typeof global !== 'undefined' && global.process && global.process.platform){
+            platform = global.process.platform;
+         
+        } else { // browser 
+            platform = 'posix';
+        }
         Object.assign(options, {
-            unc: os.platform() === 'win32',
-            dos: os.platform() === 'win32',
-            devicePath: os.platform() === 'win32',
-            posix: os.platform() !== 'win32'
+            unc: platform === 'win32',
+            dos: platform === 'win32',
+            devicePath: platform === 'win32',
+            posix: platform !== 'win32'
         });
     }
+    return options;
+}
+
+function inferPathType(path, options = {}) {
+    defaultOptions(options);
+
     const rc = {};
     const processor = createPathProcessor(path);
 
@@ -121,7 +135,7 @@ function possibilities(path, options = {}) {
 
 
 module.exports = {
-    possibilities,
+    inferPathType,
     lexPath,
     resolve
 }
