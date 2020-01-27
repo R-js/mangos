@@ -32,6 +32,7 @@ describe('filepath', () => {
         it('path "//?/UNC/Server/share"', () => {
             const answer = lexPath('C:\\somedir\\someOtherdir?:\\');
             expect(answer).to.deep.equal({
+                type: 'dos',
                 path:
                     [{ token: '\u0000x03', value: 'c:', start: 0, end: 1 },
                     { token: '\u0001', start: 2, end: 2, value: '\\' },
@@ -58,6 +59,7 @@ describe('filepath', () => {
         it('path "//?/UNC/Server/share"', () => {
             const answer = lexPath('//?/UNC/Server/share');
             expect(answer).to.deep.equal({
+                type: 'unc',
                 path: [{
                     token: '\u0000x04',
                     value: '\\\\?\\UNC\\',

@@ -26,9 +26,10 @@ function lexPath(path = '', ...args){
         if (!ns){
             return  [];
         }
+        fr[ns].type = ns;
         return fr[ns];
     }
-    return path;
+    return path; // its not a string
 }
 
 function filterErr(t) {
