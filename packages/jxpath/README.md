@@ -27,7 +27,7 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 | `literal_text`      | exact selector   | `/persons/adress/city`                                         |
 | `..`                | parent selector  | `/persons/adress/[zip=/$FL/]/../firstName`                     |
 | `[key=value]`       | predicate        | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
-| `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[[/name$/=Mr Dubois]` |
+| `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
