@@ -91,21 +91,26 @@ Continue tomorrow here: https://docs.microsoft.com/en-us/dotnet/standard/io/file
 */
 const tokens = {
     SEP: '\x01', // done
-    POSIX_ROOT: '\0x02', // done
-    TDP_ROOT: '\0x03', // traditional dos path
-    UNC_ROOT: '\0x04', // unc root
-    DDP_ROOT: '\0x05', // dos device path root
-    PATHELT: '\0x06',
-    PARENT: '\0x07',
-    CURRENT: '\0x08'
+    PATHELT: '\x06',
+    PARENT: '\x07',
+    CURRENT: '\x08'
 };
 
 const rootTokens = {
-    POSIX_ROOT: '\0x02', // done
-    TDP_ROOT: '\0x03', // traditional dos path
-    UNC_ROOT: '\0x04', // unc root
-    DDP_ROOT: '\0x05' // dos device path root
+    POSIX_ROOT: '\x02', // done
+    TDP_ROOT: '\x03', // traditional dos path
+    UNC_ROOT: '\x04', // unc root
+    DDP_ROOT: '\x05' // dos device path root
 };
+
+function invertKeyValues(obj){
+    return  Object.entries(obj).reduce((o, v) => {
+        o[v[1]] = v[0];
+        return o;
+    }, {});
+}
+const rootTokenValues = invertKeyValues(rootTokens);
+const tokenValues = invertKeyValues(tokens);
 
 const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 
@@ -275,7 +280,7 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
 
     /* 2 "//" or 2 "\\"" are also ok in MS Windows */
     // regexp this
-    const regexp = /^(\/\/|\\\\)([^\\\/]+)(\/|\\)([^\\\/]+)(\/|\\)/;
+    const regexp = /^(\/\/|\\\\)([^\\\/]+)(\/|\\)([^\\\/]+)(\/|\\)?/;
 
     const match = str.match(regexp);
     if (match === null) {
@@ -286,11 +291,12 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
     const share = match[4];
     const sep2 = '\\\\';
     const sep = '\\';
-    const endUnc = match[0].length - 1;
+    const value = `\\\\${server}\\${share}`;
+    const endUnc = value.length - 1;
 
     yield {
         token: rootTokens.UNC_ROOT,
-        value: `\\\\${server}\\${share}${sep}`, // delimter at the end makes my IDE (vscode) do weird stuff
+        value, // delimter at the end makes my IDE (vscode) do weird stuff
         start,
         end: endUnc
     };
@@ -301,40 +307,43 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
 const regExpOrderedMap = [
     //  \\?\UNC\Server\Share\
     //  \\.\UNC\Server\Share\
-    ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)/i],
+    ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)?/i],
 
     // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\ 
     // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
-    ['ddpwithVolumeUUID', /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)/i],
+    ['ddpwithVolumeUUID', /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)?/i],
 
     // example  \\?\C:\
     // example  \\.\C:\
-    ['ddpwithTDP', /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)/i]
+    ['ddpwithTDP', /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)?/i]
 ];
 
 const mathMapFns = {
     ddpwithVolumeUUID(match){
+        const value = '\\\\?\\'+match[4];
         return {
             token: rootTokens.DDP_ROOT,
-            value: '\\\\?\\'+match[4]+'\\',
+            value,
             start: 0,
-            end: match[0].length-1
+            end: value.length-1
         };
     },
     ddpwithUNC(match){
+        const value = '\\\\?\\UNC\\'+match[6]+'\\'+match[8];
         return {
             token: rootTokens.DDP_ROOT,
-            value: '\\\\?\\UNC\\'+match[6]+'\\'+match[8]+'\\',
+            value,
             start: 0,
-            end: match[0].length-1
+            end: value.length-1
         };
     },
     ddpwithTDP(match){
+        const value = '\\\\?\\'+match[4];
         return {
             token: rootTokens.DDP_ROOT,
-            value: '\\\\?\\'+match[6]+'\\'+match[8]+'\\',
+            value,
             start: 0,
-            end: match[0].length-1
+            end: value.length-1
         }
     }
 };
@@ -364,5 +373,6 @@ module.exports = {
     uncAbsorber,
     ddpAbsorber,
     tokens,
-    rootTokens
+    rootTokens,
+    rootTokenValues
 };
