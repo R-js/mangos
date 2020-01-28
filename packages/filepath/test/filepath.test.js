@@ -1,11 +1,16 @@
 const chaiAsPromised = require('chai-as-promised');
+
 const {
     describe,
     it,
 } = require('mocha');
+
 const chai = require('chai');
 chai.should();
 chai.use(chaiAsPromised);
+
+const path = require('path');
+
 const {
     expect
 } = chai;
@@ -46,6 +51,48 @@ describe('filepath', () => {
                       { token: '\u0006', start: 33, end: 49, value: 'world' } 
                     ] 
             });
+        });
+        it('from "", to ""', () => {
+            const answer = resolve();
+            // since the answer is the current working directory we test with "fidelity" heuristic
+            const cwd = path.resolve();
+            const renderPath = answer.path.map(m=>m.value).join('');
+            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+        });
+       
+        it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
+            const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
+            // since the answer is the current working directory we test with "fidelity" heuristic
+            const renderPath = answer.path.map(m=>m.value).join('');
+            console.log(renderPath);
+            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+        });
+       
+        it('from "//Server1/Share1/test1/", to "../../../../../hello/world"', () => {
+            const answer = resolve('//Server1/Share1/test1', '../../../../../hello/world');
+            // since the answer is the current working directory we test with "fidelity" heuristic
+            const renderPath = answer.path.map(m=>m.value).join('');
+            console.log(renderPath);
+            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+        });
+        it('from "C://Server1/Share1/test1/", to "../../../../../hello/world"', () => {
+            const answer = resolve('C://Server1/Share1/test1/', '../../../../../hello/world');
+            // since the answer is the current working directory we test with "fidelity" heuristic
+            const renderPath = answer.path.map(m=>m.value).join('');
+            console.log(renderPath);
+            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+        });
+       
+        it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world"', () => {
+            const answer = resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../.././././///hello/world');
+            // since the answer is the current working directory we test with "fidelity" heuristic
+            console.log(answer);
+            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
         });
     });
     describe('lexPath', () => {

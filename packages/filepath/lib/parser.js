@@ -24,9 +24,9 @@ const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 function lexPath(path = '') {
     if (typeof path === 'string') {
         const fr = inferPathType(path);
-        const ns = allNamespaces.find(v => v in fr);
+        const ns =  allNamespaces.find(v => v in fr);
         if (!ns) {
-            return [];
+            return { path:[] };
         }
         fr[ns].type = ns;
         return fr[ns];
@@ -104,15 +104,15 @@ function resolve(_from, to) {
     if (to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
-    if (_from.path.length === 0 && to.path.length === 0) {
+    if (_from.path && _from.path.length === 0 && to.path && to.path.length === 0) {
         return lexPath(process.cwd());
     }
-    if (to.path[0].token in rootTokenValues) {
+    if (to.path && to.path[0].token in rootTokenValues) {
         return clone(to);
     }
     // "to" argument is not root
     // if "_from" is not root then resolve it wth cwd()
-    if (!(_from.path[0].token in rootTokenValues)) {
+    if (!(_from.path && _from.path[0].token in rootTokenValues)) {
         const cwd = lexPath(getCWD());
         _from = resolve(cwd, _from);
     }
