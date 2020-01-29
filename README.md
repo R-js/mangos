@@ -9,8 +9,9 @@ Support this repo by ⭐ starring it.
 
 **Table of Contents**
 - [mangos](#mangos)
-  - [JXPath](#jxpath)
-  - [JValidator](#jvalidator)
+  - [JXPath](#jxpath) xpath for js objects.
+  - [JValidator](#jvalidator)  intuite, functional rich and efficient validator for js objects.
+  - [filepath](#filepath) filepath tool to join and analyze paths of type `UNC`, `MS traditional`, `MS Device path`, and `Posix`.
 
 # JXPath
 
@@ -380,6 +381,12 @@ const [result, errors] = checkData( data );        // data as defined in the USE
 //-> errors will be undefined or an array of errors specifiying a single validation failure
 //-> result will be the same as data, if sanitizers are used (not used in this example) result will have been sanitized
 ```
+
+# filepath
+
+filepath tool is to analyze and manipulate (join, validate and infer) filepath based on the string value.
+
+
 
 ## Feedback
 

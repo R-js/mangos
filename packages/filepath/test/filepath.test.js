@@ -36,63 +36,100 @@ describe('filepath', () => {
     describe('resolve', () => {
         it('from "//?/UNC/Server/share/", to "../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../hello/world');
-            const renderPath = answer.path.map(m=>m.value).join('');
-            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            const renderPath = answer.path.map(m => m.value).join('');
+            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
             expect(fidelity).to.equal('\\\\?\\UNC\\Server\\share\\hello\\world');
             expect(answer).to.deep.equal({
-                path:[
-                     { token: '\u0005',
+                path: [
+                    {
+                        token: '\u0005',
                         value: '\\\\?\\UNC\\Server\\share',
                         start: 0,
-                        end: 19 },
-                      { token: '\u0001', start: 20, end: 20, value: '\\' },
-                      { token: '\u0006', start: 21, end: 31, value: 'hello' },
-                      { token: '\u0001', start: 32, end: 32, value: '\\' },
-                      { token: '\u0006', start: 33, end: 49, value: 'world' } 
-                    ] 
+                        end: 19
+                    },
+                    { token: '\u0001', start: 20, end: 20, value: '\\' },
+                    { token: '\u0006', start: 21, end: 31, value: 'hello' },
+                    { token: '\u0001', start: 32, end: 32, value: '\\' },
+                    { token: '\u0006', start: 33, end: 49, value: 'world' }
+                ],
+                type: 'devicePath'
             });
         });
         it('from "", to ""', () => {
             const answer = resolve();
             // since the answer is the current working directory we test with "fidelity" heuristic
             const cwd = path.resolve();
-            const renderPath = answer.path.map(m=>m.value).join('');
-            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
+            const renderPath = answer.path.map(m => m.value).join('');
+            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
             expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
         });
-       
+
         it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
             // since the answer is the current working directory we test with "fidelity" heuristic
-            const renderPath = answer.path.map(m=>m.value).join('');
-            console.log(renderPath);
-            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
-            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+            // const renderPath = answer.path.map(m => m.value).join('');
+            expect(answer).to.deep.equal({ path: 
+                [ { token: '\u0005',
+                    value: '\\\\?\\UNC\\Server\\share',
+                    start: 0,
+                    end: 19 },
+                  { token: '\u0001', start: 20, end: 20, value: '\\' },
+                  { token: '\u0006', start: 21, end: 40, value: 'hello' },
+                  { token: '\u0001', start: 41, end: 41, value: '\\' },
+                  { token: '\u0006', start: 42, end: 67, value: 'world' } ],        
+               type: 'devicePath' });
         });
-       
+
         it('from "//Server1/Share1/test1/", to "../../../../../hello/world"', () => {
             const answer = resolve('//Server1/Share1/test1', '../../../../../hello/world');
-            // since the answer is the current working directory we test with "fidelity" heuristic
-            const renderPath = answer.path.map(m=>m.value).join('');
-            console.log(renderPath);
-            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
-            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+            expect(answer).to.deep.equal({ path:
+                [ { token: '\u0004',
+                    value: '\\\\Server1\\Share1',
+                    start: 0,
+                    end: 15 },
+                  { token: '\u0001', start: 16, end: 16, value: '\\' },
+                  { token: '\u0006', start: 17, end: 36, value: 'hello' },
+                  { token: '\u0001', start: 37, end: 37, value: '\\' },
+                  { token: '\u0006', start: 38, end: 63, value: 'world' } ],
+               type: 'unc' });
         });
         it('from "C://Server1/Share1/test1/", to "../../../../../hello/world"', () => {
             const answer = resolve('C://Server1/Share1/test1/', '../../../../../hello/world');
             // since the answer is the current working directory we test with "fidelity" heuristic
-            const renderPath = answer.path.map(m=>m.value).join('');
-            console.log(renderPath);
-            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
-            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+            //const renderPath = answer.path.map(m => m.value).join('');
+            expect(answer).to.deep.equal({ path:
+                [ { token: '\u0003', value: 'c:', start: 0, end: 1 },
+                  { token: '\u0001', start: 2, end: 2, value: '\\' },
+                  { token: '\u0006', start: 3, end: 22, value: 'hello' },
+                  { token: '\u0001', start: 23, end: 23, value: '\\' },
+                  { token: '\u0006', start: 24, end: 49, value: 'world' } ],
+               type: 'dos' });
         });
-       
+
         it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world"', () => {
             const answer = resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../.././././///hello/world');
-            // since the answer is the current working directory we test with "fidelity" heuristic
-            console.log(answer);
-            //const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end+1)).join('');
-            //expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
+            expect(answer).to.deep.equal({ path:
+                [ { token: '\u0005',
+                    value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
+                    start: 0,
+                    end: 47 },
+                  { token: '\u0001', start: 48, end: 48, value: '\\' },
+                  { token: '\u0006', start: 49, end: 71, value: 'hello' },
+                  { token: '\u0001', start: 72, end: 72, value: '\\' },
+                  { token: '\u0006', start: 73, end: 101, value: 'world' } ],
+               type: 'devicePath' })
+        });
+        it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world", "c:\\Users\\guest"', () => {
+            const answer = resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../.././././///hello/world', 'c:\\Users\\guest');
+            expect(answer).to.deep.equal({
+                path:
+                    [{ token: '\u0003', value: 'c:', start: 0, end: 1 },
+                    { token: '\u0001', start: 2, end: 2, value: '\\' },
+                    { token: '\u0006', start: 3, end: 7, value: 'Users' },
+                    { token: '\u0001', start: 8, end: 8, value: '\\' },
+                    { token: '\u0006', start: 9, end: 13, value: 'guest' }],
+                type: 'dos'
+            });
         });
     });
     describe('lexPath', () => {

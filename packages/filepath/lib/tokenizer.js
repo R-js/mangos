@@ -110,7 +110,6 @@ function invertKeyValues(obj){
     }, {});
 }
 const rootTokenValues = invertKeyValues(rootTokens);
-const tokenValues = invertKeyValues(tokens);
 
 const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 

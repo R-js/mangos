@@ -24,9 +24,9 @@ const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 function lexPath(path = '') {
     if (typeof path === 'string') {
         const fr = inferPathType(path);
-        const ns =  allNamespaces.find(v => v in fr);
+        const ns = allNamespaces.find(v => v in fr);
         if (!ns) {
-            return { path:[] };
+            return { path: [] };
         }
         fr[ns].type = ns;
         return fr[ns];
@@ -95,12 +95,13 @@ function add(_tokens, token) {
     });
 }
 
-function resolve(_from, to) {
+function resolve(_from, ..._to) {
     _from = lexPath(_from);
-    to = lexPath(to);
     if (_from.firstError) {
         throw TypeError(`"from" path contains errors: ${getErrors(_from)}`)
     }
+    let to = _to.shift()
+    to = lexPath(to);
     if (to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
@@ -108,7 +109,10 @@ function resolve(_from, to) {
         return lexPath(process.cwd());
     }
     if (to.path && to.path[0].token in rootTokenValues) {
-        return clone(to);
+        if (_to.length === 0) {
+            return clone(to);
+        }
+        return resolve(to, ..._to);
     }
     // "to" argument is not root
     // if "_from" is not root then resolve it wth cwd()
@@ -132,7 +136,11 @@ function resolve(_from, to) {
         }
     }
     // finished processing all tokens
-    return { path: working };
+    const rc = { path: working, type: _from.type };
+    if (_to.length === 0) { // efficiency+
+        return rc;
+    }
+    return resolve(rc, ..._to)
 }
 
 function getSeperator() {
