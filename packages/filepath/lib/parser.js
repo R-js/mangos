@@ -21,9 +21,9 @@ const absorberMapping = {
 // order of importance
 const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
-function lexPath(path = '') {
+function lexPath(path = '', options = {}) {
     if (typeof path === 'string') {
-        const fr = inferPathType(path);
+        const fr = inferPathType(path, options);
         const ns = allNamespaces.find(v => v in fr);
         if (!ns) {
             return { path: [] };
