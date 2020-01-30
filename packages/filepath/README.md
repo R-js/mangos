@@ -37,5 +37,18 @@ const { inferPathType } = require('@mangos/filepath');
 ```
 
 
+## `inferPathObject`
+
+Return value of [inferPathType](#option-object)
+
+
+```typescript
+
+
+```
+
+## `Tokens`
+
+
 
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
