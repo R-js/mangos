@@ -26,13 +26,13 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 
 ## `inferPathType((path[, options])`
 
-- `path` [string](#string) File path
+- `path` [string][string] File path
 - `options` [Object]
-    - `unc`: [boolean](#boolean) interperet (if possible) the `path` as a `unc` pathname, if it is not possible there will be no `unc` entry in the return value object.
-    - `dos`: [boolean](#boolean) interperet (if possible) the `path` as a TDP (Traditional dos Path)
-    - `devicePath`: [boolean](#boolean) interperet (if possible) the `path` as a DDP ([Dos Device Path](#ddp)).
-    - `posix`: [boolean](#boolean) interpret (if possible) the `path` as a [UNIX devivce path](#posix). 
-- Returns: [iterator<inferPathObject>](#infer-path-object) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
+    - `unc`: [boolean][boolean] interperet (if possible) the `path` as a `unc` pathname, if it is not possible there will be no `unc` entry in the return value object.
+    - `dos`: [boolean][boolean] interperet (if possible) the `path` as a TDP (Traditional dos Path)
+    - `devicePath`: [boolean][boolean] interperet (if possible) the `path` as a DDP ([Dos Device Path](#ddp)).
+    - `posix`: [boolean][boolean] interpret (if possible) the `path` as a [UNIX devivce path][posix]. 
+- Returns: [iterator<inferPathObject>][infer-path-object] an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
 
 ```javascript
 const { inferPathType } = require('@mangos/filepath');
