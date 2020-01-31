@@ -24,7 +24,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 | `resolve`       | akin to nodejs `path.resolve`, respecting `unc` , `unc_long` and `device path` roots  |
 
 
-## `inferPathType((path[, options])`
+## `inferPathType(path[, options])`
 
 - `path` [string][string] File path
 - `options` [Object]
@@ -121,6 +121,8 @@ interface PathType {
     firstError?: string; // the first error in the "path" array of tokens.
 }
 ```
+
+Return type of function [inferPathType][#inferpathtypepath-options]
 
 ### `inferPathObject`
 
