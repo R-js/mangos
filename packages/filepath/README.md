@@ -68,47 +68,48 @@ let value, done;
 
 - `path` [string][string] File path.
 - `options` [Object][object]
-    - unc: boolean interperet (if possible) the path as a unc pathname, if it is not possible there will be no unc entry in the return value object.
-    - dos: boolean interperet (if possible) the path as a TDP (Traditional dos Path)
-    - devicePath: boolean interperet (if possible) the path as a DDP (Dos Device Path).
-    - posix: boolean interpret (if possible) the path as a UNIX devivce path.
+    - unc: [boolean][boolean] interperet (if possible) the path as a unc pathname, if it is not possible there will be no unc entry in the return value object.
+    - dos: [boolean][boolean] interperet (if possible) the path as a TDP (Traditional dos Path)
+    - devicePath: [boolean][boolean] interperet (if possible) the path as a DDP (Dos Device Path).
+    - posix: [boolean][boolean] interpret (if possible) the path as a UNIX devivce path.
 - Returns: [inferPathObjectSingle](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
 
 
-Example:
+Example 1:
 
 ```javascript
-const { inferPathType } = require('@mangos/filepath');
+const { lexPath } = require('@mangos/filepath');
 
-const iterator = inferPathType('\\\\?\\unc\\c:/Users'); // Note: in JS you need to escape backslashes \\
+const result = lexPath('c:/hello/world'); // the function is agnostic to '\' or '/' tokens
+// ->
+/*
+{ path:
+   [ { token: '\u0003', value: 'c:', start: 0, end: 1 },   
+     { token: '\u0001', start: 2, end: 2, value: '\\' },   
+     { token: '\u0006', start: 3, end: 7, value: 'hello' },
+     { token: '\u0001', start: 8, end: 8, value: '\\' },
+     { token: '\u0006', start: 9, end: 13, value: 'world' } ],
+  type: 'dos' 
+*/
+```
 
-let value, done;
+Example 2:
 
-{ value, done } = iterator.next(); // most likely path type
-{
-                type: 'dos',
-                path:
-                    [{ token: '\u0003', value: 'c:', start: 0, end: 1 },
-                    { token: '\u0001', start: 2, end: 2, value: '\\' },
-                    { token: '\u0006', start: 3, end: 9, value: 'somedir' },
-                    { token: '\u0001', start: 10, end: 10, value: '\\' },
-                    {
-                        token: '\u0006',
-                        start: 11,
-                        end: 24,
-                        value: 'someOtherdir?:',
-                        error: 'name "someOtherdir?:" contains invalid characters'
-                    },
-                    { token: '\u0001', start: 25, end: 25, value: '\\' }],
-                firstError:
-                {
-                    token: '\u0006',
-                    start: 11,
-                    end: 24,
-                    value: 'someOtherdir?:',
-                    error: 'name "someOtherdir?:" contains invalid characters'
-                }
-            });
+```javascript
+const { lexPath } = require('@mangos/filepath');
+
+const result = lexPath('//Server1/share/file.txt'); // the function is agnostic to '\' or '/' tokens
+// ->
+/*
+{ 
+    type: 'unc',
+    path: [ 
+        { token: '\u0004', value: '\\\\Server1\\share', start: 0, end: 14 },
+        { token: '\u0001', start: 15, end: 15, value: '\\' },
+        { token: '\u0006', start: 16, end: 23, value: 'file.txt' } 
+   ]
+}
+*/
 ```
 
 ## `resolve([fromPath[,toPath1[, toPath2[,...[, toPathN]]]])`
@@ -177,8 +178,22 @@ interface inferPathObject {
     unc?: PathType;
     dos?: PathType;
     devicePath?: PathType;
-};
+}
 ```
+
+### `lexPathObject`
+
+The function [lexPath](#lexpathpathoptions) returns this single instance of this type
+
+```typescript
+interface lexPathObject {
+    type: 'dos'||'posix'||'devicePath'||'unc';
+    path: PathType;
+    firstError?: string; // the first error in the "path" array of tokens.
+}
+```
+
+
 
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type
