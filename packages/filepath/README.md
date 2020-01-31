@@ -118,7 +118,7 @@ A representation of a sting path with an array of tokens
 ```typescript
 interface PathType { 
     path: Token[];
-    firstError?: string; // points to the first error in the "path" array of tokens, for quick determination if there was an error.
+    firstError?: string; // the first error in the "path" array of tokens.
 }
 ```
 
