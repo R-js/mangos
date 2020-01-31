@@ -137,9 +137,6 @@ interface inferPathObject {
 };
 ```
 
-Return value of [`resolve`](#resolvefrompathtopath1-topath2-topathn)
-
-
 ## `Tokens`
 
 
