@@ -74,7 +74,7 @@ let value, done;
 - `toPath1` [string][string] File path.
 - `toPath2` [string][string] File path.
 - `toPathN` [string][string] File path.
-- Returns: [pathTokenArray](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
+- Returns: [pathTokenArray](#inferpathobject). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
 
 ## Types
 
