@@ -27,7 +27,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 ## `inferPathType(path[, options])`
 
 - `path` [string][string] File path
-- `options` [Object]
+- `options` [Object][object]
     - `unc`: [boolean][boolean] interperet (if possible) the `path` as a `unc` pathname, if it is not possible there will be no `unc` entry in the return value object.
     - `dos`: [boolean][boolean] interperet (if possible) the `path` as a TDP (Traditional dos Path)
     - `devicePath`: [boolean][boolean] interperet (if possible) the `path` as a DDP ([Dos Device Path](#ddp)).
@@ -64,9 +64,52 @@ let value, done;
 
 ## `lexPath([path[,options]])`
 
+`LexPath` chooses the most likely (even if there are more interpertations of the `path` arguments) path type interpretation.
+
 - `path` [string][string] File path.
-- `options` [Object](#option-object) A set of options used to guide the infer path types.
+- `options` [Object][object]
+    - unc: boolean interperet (if possible) the path as a unc pathname, if it is not possible there will be no unc entry in the return value object.
+    - dos: boolean interperet (if possible) the path as a TDP (Traditional dos Path)
+    - devicePath: boolean interperet (if possible) the path as a DDP (Dos Device Path).
+    - posix: boolean interpret (if possible) the path as a UNIX devivce path.
 - Returns: [inferPathObjectSingle](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
+
+
+Example:
+
+```javascript
+const { inferPathType } = require('@mangos/filepath');
+
+const iterator = inferPathType('\\\\?\\unc\\c:/Users'); // Note: in JS you need to escape backslashes \\
+
+let value, done;
+
+{ value, done } = iterator.next(); // most likely path type
+{
+                type: 'dos',
+                path:
+                    [{ token: '\u0003', value: 'c:', start: 0, end: 1 },
+                    { token: '\u0001', start: 2, end: 2, value: '\\' },
+                    { token: '\u0006', start: 3, end: 9, value: 'somedir' },
+                    { token: '\u0001', start: 10, end: 10, value: '\\' },
+                    {
+                        token: '\u0006',
+                        start: 11,
+                        end: 24,
+                        value: 'someOtherdir?:',
+                        error: 'name "someOtherdir?:" contains invalid characters'
+                    },
+                    { token: '\u0001', start: 25, end: 25, value: '\\' }],
+                firstError:
+                {
+                    token: '\u0006',
+                    start: 11,
+                    end: 24,
+                    value: 'someOtherdir?:',
+                    error: 'name "someOtherdir?:" contains invalid characters'
+                }
+            });
+```
 
 ## `resolve([fromPath[,toPath1[, toPath2[,...[, toPathN]]]])`
 
@@ -142,3 +185,5 @@ interface inferPathObject {
 [ddp]: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#dos-device-paths
 [tdp]: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#traditional-dos-paths
 [posix]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap03.html#tag_03_266
+[object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
+
