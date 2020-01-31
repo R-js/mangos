@@ -32,7 +32,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
     - `dos`: [boolean][boolean] interperet (if possible) the `path` as a TDP (Traditional dos Path)
     - `devicePath`: [boolean][boolean] interperet (if possible) the `path` as a DDP ([Dos Device Path](#ddp)).
     - `posix`: [boolean][boolean] interpret (if possible) the `path` as a [UNIX devivce path][posix]. 
-- Returns: [iterator &lt inferPathObject &gt](#inferpathobject) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
+- Returns: [iterator < inferPathObject >](#inferpathobject) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
 
 ```javascript
 const { inferPathType } = require('@mangos/filepath');
