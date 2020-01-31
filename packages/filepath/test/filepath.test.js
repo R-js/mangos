@@ -68,56 +68,70 @@ describe('filepath', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
             // since the answer is the current working directory we test with "fidelity" heuristic
             // const renderPath = answer.path.map(m => m.value).join('');
-            expect(answer).to.deep.equal({ path: 
-                [ { token: '\u0005',
-                    value: '\\\\?\\UNC\\Server\\share',
-                    start: 0,
-                    end: 19 },
-                  { token: '\u0001', start: 20, end: 20, value: '\\' },
-                  { token: '\u0006', start: 21, end: 40, value: 'hello' },
-                  { token: '\u0001', start: 41, end: 41, value: '\\' },
-                  { token: '\u0006', start: 42, end: 67, value: 'world' } ],        
-               type: 'devicePath' });
+            expect(answer).to.deep.equal({
+                path:
+                    [{
+                        token: '\u0005',
+                        value: '\\\\?\\UNC\\Server\\share',
+                        start: 0,
+                        end: 19
+                    },
+                    { token: '\u0001', start: 20, end: 20, value: '\\' },
+                    { token: '\u0006', start: 21, end: 40, value: 'hello' },
+                    { token: '\u0001', start: 41, end: 41, value: '\\' },
+                    { token: '\u0006', start: 42, end: 67, value: 'world' }],
+                type: 'devicePath'
+            });
         });
 
         it('from "//Server1/Share1/test1/", to "../../../../../hello/world"', () => {
             const answer = resolve('//Server1/Share1/test1', '../../../../../hello/world');
-            expect(answer).to.deep.equal({ path:
-                [ { token: '\u0004',
-                    value: '\\\\Server1\\Share1',
-                    start: 0,
-                    end: 15 },
-                  { token: '\u0001', start: 16, end: 16, value: '\\' },
-                  { token: '\u0006', start: 17, end: 36, value: 'hello' },
-                  { token: '\u0001', start: 37, end: 37, value: '\\' },
-                  { token: '\u0006', start: 38, end: 63, value: 'world' } ],
-               type: 'unc' });
+            expect(answer).to.deep.equal({
+                path:
+                    [{
+                        token: '\u0004',
+                        value: '\\\\Server1\\Share1',
+                        start: 0,
+                        end: 15
+                    },
+                    { token: '\u0001', start: 16, end: 16, value: '\\' },
+                    { token: '\u0006', start: 17, end: 36, value: 'hello' },
+                    { token: '\u0001', start: 37, end: 37, value: '\\' },
+                    { token: '\u0006', start: 38, end: 63, value: 'world' }],
+                type: 'unc'
+            });
         });
         it('from "C://Server1/Share1/test1/", to "../../../../../hello/world"', () => {
             const answer = resolve('C://Server1/Share1/test1/', '../../../../../hello/world');
             // since the answer is the current working directory we test with "fidelity" heuristic
             //const renderPath = answer.path.map(m => m.value).join('');
-            expect(answer).to.deep.equal({ path:
-                [ { token: '\u0003', value: 'c:', start: 0, end: 1 },
-                  { token: '\u0001', start: 2, end: 2, value: '\\' },
-                  { token: '\u0006', start: 3, end: 22, value: 'hello' },
-                  { token: '\u0001', start: 23, end: 23, value: '\\' },
-                  { token: '\u0006', start: 24, end: 49, value: 'world' } ],
-               type: 'dos' });
+            expect(answer).to.deep.equal({
+                path:
+                    [{ token: '\u0003', value: 'c:', start: 0, end: 1 },
+                    { token: '\u0001', start: 2, end: 2, value: '\\' },
+                    { token: '\u0006', start: 3, end: 22, value: 'hello' },
+                    { token: '\u0001', start: 23, end: 23, value: '\\' },
+                    { token: '\u0006', start: 24, end: 49, value: 'world' }],
+                type: 'dos'
+            });
         });
 
         it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world"', () => {
             const answer = resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../.././././///hello/world');
-            expect(answer).to.deep.equal({ path:
-                [ { token: '\u0005',
-                    value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
-                    start: 0,
-                    end: 47 },
-                  { token: '\u0001', start: 48, end: 48, value: '\\' },
-                  { token: '\u0006', start: 49, end: 71, value: 'hello' },
-                  { token: '\u0001', start: 72, end: 72, value: '\\' },
-                  { token: '\u0006', start: 73, end: 101, value: 'world' } ],
-               type: 'devicePath' })
+            expect(answer).to.deep.equal({
+                path:
+                    [{
+                        token: '\u0005',
+                        value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
+                        start: 0,
+                        end: 47
+                    },
+                    { token: '\u0001', start: 48, end: 48, value: '\\' },
+                    { token: '\u0006', start: 49, end: 71, value: 'hello' },
+                    { token: '\u0001', start: 72, end: 72, value: '\\' },
+                    { token: '\u0006', start: 73, end: 101, value: 'world' }],
+                type: 'devicePath'
+            })
         });
         it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world", "c:\\Users\\guest"', () => {
             const answer = resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../.././././///hello/world', 'c:\\Users\\guest');
@@ -175,9 +189,9 @@ describe('filepath', () => {
         });
     });
     describe('inferPathType', () => {
-        it('path "c:\\Users\\"', () => {
-            const answer = inferPathType('c:\\Users\\');
-            expect(answer).to.deep.equal({
+        it('path "c:\\Users\\" interpreted as dos and unix types', () => {
+            const answer = Array.from(inferPathType('c:\\Users\\', { posix: true, dos: true}));
+            expect(answer).to.deep.equal([{
                 "dos": {
                     "path": [{
                         "token": "\u0003",
@@ -201,80 +215,60 @@ describe('filepath', () => {
                         "value": "\\"
                     }]
                 }
-            });
+            },
+            {
+                posix: {
+                    "path": [
+                        {
+                            "end": 8,
+                            "start": 0,
+                            "token": "\u0006",
+                            "value": "c:\\Users\\",
+                        }
+                    ]
+                }
+            }
+            ]);
         });
         it('path "\\\\Users\\" as "dos"', () => {
-            const answer = inferPathType('\\Users\\', {
+            const answer = Array.from(inferPathType('\\\\Users\\', {
                 dos: true
-            });
-            expect(answer).to.deep.equal({
+            }));
+            expect(answer).to.deep.equal([{
                 "dos": {
-                    "path": [{
-                        "token": "\u0001",
-                        "start": 0,
-                        "end": 0,
-                        "value": "\\"
-                    }, {
-                        "token": "\u0006",
-                        "start": 1,
-                        "end": 5,
-                        "value": "Users"
-                    }, {
-                        "token": "\u0001",
-                        "start": 6,
-                        "end": 6,
-                        "value": "\\"
-                    }]
+                    path: [
+                        { token: '\u0003', value: 'c:', start: 0, end: 1 },
+                        { token: '\u0001', start: 2, end: 2, value: '\\' },
+                        { token: '\u0006', start: 3, end: 7, value: 'Users' },
+                        { token: '\u0001', start: 8, end: 8, value: '\\' }
+                    ]
                 }
-            });
+            }]);
+        });
+        it('interpret path "/path1/path2" as a "dos"', () => {
+            const answer = Array.from(inferPathType('/path1/path2', { dos: true }));
+            expect(answer).to.deep.equal([{
+                dos: {
+                    path:
+                        [{ token: '\u0003', value: 'c:', start: 0, end: 1 },
+                        { token: '\u0001', start: 2, end: 2, value: '\\' },
+                        { token: '\u0006', start: 3, end: 7, value: 'path1' },
+                        { token: '\u0001', start: 8, end: 8, value: '\\' },
+                        { token: '\u0006', start: 9, end: 13, value: 'path2' }]
+                }
+            }]);
         });
         it('path "\\Users\\share\\" should be "unc"', () => {
-            const answer = inferPathType('\\\\Users\\share\\');
-            expect(answer).to.deep.equal({
-                "unc": {
-                    "path": [{
-                        token: '\u0004',
-                        value: '\\\\Users\\share',
-                        start: 0,
-                        end: 12
-                    },
+            const answer = Array.from(inferPathType('\\\\Users\\share\\'));
+            expect(answer).to.deep.equal([
+                {
+                    unc:
                     {
-                        end: 13,
-                        start: 13,
-                        token: '\u0001',
-                        value: '\\'
+                        path: [
+                            { token: '\u0004', value: '\\\\Users\\share', start: 0, end: 12 },
+                            { token: '\u0001', start: 13, end: 13, value: '\\' }]
                     }
-                    ]
-                },
-                "dos": {
-                    "path": [{
-                        "token": "\u0001",
-                        "start": 0,
-                        "end": 1,
-                        "value": "\\\\"
-                    }, {
-                        "token": "\u0006",
-                        "start": 2,
-                        "end": 6,
-                        "value": "Users"
-                    }, {
-                        "token": "\u0001",
-                        "start": 7,
-                        "end": 7,
-                        "value": "\\"
-                    }, {
-                        "token": "\u0006",
-                        "start": 8,
-                        "end": 12,
-                        "value": "share"
-                    }, {
-                        "token": "\u0001",
-                        "start": 13,
-                        "end": 13,
-                        "value": "\\"
-                    }]
-                }
-            });
+                }]);
         });
     });
     describe('posixAbsorber', () => {
@@ -468,7 +462,7 @@ describe('filepath', () => {
                 end: 14,
                 start: 14,
                 token: '\u0001',
-                value: '/'
+                value: '\\'
             }
             ]);
         });
@@ -484,7 +478,7 @@ describe('filepath', () => {
                 token: '\u0001',
                 start: 14,
                 end: 17,
-                value: '////'
+                value: '\\'
             },
             {
                 token: '\u0006',
@@ -529,7 +523,7 @@ describe('filepath', () => {
                 token: '\u0001',
                 start: 2,
                 end: 3,
-                value: '//'
+                value: '\\'
             }
             ]);
         })
@@ -588,7 +582,7 @@ describe('filepath', () => {
                 token: '\u0001',
                 start: 21,
                 end: 22,
-                value: '\\/'
+                value: '\\'
             },
             {
                 token: '\u0006',
@@ -624,7 +618,7 @@ describe('filepath', () => {
                 token: '\u0001',
                 start: 19,
                 end: 20,
-                value: '\\/'
+                value: '\\'
             },
             {
                 token: '\u0006',

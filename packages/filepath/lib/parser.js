@@ -7,8 +7,8 @@ const {
     uncAbsorber,
     ddpAbsorber,
     tokens,
-    rootTokens,
-    rootTokenValues
+    rootTokenValues,
+    getCWD
 } = require('./tokenizer');
 
 const absorberMapping = {
@@ -23,35 +23,38 @@ const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
 function lexPath(path = '', options = {}) {
     if (typeof path === 'string') {
-        const fr = inferPathType(path, options);
-        const ns = allNamespaces.find(v => v in fr);
-        if (!ns) {
-            return { path: [] };
+        const rc = {};
+        const iterator = inferPathType(path, options);
+        const step = iterator.next(); // only get the first one (is also the most likely one)
+        if (step.done){
+            return undefined;
         }
-        fr[ns].type = ns;
-        return fr[ns];
+        const ns = Object.getOwnPropertyNames(step.value)[0];
+        Object.assign(rc, step.value[ns]);
+        rc.type = ns;
+        return rc;
     }
     return path; // its not a string
 }
 
 function filterErr(t) {
-    return t.error !== undefined
+    return t.error !== undefined;
 }
 
 function createPathProcessor(path) {
     return function (ns, absorber) {
         const rc = {};
-        const tokens = Array.from(absorber(path));
-        if (tokens.length === 0) {
-            return rc;
+        const _tokens = Array.from(absorber(path));
+        if (_tokens.length === 0) {
+            return undefined;
         }
-        rc[ns] = { path: tokens };
-        const firstError = tokens.find(filterErr);
+        rc[ns] = { path: _tokens };
+        const firstError = _tokens.find(filterErr);
         if (firstError) {
             rc[ns].firstError = firstError;
         }
         return rc;
-    }
+    };
 }
 
 function getErrors(path) {
@@ -97,16 +100,16 @@ function add(_tokens, token) {
 
 function resolve(_from, ..._to) {
     _from = lexPath(_from);
-    if (_from.firstError) {
+    if (_from && _from.firstError) {
         throw TypeError(`"from" path contains errors: ${getErrors(_from)}`)
     }
     let to = _to.shift()
     to = lexPath(to);
-    if (to.firstError) {
+    if (to && to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
-    if (_from.path && _from.path.length === 0 && to.path && to.path.length === 0) {
-        return lexPath(process.cwd());
+    if (_from === undefined && to === undefined) {
+        return lexPath(getCWD());
     }
     if (to.path && to.path[0].token in rootTokenValues) {
         if (_to.length === 0) {
@@ -172,32 +175,20 @@ function defaultOptions(options = {}) {
     return options;
 }
 
-function getCWD() {
-    if (typeof global !== 'undefined' && global.process && global.process.cwd && typeof global.process.cwd === 'function') {
-        return global.process.cwd();
-    }
-    if (typeof window !== 'undefined' && window.location && window.location.pathname) {
-        return window.location.pathname;
-    }
-    return '/'
-}
 
 
-function inferPathType(path, options = {}) {
+
+function* inferPathType(path, options = {}) {
     defaultOptions(options);
-
-    const rc = {};
     const processor = createPathProcessor(path);
-
-    for (const ns of allNamespaces) {
-        const ok = options[ns];
-        if (!ok) {
-            continue;
-        }
+    const filtered = allNamespaces.filter(f=> options[f])
+    for (const ns of filtered) {
         const result = processor(ns, absorberMapping[ns]);
-        Object.assign(rc, result);
+        if (result){
+            yield result;
+        }
     }
-    return rc;
+    return;
 }
 
 
