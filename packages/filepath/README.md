@@ -37,7 +37,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 ```javascript
 const { inferPathType } = require('@mangos/filepath');
 
-const iterator = inferPathType('\\\\?\\unc\\c:/Users'); // Note: escape backslash with backslash
+const iterator = inferPathType('\\\\?\\unc\\c:/Users'); // Note: in JS you need to escape backslashes \\
 
 let value, done;
 
@@ -59,19 +59,7 @@ let value, done;
 }
 */
 { value, done } = iterator.next(); // less likely type path
-// done = false
-// -> value = (contain errors see below)
-/*
-{
-    dos: {
-        path:[
-            .
-            .
-        ]
-
-    }
-}
-*/
+// -> next possible interpretation for the string
 ```
 
 ## `lexPath([path[,options]])`
@@ -116,12 +104,23 @@ interface Token {
     start: number; // the index of original string, indicating the start of the token
     end: number; //  the index of original string, indicating the end (inclusive) of the token
     error: string; // it this token contains errors (like forbidden charactes in dos paths)
-    token: 
+    token: string; // single character `\u0001` between `\u0008`
 }
 ```
 
+For the `token` values, see this [list](#token-id)
+
+
 ### `PathType`
 
+A representation of a sting path with an array of tokens
+
+```typescript
+interface PathType { 
+    path: Token[];
+    firstError?: string; // points to the first error in the "path" array of tokens, for quick determination if there was an error.
+}
+```
 
 ### `inferPathObject`
 
@@ -135,10 +134,6 @@ interface inferPathObject {
     devicePath?: PathType;
 };
 ```
-
-Toke
-
-### `pathTokenArray`
 
 Return value of [`resolve`](#resolvefrompathtopath1-topath2-topathn)
 
