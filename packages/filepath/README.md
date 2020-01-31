@@ -72,7 +72,7 @@ let value, done;
     - dos: [boolean][boolean] interperet (if possible) the path as a TDP (Traditional dos Path)
     - devicePath: [boolean][boolean] interperet (if possible) the path as a DDP (Dos Device Path).
     - posix: [boolean][boolean] interpret (if possible) the path as a UNIX devivce path.
-- Returns: [inferPathObjectSingle](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
+- Returns: Object of type [lexPathObject](#lexpathobject). 
 
 
 Example 1:
