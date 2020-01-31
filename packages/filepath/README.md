@@ -64,16 +64,16 @@ let value, done;
 
 ## `lexPath([path[,options]])`
 
-- `path` [string](#string) File path.
+- `path` [string][string] File path.
 - `options` [Object](#option-object) A set of options used to guide the infer path types.
 - Returns: [inferPathObjectSingle](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
 
 ## `resolve([fromPath[,toPath1[, toPath2[,...[, toPathN]]]])`
 
-- `fromPath` [string](#string) File path.
-- `toPath1` [string](#string) File path.
-- `toPath2` [string](#string) File path.
-- `toPathN` [string](#string) File path.
+- `fromPath` [string][string] File path.
+- `toPath1` [string][string] File path.
+- `toPath2` [string][string] File path.
+- `toPathN` [string][string] File path.
 - Returns: [pathTokenArray](#infer-path-object-single). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
 
 ## Types
