@@ -1,8 +1,10 @@
 
 # filepath
 
-filepath tool is to analyze and manipulate (join, validate and infer os path types) filepath based on the string value.
+_Part of the monorepo [mangos](https://github.com/R-js/mangos)_
 
+_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+filepath tool is to analyze and manipulate (join, validate and infer os path types) filepath based on the string value.
 
 It handles the following paths types:
 
@@ -263,6 +265,21 @@ interface lexPathObject {
 }
 ```
 
+## Feedback
+
+We appreceate any feedback, with new ideas, to enhance this tool suite. File an issue [here](https://github.com/R-js/mangos/issues)
+
+Before contributing, please read our contributing [guidelines](CODE_OF_CONDUCT.md) and [code of conduct](CONTRIBUTING_GUIDELINES.md).
+
+## [License](LICENSE)
+
+Copyright (c) 2019-2020 Jacob Bogers `info@mail.jacob-bogers.com`.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
 
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
