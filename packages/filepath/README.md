@@ -128,7 +128,67 @@ const result = lexPath('//Server1/share/file.txt'); // the function is agnostic 
 Resolve will work exactly like `path.resolve` but with these difference: It will respect the `devicePath` roots including the `Server` and `share` parts aswell. aka `//./unc/server/share` will seen as a root in totality.
 
 - `...paths` [string][string] A sequence of file path or paths segments, the sequence can be empty (returns current working directory)
-- Returns: [pathTokenArray](#inferpathobject). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
+- Returns: Object of [lexPathObject](#lexpathobject). 
+
+Example 1:
+
+```javascript
+const { resolve } = require('@mangos/filepath');
+
+const result = resolve('//./unc/Server1/share1/dir1/file.txt','../../../../hello/world');
+//->
+/*
+{ path:
+   [ { token: '\u0005',
+       value: '\\\\?\\UNC\\Server1\\share1',
+       start: 0,
+       end: 21 },
+     { token: '\u0001', start: 22, end: 22, value: '\\' },
+     { token: '\u0006', start: 23, end: 39, value: 'hello' },
+     { token: '\u0001', start: 40, end: 40, value: '\\' },
+     { token: '\u0006', start: 41, end: 63, value: 'world' } ],
+  type: 'devicePath' }
+*/
+```
+
+Example 2:
+
+```javascript
+const { resolve, lextPath } = require('@mangos/filepath');
+
+const posixPath = lexPath('/home/user1', {posix: true});
+
+const result = resolve('//./Server1/share1/',posixPath); // the last asbolute Path defines resulting pathType
+//->
+/*
+{ path:
+   [ { token: '\u0002', start: 0, end: 0, value: '/' },
+     { token: '\u0006', start: 1, end: 4, value: 'home' },
+     { token: '\u0001', start: 5, end: 5, value: '/' },
+     { token: '\u0006', start: 6, end: 10, value: 'user1' } ],
+  type: 'posix' }
+*/
+```
+
+Example 3:
+
+```javascript
+const { resolve, lextPath } = require('@mangos/filepath');
+
+const posix = lexPath('/home/user1', {posix: true});
+const dos= lexPath('c:/Program Files/app');
+
+const result = resolve(dos,posi); // the last asbolute Path defines resulting pathType
+//->
+/*
+{ path:
+   [ { token: '\u0002', start: 0, end: 0, value: '/' },
+     { token: '\u0006', start: 1, end: 4, value: 'home' },
+     { token: '\u0001', start: 5, end: 5, value: '/' },
+     { token: '\u0006', start: 6, end: 10, value: 'user1' } ],
+  type: 'posix' }
+*/
+```
 
 ## Types
 
@@ -193,7 +253,7 @@ interface inferPathObject {
 
 ### `lexPathObject`
 
-The function [lexPath](#lexpathpathoptions) returns this single instance of this type
+The function [lexPath](#lexpathpathoptions) and [resolve](#resolvepath) return a this single instance of this type
 
 ```typescript
 interface lexPathObject {
@@ -202,10 +262,6 @@ interface lexPathObject {
     firstError?: string; // the first error in the "path" array of tokens.
 }
 ```
-
-### `resolvePathObject`
-
-The function [resolve](#)
 
 
 
