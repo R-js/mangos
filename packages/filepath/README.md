@@ -3,6 +3,17 @@
 
 filepath tool is to analyze and manipulate (join, validate and infer os path types) filepath based on the string value.
 
+
+It handles the following paths types:
+
+| path type    | description                                                                            |
+|--------------|----------------------------------------------------------------------------------------|
+| `unc`        | microsoft unc filepath                                                                 |
+| `dos`        | traditional doth path                                                                  |
+| `devicePath` | dos device path, alos allowing for dos devicepath descibing UNC `//./UNC/Server/Share` |
+| `posix`      | posix path                                                                             |
+
+
 Works in browser and in node.
 
 ```bash
@@ -112,12 +123,11 @@ const result = lexPath('//Server1/share/file.txt'); // the function is agnostic 
 */
 ```
 
-## `resolve([fromPath[,toPath1[, toPath2[,...[, toPathN]]]])`
+## `resolve([...paths])`
+ 
+Resolve will work exactly like `path.resolve` but with these difference: It will respect the `devicePath` roots including the `Server` and `share` parts aswell. aka `//./unc/server/share` will seen as a root in totality.
 
-- `fromPath` [string][string] File path.
-- `toPath1` [string][string] File path.
-- `toPath2` [string][string] File path.
-- `toPathN` [string][string] File path.
+- `...paths` [string][string] A sequence of file path or paths segments, the sequence can be empty (returns current working directory)
 - Returns: [pathTokenArray](#inferpathobject). Simular to the [`inferPathType`](#inferpathtypepath-options) but returns a single answer, the most likely path type.
 
 ## Types
@@ -192,6 +202,10 @@ interface lexPathObject {
     firstError?: string; // the first error in the "path" array of tokens.
 }
 ```
+
+### `resolvePathObject`
+
+The function [resolve](#)
 
 
 
