@@ -28,7 +28,7 @@
   ],
   "license": "MIT",
   "main": "src/proxy.js",
-  "name": "@mangos/jvalidator",
+  "name": "@mangos/jovvalidator",
   "nyc": {
     "instrument": true,
     "reporter": [
