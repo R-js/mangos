@@ -90,11 +90,16 @@ describe('path', () => {
             const result = () => jpath('', copy);
             expect(result).to.throw('path cannot be empty or just spaces');
         });
-        it('execute curried version "/customers/name"', () => {
+        it('execute curried version "/customers/name" with no data', () => {
             const copy = clone(data);
             const slice = jpath('/customers/name');
-            const result = slice();
+            const result = slice(); // 
             expect(result).to.deep.equal([]);
+        });
+        it('ending forward slash should be ignored "/////customers/name', () => {
+            const copy = clone(data);
+            const slice = jpath('/////customers/name/', data);
+            expect(slice).to.deep.equal(['Ms Betty DavenPort']);
         });
     });
 

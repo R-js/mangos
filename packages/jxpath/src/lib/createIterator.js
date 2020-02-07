@@ -1,6 +1,23 @@
 module.exports = function createIterator(iterator, cursor = 0) {
     const arr = Array.from(iterator);
     return ({
+        advanceUntillFalse(fn) {
+            const rc = { done: false};
+            do {
+                if (cursor >= arr.length) {
+                    rc.done = true;
+                    rc.value = undefined;
+                    return rc;
+                }
+                rc.value = arr[cursor];
+                // peek
+                cursor++;
+                if (fn(rc)) {
+                    continue;
+                }
+                return rc;
+            } while (true);
+        },
         next(fn) {
             const rc = { value: undefined, done: false };
             if (cursor >= arr.length) {
@@ -21,6 +38,6 @@ module.exports = function createIterator(iterator, cursor = 0) {
         fork() {
             return createIterator(arr, cursor);
         },
-        [Symbol.iterator]: function() { return this }
+        [Symbol.iterator]: function () { return this }
     });
 }

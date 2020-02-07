@@ -1,3 +1,8 @@
+## 1.0.4
+
+Released Feb 7 2020
+- Fixed trailing '/' should not cause a exception
+
 ## 0.0.2
 
 Released Jan 15, 2020

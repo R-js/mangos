@@ -38,7 +38,7 @@ function createParent(object, prevParent) {
 }
 
 function approve(opaque, clauses) {
-    const [, firstPred, , secondPred, ]  = clauses;
+    const [, firstPred, , secondPred,] = clauses;
     if (!isObject(opaque)) {
         return undefined;
     }
@@ -98,20 +98,11 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
     }
     // absorb itslash and current
     if (instr.token === tokens.SLASH || instr.token === tokens.CURRENT) {
-        while (true) {
-            const {
-                done: done2
-            } = iterator.next(p => p.value.token === tokens.SLASH || instr.token === tokens.CURRENT);
-            if (done2) {
-                break;
-            }
-        } {
-            const {
-                value,
-                done: done2
-            } = iterator.next();
-            instr = value;
-            done = done2;
+        const { value: value2, done: done2 } = iterator.advanceUntillFalse(p => p.value.token == tokens.SLASH || p.value.token === tokens.CURRECT)
+        done = done2;
+        instr = value2;
+        if (done) {
+            return [opaque];
         }
     }
     // predicates 
