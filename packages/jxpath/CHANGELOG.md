@@ -1,3 +1,8 @@
+## 1.0.5
+
+Released Feb 7 2020
+Added "internal" sub-module
+
 ## 1.0.4
 
 Released Feb 7 2020
