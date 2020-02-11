@@ -17,6 +17,7 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 
 ### Differences with json-path
 
+- `jxpath` is very efficient slicing extreemly large JS objects without creating intermediate results (its a generator function returning an iterator, aka "just in time"/"lazy" slicing of the JS object data).
 - `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
 - `jxpath` has full regular expression to select for both property names and property values
 
@@ -77,7 +78,8 @@ const data = {
 };
 const  path =  // see examples below
 const jxpath = require('@mangos/jxpath');
-const result = jxpath( path , data);
+const result = jxpath( path , data); // returns iterator, lazy lexing
+console.log( Array.from (result ) );
 //-> result , see below
 ```
 

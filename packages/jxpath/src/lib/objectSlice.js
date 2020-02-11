@@ -82,7 +82,7 @@ function flatterMap(array) {
     return result;
 }
 
-function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined)) {
+function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined)) {
 
     let instr;
     let done; {
@@ -94,7 +94,8 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
         done = done2;
     }
     if (done) {
-        return [opaque];
+        yield opaque;
+        return;
     }
     // absorb itslash and current
     if (instr.token === tokens.SLASH || instr.token === tokens.CURRENT) {
@@ -102,7 +103,8 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
         done = done2;
         instr = value2;
         if (done) {
-            return [opaque];
+            yield opaque;
+            return;
         }
     }
     // predicates 
@@ -126,29 +128,30 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
         }
         // test for errors, if errors basicly throw errors
         if (approve(opaque, clauses)) {
-            return objectSlice(opaque, iterator, parentFn);
+            yield *objectSlice(opaque, iterator, parentFn);
+            return;
         }
-        return [];
+        return;
     }
     // pathpart
     if (instr.token === tokens.PATHPART) {
         if (isObject(opaque)) { // dive deeper
             if (!(instr.value in opaque)) {
-                return [];
+                return;
             }
             const newOpaque = opaque[instr.value];
             if (Array.isArray(newOpaque)) {
                 const pancaked = flatterMap(newOpaque);
                 const collect = [];
                 for (opaqueSingle of pancaked) {
-                    const rcSub = objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn));
-                    collect.push(...rcSub);
+                    yield *objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn));
                 }
-                return collect;
+                return;
             }
-            return objectSlice(newOpaque, iterator, createParent(opaque, parentFn));
+            yield *objectSlice(newOpaque, iterator, createParent(opaque, parentFn));
+            return;
         }
-        return [];
+        return;
     }
     // parent
     // get the previours object and parentFn
@@ -158,7 +161,8 @@ function objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined
             d,
             p
         } = parentFn();
-        return objectSlice(d, iterator, p);
+        yield *objectSlice(d, iterator, p);
+        return;
     }
     throw new Error(`token is invvalid ${JSON.stringify(instr)}`);
 }

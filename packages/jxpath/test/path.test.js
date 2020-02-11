@@ -73,6 +73,7 @@ const data = {
         ]
     }]
 };
+const jxa = (path, data) => (data && Array.from(jpath(path, data))) || jpath(path);
 
 describe('path', () => {
     describe('edge cases and errors', () => {
@@ -82,7 +83,7 @@ describe('path', () => {
         });
         it('empty path ""', () => {
             const copy = clone(data);
-            const result = jpath('retailOutlets/name', copy);
+            const result = jxa('retailOutlets/name', copy);
             expect(result).to.deep.equal(['radioshack', 'wallmart']);
         });
         it('no path should raise an error', () => {
@@ -93,12 +94,12 @@ describe('path', () => {
         it('execute curried version "/customers/name" with no data', () => {
             const copy = clone(data);
             const slice = jpath('/customers/name');
-            const result = slice(); // 
+            const result = Array.from(slice()); // 
             expect(result).to.deep.equal([]);
         });
         it('ending forward slash should be ignored "/////customers/name', () => {
             const copy = clone(data);
-            const slice = jpath('/////customers/name/', data);
+            const slice = jxa('/////customers/name/', data);
             expect(slice).to.deep.equal(['Ms Betty DavenPort']);
         });
     });
@@ -106,13 +107,13 @@ describe('path', () => {
     describe('normal operation', () => {
         it('get "/customers/name"', () => {
             const copy = clone(data);
-            const result = jpath('/customers/name', copy);
+            const result = jxa('/customers/name', copy);
             expect(result).to.deep.equal(['Ms Betty DavenPort']);
         });
         it('execute curried version "/customers/name"', () => {
             const copy = clone(data);
             const slice = jpath('/customers/name');
-            const result = slice(copy);
+            const result = Array.from(slice(copy));
             expect(result).to.deep.equal(['Ms Betty DavenPort']);
         });
     });
