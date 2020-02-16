@@ -25,6 +25,7 @@ const tokens = Object.freeze({
     EQUAL_TOKEN: '\0x09',
     BRACKET_OPEN: '\0x0a',
     BRACKET_CLOSE: '\0x0b',
+    RECURSIVE_DESCENT: '\u000c'
 });
 
 // there should be a list of "absorbers" things like
@@ -243,6 +244,22 @@ function* predicateHolisticAbsorber(str = '', start = 0, end = max(str.length - 
     };
 }
 
+const tokenMap= {
+    '..': {
+        t:tokens.PARENT,
+        s:1
+    },
+    '.': {
+        t:tokens.CURRENT,
+        s:0
+    },
+    '**': {
+        t:tokens.RECURSIVE_DESCENT,
+        s:1
+    }
+}
+
+
 function* pathEltAbsorber(str = '', start = 0, end = str.length - 1) {
     let i = start;
     if (str[i] === '/' || end < start) {
@@ -259,29 +276,17 @@ function* pathEltAbsorber(str = '', start = 0, end = str.length - 1) {
     }
     i++;
     const value = str.slice(start, i);
-    if (value === '..') {
-        yield {
-            token: tokens.PARENT,
-            start: start,
-            end: start + 1,
-            value
-        }
-        return;
-    }
-    if (value === '.') {
-        yield {
-            token: tokens.CURRENT,
-            start: start,
-            end: start,
-            value
-        }
+    const ti = tokenMap[value];
+    if (ti){
+        const rc = { start, end: start+ti.s, value, token: ti.t };
+        yield rc;
         return;
     }
     yield {
         token: tokens.PATHPART,
         start: start,
         end: i - 1,
-        value: str.slice(start, i)
+        value
     };
 }
 

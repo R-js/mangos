@@ -210,5 +210,34 @@ describe('objectSlice', () => {
             const result2 = Array.from(objectSlice(copy, iterator2));
             expect(result2).to.deep.equal(['Ms Betty DavenPort', 'Mr Jimmy Hoffa']);
         });
+        it('reject invalid token "/customers/orderItems "', () => {
+            const copy = clone(data);
+            const arr = Array.from(pathAbsorber('/customers/orderItems'));
+            arr[arr.length - 1].token = 0xff;
+            const iterator = createIterator(arr);
+            const genErr = () => Array.from(objectSlice(copy, iterator));
+            expect(genErr).to.throw('token is invvalid {"token":255,"start":11,"end":20,"value":"orderItems"}')
+        });
+        it('recursive descent "/**/zip"', () => {
+            const copy = clone(data);
+            const iterator = createIterator(Array.from(pathAbsorber('/**/zip')));
+            const result = Array.from(objectSlice(copy, iterator));
+            expect(result).to.deep.equal(['PA 17557','NJ 07457','NY 11236']);
+        });
+        it('recursive descent "/**/zip/../"', () => {
+            const copy = clone(data);
+            const iterator = createIterator(Array.from(pathAbsorber('/**/zip/../')));
+            const result = Array.from(objectSlice(copy, iterator));
+            expect(result).to.deep.equal([ { streetName: 'E Main St, New Holland',
+            zip: 'PA 17557',
+            houseNr: 331 },
+          { streetName: 'NJ-23 Riverdale',
+            zip: 'NJ 07457',
+            houseNr: 48,
+            state: 'NJ' },
+          { zip: 'NY 11236',
+            streetName: 'Devonshire Dr.Brooklyn',
+            houseNumber: 72 } ]);
+        });
     });
 });

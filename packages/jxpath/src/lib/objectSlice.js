@@ -164,6 +164,36 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
         yield *objectSlice(d, iterator, p);
         return;
     }
+    if (instr.token === tokens.RECURSIVE_DESCENT){
+        if (!isObject(opaque)) { 
+            return;
+        }
+        // absorb consequitive recursive descent tokens
+        const { done: done2 } = iterator.advanceWhileTrue(p => p.value.token == tokens.SLASH || p.value.token === tokens.RECURSIVE_DESCENT)
+        if (done2) {
+            return; // blind recursive descent we dont do
+        }
+        const iterator2 = iterator.fork();
+        iterator2.stepBackWhileTrue(p => p.value === tokens.SLASH || p.value.token !== tokens.RECURSIVE_DESCENT );
+        
+        yield *objectSlice(opaque, iterator, parentFn);
+        // recursive descent
+        for (const value of Object.values(opaque)){
+            if (isObject(value)){
+                const iterator3 = iterator2.fork();
+                yield *objectSlice(value, iterator3, createParent(value, parentFn)); 
+                continue;
+            }
+            if (Array.isArray(value)){
+                for (value2 of value){
+                    const iterator3 = iterator2.fork();
+                    yield *objectSlice(value2, iterator3, createParent(value2, parentFn));
+                }
+            }
+        }
+        return;
+        
+    }
     throw new Error(`token is invvalid ${JSON.stringify(instr)}`);
 }
 

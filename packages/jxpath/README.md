@@ -23,12 +23,13 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 
 ## Query operators overview
 
-| operator            | jxpath           | example                                                        |
-| ------------------- | ---------------- | -------------------------------------------------------------- |
-| `literal_text`      | exact selector   | `/persons/adress/city`                                         |
-| `..`                | parent selector  | `/persons/adress/[zip=/$FL/]/../firstName`                     |
-| `[key=value]`       | predicate        | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
-| `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
+| operator            | jxpath            | example                                                       |
+| ------------------- | ----------------- | ------------------------------------------------------------- |
+| `literal_text`      | exact selector    | `/persons/adress/city`                                        |
+| `..`                | parent selector   | `/persons/adress/[zip=/$FL/]/../firstName`                    |
+| `**`                | recursive descent | `[/employees/**/[name=Clark Kent]/address`                    |
+| `[key=value]`       | predicate         | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`       |
+| `[regexp1=regexp2]` | regexp predicate  | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
@@ -78,8 +79,8 @@ const data = {
 };
 const  path =  // see examples below
 const jxpath = require('@mangos/jxpath');
-const result = jxpath( path , data); // returns iterator, lazy lexing
-console.log( Array.from (result ) );
+const iterator = jxpath( path , data); // returns iterator, lazy lexing
+console.log( Array.from( iterator );
 //-> result , see below
 ```
 
@@ -106,6 +107,12 @@ Predicates have the general pattern `/[key=value]/`; both `key` and `value` can 
 A parent selector is the two dots `..` as it is in XPath.
 
 * A path of `/employees/address/[zip=/^AL/]/../firstName` will give back the result `[ 'Tammy', 'Roy', ]`, aka all first names of employees having a zipcode starting with `AL`.
+
+## Recursive descent selector
+
+A recursive descent selector is the `**` as it is in XPath.
+
+* A path of `/**/zip` will give back the zip prop values in the JS object (descending through objects or array of objects). Result `['AL 36104','AL 36487', 'FL 32301']`.
 
 ## Feedback
 

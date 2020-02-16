@@ -29,17 +29,19 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 
 ### Differences with json-path
 
+- `jxpath` is very efficient slicing extreemly large JS objects without creating intermediate results (its a generator function returning an iterator, aka "just in time"/"lazy" slicing of the JS object data).
 - `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
 - `jxpath` has full regular expression to select for both property names and property values
 
 ## Query operators overview
 
-| operator            | jxpath           | example                                                        |
-| ------------------- | ---------------- | -------------------------------------------------------------- |
-| `literal_text`      | exact selector   | `/persons/adress/city`                                         |
-| `..`                | parent selector  | `/persons/adress/[zip=/$FL/]/../firstName`                     |
-| `[key=value]`       | predicate        | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
-| `[regexp1=regexp2]` | regexp predicate | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
+| operator            | jxpath            | example                                                       |
+| ------------------- | ----------------- | ------------------------------------------------------------- |
+| `literal_text`      | exact selector    | `/persons/adress/city`                                        |
+| `..`                | parent selector   | `/persons/adress/[zip=/$FL/]/../firstName`                    |
+| `**`                | recursive descent | `[/employees/**/[name=Clark Kent]/address`                    |
+| `[key=value]`       | predicate         | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`       |
+| `[regexp1=regexp2]` | regexp predicate  | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
@@ -48,74 +50,6 @@ Query _"path"_ elements are seperated by `/` token and predicates are enclosed b
 JXPath alaws returns a array of values/objects, if nothing was selected by the query the array will be empty.
 
 JXPath navigates through arrays and objects agnosticly.
-
-Look the the following JS object:
-
-```javascript
-const data = {
-    manager: {
-        firstName: 'Big',
-        lastName: 'Boss'
-    }
-    employees: [ 
-        {
-            firstName: 'Tammy',
-            lastName: 'Brant',
-            address: {
-                zip: 'AL 36104'
-                city: 'Calumet City',
-                street: '837 West St.'
-            }
-        },
-        {
-            firstName: 'Roy',
-            lastName: 'White',
-            address: {
-                zip: 'AL 36487',
-                city: 'Tullahoma',
-                street: '843 Golden Star Avenue'
-            }
-        },
-        {
-            firstName: 'James',
-            lastName: 'Kirk',
-            address: {
-                zip: 'FL 32301',
-                city: 'Jackson Heights',
-                street: '572 Myrtle Avenue'
-            }
-        }
-    ]
-};
-const  path =  // see examples below
-const jxpath = require('@mangos/jxpath');
-const result = jxpath( path , data);
-//-> result , see below
-```
-
-The `/employees/` is an array of objects, and `/manager` is single nested object, JXPath query treats them both agnosticly.
-
-## Predicate `[..]` query selector
-
-Predicates have the general pattern `/[key=value]/`; both `key` and `value` can be regular expressions
-
-### regular expression predicates
-
-* A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
-* A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
-* A path of `/manager/[/Name$/=/^B/]` will return the object value `manager` since both `firstName` and `lastName` match the left side expression and both values start with the capital letter `B`.
-
-### literal predicates
-
-* A path of `/manager/firstName` returns the result `[ 'Big' ]`.
-* A path of `/employees/firstName` returns the result `[ 'Tammy', 'Roy', 'James' ]`.
-* A path of `/employees/non-existant-path` returns an empty result `[]`.
-
-## Parent selector
-
-A parent selector is the two dots `..` as it is in XPath.
-
-* A path of `/employees/address/[zip=/^AL/]/../firstName` will give back the result `[ 'Tammy', 'Roy' ]`, aka all first names of employees having a zipcode starting with `AL`.
 
 ### JXPath query examples
 
@@ -191,7 +125,7 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/../name'); 
+    const iterator = jxpath('/customers/orders/[order_status=cancelled]/../name'); 
     //-> [ 'Tammy Bryant' ]
 ```
 
@@ -201,7 +135,7 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
     const jxpath = require('@mangos/jxpath');
     // using regular expression /.*/  
 
-    const resultArray = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/.*/]/../../email');
+    const iterator = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/.*/]/../../email');
     //-> [ 'tammy.bryant@internalmail' ]
 ```
 
@@ -209,9 +143,18 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-    const resultArray = jxpath('/customers/name');
+    const iterator = jxpath('/customers/name');
     //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
 ```
+
+### Q4: Recursive descent the JS object and give me all `unit_price` (s).
+
+```javascript
+    const jxpath = require('@mangos/jxpath');
+    const iterator = jxpath('/**/unit_price');
+    //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
+```
+
 
 [Full Api Doc](packages/jxpath/README.md)
 

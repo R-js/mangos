@@ -215,6 +215,12 @@ describe('lexer', () => {
                 const errors = tokens.filter(f=>f.error).map(m=>m.error).join('|');
                 expect(errors).to.equal('no L value at all|no "=" token found to seperate L-exp and R-exp predicates')
             });
+            it('path with recursive descent "**/"',()=>{
+                const path = '**/';
+                const tokens = Array.from(pathAbsorber(path));
+                expect(tokens).to.deep.equal([ { start: 0, end: 1, value: '**', token: '\f' },
+                { token: '\u000f', value: '/', start: 2, end: 2 } ]);
+            })
         });
     });
 });
