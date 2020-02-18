@@ -1,19 +1,4 @@
 'use strict';
-// 1.token  '/'
-// 2.token name [anything not '/']
-// 3.you can have escaped \/ this is allowed,  '/' does appear as object property names in rollup "bundle" object.
-// AST
-// root -> starts with / (or not)
-// (root=/)pathelement|path-devider=/ (not escaped)/finalprop
-// ast will be an array of 
-//  { root->"/" or emoty,
-//    pathElts: [] array of path pathelts either names (nothingthing goes that is allowed )
-//    see path elts more as navigation instructions
-//  target prop is
-// 
-// emits tokens
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
-// [Symbol.iterator] -> A zero arguments function that returns an object, conforming to the iterator protocol.
 
 const tokens = Object.freeze({
     PATHPART: '\x01',
@@ -28,26 +13,19 @@ const tokens = Object.freeze({
     RECURSIVE_DESCENT: '\u000c'
 });
 
-// there should be a list of "absorbers" things like
-// default
-//  absorber for clauses
-//    absorber for keys within clauses
-//    absorber for value within clauses
-//  all these absorbers emit token streams, any absorber token bust be "globally unique"
-//  For now how absorbers are hierarchicly linked is programmicly determined, but later do a more declerative way of doing things.
-// 
-
 const { min, max } = Math;
 // const clamp = (l, u, x) => max(l, min(u, x));
 
-function regExpSafe(exp) {
+function regExpSafe(exp, flags) {
     try {
-        return new RegExp(exp);
+        return new RegExp(exp, flags);
     }
     catch (err) {
         return undefined;
     }
 }
+
+const flags = 'igmsuy';
 
 function* predicateRegExpAbsorber(str = '', start = 0, end = str.length - 1) {
     if (str[start] !== '/') {
@@ -57,9 +35,18 @@ function* predicateRegExpAbsorber(str = '', start = 0, end = str.length - 1) {
     let i = start + 1
     while (i <= end) {
         if (str[i] === '/' && str[i - 1] !== '\\') {
-            // can we create a regexp?
+            // check for regexp flags after the "/" token
+            let j = i+1;
+            while ('igmsuy'.includes(str[j])){
+                j++;
+            }
+            j--;
+            let flags;
+            if (j >= i+1){
+                flags = str.slice(i+1, j+1);
+            }
             const exp = str.slice(start + 1, i);
-            const value = regExpSafe(exp);
+            const value = regExpSafe(exp, flags);
             if (value) {
                 yield {
                     start,

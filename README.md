@@ -35,13 +35,13 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 
 ## Query operators overview
 
-| operator            | jxpath            | example                                                       |
-| ------------------- | ----------------- | ------------------------------------------------------------- |
-| `literal_text`      | exact selector    | `/persons/adress/city`                                        |
-| `..`                | parent selector   | `/persons/adress/[zip=/$FL/]/../firstName`                    |
-| `**`                | recursive descent | `[/employees/**/[name=Clark Kent]/address`                    |
-| `[key=value]`       | predicate         | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`       |
-| `[regexp1=regexp2]` | regexp predicate  | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
+| operator            | jxpath                                    | example                                                        |
+| ------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `literal_text`      | exact selector                            | `/persons/adress/city`                                         |
+| `..`                | parent selector                           | `/persons/adress/[zip=/$FL/]/../firstName`                     |
+| `**`                | recursive descent                         | `[/employees/**/[name=Clark Kent]/address`                     |
+| `[key=value]`       | predicate                                 | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`        |
+| `[regexp1=regexp2]` | regexp predicate (including regexp flags) | `[city=/town$/i]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
@@ -133,9 +133,9 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 
 ```javascript
     const jxpath = require('@mangos/jxpath');
-    // using regular expression /.*/  
+    // using regular expression with flags "im" /www.backery-r-us.com/im  
 
-    const iterator = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/.*/]/../../email');
+    const iterator = jxpath('/customers/orders/[order_status=cancelled]/store/[web=/www.backery-r-us.com/im]/../../email');
     //-> [ 'tammy.bryant@internalmail' ]
 ```
 

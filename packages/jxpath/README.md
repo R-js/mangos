@@ -29,7 +29,7 @@ JS Objects (unlike XML) dont have attributes. This means JXPath query language o
 | `..`                | parent selector   | `/persons/adress/[zip=/$FL/]/../firstName`                    |
 | `**`                | recursive descent | `[/employees/**/[name=Clark Kent]/address`                    |
 | `[key=value]`       | predicate         | `[city=London]`, `[city=/town$/]`, `[/name$/=/^Smith/]`       |
-| `[regexp1=regexp2]` | regexp predicate  | `[city=/town$/]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
+| `[regexp1=regexp2]` | regexp predicate (including regexp flags)  | `[city=/town$/igm]`, `[/name$/=/^Smith/]`, `[/name$/=Mr Dubois]` |
 
 **Note: more operators will be implemented, create an issue if you have an idea for a novice operator**
 
@@ -92,9 +92,11 @@ Predicates have the general pattern `/[key=value]/`; both `key` and `value` can 
 
 ### regular expression predicates
 
+The regular expresion predicate will take flags `igmsuy` after the last regexp delimiter `/`.
+
 * A path of `/employees/[firstName=/(Tammy|Roy)/]/lastName` would return the the lastNames: `[ 'Brant', 'White' ]` omitting `Kirk`.
 * A path of `/employees/[/Name$/=/.*/]/firstName` would return the first-and lastNames combined: `[ 'Tammy', 'Brant' , 'Roy' , 'White' , 'James' , 'Kirk' ]`
-* A path of `/manager/[/Name$/=/^B/]` will return the object value `manager` since both `firstName` and `lastName` match the left side expression and both values start with the capital letter `B`.
+* A path of `/manager/[/Name$/i=/^B/i]` (not the use of the `i` flag) will return the object value `manager` since both `firstName` and `lastName` match the left side expression and both values start with the upperCase `B` (or lowerCase `b` because of the use of flag `i`).
 
 ### literal predicates
 

@@ -49,6 +49,11 @@ describe('lexer', () => {
                 expect(a1).to.deep.equal([{ start: 0, end: 9, value: /^[a-z]+$/, token: '\u0000x07' }]);
             });
 
+            it('with flags /^[a-z]+$/igm', () => {
+               const a1 = Array.from(predicateRegExpAbsorber('/^[a-z]+$/igm'));
+               expect(a1).to.deep.equal([ { start: 0, end: 9, value: /^[a-z]+$/gim, token: '\u0000x07' } ]);
+            });
+
             it('/^[a-z]+$', () => {
                 const a2 = Array.from(predicateRegExpAbsorber('/^[a-z]+$'));
                 expect(a2).to.deep.equal([{
