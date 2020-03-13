@@ -17,10 +17,10 @@ module.exports = function jxpath(path, data = undefined, ignore = undefined) {
     const iterator = createIterator(tokens);
     // if there are errors in iterator
     if (data){
-        return objectSlice(data, iterator, ignore);
+        return objectSlice(data, iterator, undefined, ignore);
     }
     return function(data, ignore2){
-        return objectSlice(data, iterator.fork(), ignore2);
+        return objectSlice(data, iterator.fork(), undefined , ignore2);
     }
 };
 
