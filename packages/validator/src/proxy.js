@@ -12,6 +12,9 @@ const excludeSymbols = [
     Symbol.for('nodejs.util.inspect.custom'),
 ];
 
+const isObject = require('./isObject');
+
+
 require('./features/boolean');
 require('./features/object');
 require('./features/range');
@@ -90,11 +93,12 @@ function createValidatorFactory() {
                     const temp = {
                         ...propContext,
                         fn: propContext.fn(...argumentList) // this can throw!!
+                        
                     };
                     Object.assign(propContext, temp);
                     propContext.factory--;
                     if (propContext.factory > 0) {
-                        return new Proxy(temp.fn, createHandler(propContext, parentAssembler || thisarg)); //not done yet with finalizing
+                        return new Proxy(temp.fn, createHandler(propContext, parentAssembler || thisArg)); //not done yet with finalizing
                     }
                     const assembly = new Proxy(temp.fn, createHandler(undefined, parentAssembler || thisArg)); // create parent-child-chain of handlers for callback
                     return assembly;

@@ -45,7 +45,8 @@
   "scripts": {
     "coverage": "nyc mocha",
     "test": "mocha",
-    "lint": "eslint src/**/*.js"
+    "lint": "eslint src/**/*.js",
+    "lint:other": "eslint test/**/*.js"
   },
   "version": "0.0.1"
 }

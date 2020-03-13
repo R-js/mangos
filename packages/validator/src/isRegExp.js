@@ -1,1 +1,1 @@
-module.exports = isRegexp = regex => regex instanceof RegExp;
+module.exports = regex => regex instanceof RegExp;

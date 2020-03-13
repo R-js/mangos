@@ -11,8 +11,6 @@ const equalClass = require('./equalClass');
 
 const isArray = Array.isArray;
 
-const regxpNormalisation = /^\(([^\)\(]*)\)\s*=>\s*/;
-
 function equalprops(a, b, selector) {
     const aS = selector(a);
     const bS = selector(b);
@@ -30,7 +28,7 @@ function equalprops(a, b, selector) {
         }
     }
     return true;
-};
+}
 
 function equalObject(a, b){
     // lets to symbolsfor (const a )
@@ -41,7 +39,7 @@ function equalObject(a, b){
         return false;
     }
     return true;
-};
+}
 
 function equalArray(arr1, arr2){
     // for every part in arr1, there is something in arr2
@@ -69,7 +67,7 @@ function equalArray(arr1, arr2){
     if (ac1.length) return false;
 
     return true;
-};
+}
 
 function equal(a, b) {
     if (isScalar(a) && isScalar(b)) {

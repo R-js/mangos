@@ -28,7 +28,7 @@ module.exports = function setInteger(integer = false) {
                                 return [null, `${i} is not a number`];
                         }
                         if (integer) {
-                                const [res, err] = isInteger(i);
+                                const [, err] = isInteger(i);
                                 if (err) {
                                         return [null, `${i} is not an integer`];
                                 }

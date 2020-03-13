@@ -93,7 +93,7 @@ describe('utilities', function () {
             { value: 'somevalue', token: '\u0000x08', start: 9, end: 17 }]);
             
         });
-        it('lexer "[som\=ekey=\\/^$\\/]"', () => {
+        it('lexer "[som\\=ekey=\\/^$\\/]"', () => {
             const text = '[som\\=ekey=\\/^$\\/]';
             const tokens = arr(predicateTokenizer(text, 0, text.length - 1));
             expect(tokens).to.deep.equal([{ value: 'som\\=ekey', token: '\u0000x08', start: 1, end: 9 },

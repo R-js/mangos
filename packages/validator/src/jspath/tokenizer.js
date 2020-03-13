@@ -1,19 +1,4 @@
 'use strict';
-// 1.token  '/'
-// 2.token name [anything not '/']
-// 3.you can have escaped \/ this is allowed,  '/' does appear as object property names in rollup "bundle" object.
-// AST
-// root -> starts with / (or not)
-// (root=/)pathelement|path-devider=/ (not escaped)/finalprop
-// ast will be an array of 
-//  { root->"/" or emoty,
-//    pathElts: [] array of path pathelts either names (nothingthing goes that is allowed )
-//    see path elts more as navigation instructions
-//  target prop is
-// 
-// emits tokens
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
-// [Symbol.iterator] -> A zero arguments function that returns an object, conforming to the iterator protocol.
 
 const tokens = Object.freeze({
     PATHPART: '\x01',
@@ -24,15 +9,6 @@ const tokens = Object.freeze({
     PREDICATE_ELT_LITERAL: '\0x08',
 
 });
-
-// there should be a list of "absorbers" things like
-// default
-//  absorber for clauses
-//    absorber for keys within clauses
-//    absorber for value within clauses
-//  all these absorbers emit token streams, any absorber token bust be "globally unique"
-//  For now how absorbers are hierarchicly linked is programmicly determined, but later do a more declerative way of doing things.
-// 
 
 function createRegExp(regexpText) {
     try {
@@ -95,8 +71,6 @@ const predicateElementAbsorber = {
     }
 };
 
-
-
 const predicateAbsorber = {
     name: 'clause',
     order: 0,
@@ -136,7 +110,6 @@ const predicateAbsorber = {
     }
 };
 
-
 const rootAbsorber = {
     name: 'path',
     order: 0,
@@ -155,6 +128,7 @@ const rootAbsorber = {
             }
             // scan for next '/' or end of string
             let i2 = i;
+            // eslint-disable-next-line no-constant-condition
             while (true) {
                 if (!str[i2]) {
                     if (i2 !== i) {
@@ -169,11 +143,11 @@ const rootAbsorber = {
                     }
                 }
                 i2++;
-            };
+            }
             let i3 = i;
             while (str[i3] === '.' && i3 <= i2) {
                 i3++;
-            };
+            }
             if (i3 !== i) {
                 const len = i3 - i;
                 if (len === 1 || len === 2) {
@@ -222,10 +196,6 @@ const isAbsolute = t => t.length && t[0].token === tokens.SLASH;
 
 function escape(str) { // normal -> human interface
     return str.replace('/', '\\/');
-}
-
-function descape(str) { // human interface -> normal
-    return str.replace(/\\\//g, '/');
 }
 
 const lastToken = a => a[a.length - 1] || {};

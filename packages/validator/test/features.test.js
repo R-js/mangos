@@ -99,6 +99,7 @@ describe('features tests', function () {
         });
     });
     describe('function', () => {
+        // eslint-disable-next-line no-unused-vars
         const fun = (a, b, c) => { };
         it('check if it is a function type', () => {
             const result = V.function()(fun);
@@ -109,10 +110,12 @@ describe('features tests', function () {
             expect(result).to.deep.equal([undefined, 'is not a function']);
         });
         it('invalidate a non function with wrong arguments', () => {
+             // eslint-disable-next-line no-unused-vars
             const result = V.function(3)(function func1(a, b) { });
             expect(result).to.deep.equal([undefined, 'function [func1] does not have the required number of manditory arguments: 3']);
         });
         it('invalidate a anonymous function', () => {
+             // eslint-disable-next-line no-unused-vars
             const result = V.function(3)((a, b) => { });
             expect(result).to.deep.equal([undefined, 'function [anonymous] does not have the required number of manditory arguments: 3']);
         });

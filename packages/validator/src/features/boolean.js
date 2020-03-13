@@ -1,6 +1,5 @@
 
 
-const createRangeCheck = require('../createRangeCheck');
 const { features } = require('./dictionary');
 
 features.set('boolean', {
