@@ -1,3 +1,10 @@
+
+## 1.0.10
+
+Released 13 Mar 2020
+Mitiate Circular references by adding an "ignore" argument to the jxpath
+Updated documentation to documentation
+
 ## 1.0.5
 
 Released Feb 7 2020
