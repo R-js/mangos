@@ -82,7 +82,7 @@ function flatterMap(array) {
     return result;
 }
 
-function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined)) {
+function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefined), ignore) {
 
     let instr;
     let done; {
@@ -128,7 +128,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
         }
         // test for errors, if errors basicly throw errors
         if (approve(opaque, clauses)) {
-            yield *objectSlice(opaque, iterator, parentFn);
+            yield *objectSlice(opaque, iterator, parentFn, ignore);
             return;
         }
         return;
@@ -144,11 +144,11 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
                 const pancaked = flatterMap(newOpaque);
                 const collect = [];
                 for (opaqueSingle of pancaked) {
-                    yield *objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn));
+                    yield *objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn), ignore);
                 }
                 return;
             }
-            yield *objectSlice(newOpaque, iterator, createParent(opaque, parentFn));
+            yield *objectSlice(newOpaque, iterator, createParent(opaque, parentFn), ignore);
             return;
         }
         return;
@@ -161,7 +161,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
             d,
             p
         } = parentFn();
-        yield *objectSlice(d, iterator, p);
+        yield *objectSlice(d, iterator, p, ignore);
         return;
     }
     if (instr.token === tokens.RECURSIVE_DESCENT){
@@ -176,18 +176,21 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
         const iterator2 = iterator.fork();
         iterator2.stepBackWhileTrue(p => p.value === tokens.SLASH || p.value.token !== tokens.RECURSIVE_DESCENT );
         
-        yield *objectSlice(opaque, iterator, parentFn);
+        yield *objectSlice(opaque, iterator, parentFn, ignore);
         // recursive descent
-        for (const value of Object.values(opaque)){
+        for (const [propName, value] of Object.entries(opaque)){
+            if (propName === ignore){
+                continue;
+            }
             if (isObject(value)){
                 const iterator3 = iterator2.fork();
-                yield *objectSlice(value, iterator3, createParent(value, parentFn)); 
+                yield *objectSlice(value, iterator3, createParent(value, parentFn), ignore); 
                 continue;
             }
             if (Array.isArray(value)){
                 for (value2 of value){
                     const iterator3 = iterator2.fork();
-                    yield *objectSlice(value2, iterator3, createParent(value2, parentFn));
+                    yield *objectSlice(value2, iterator3, createParent(value2, parentFn), ignore);
                 }
             }
         }

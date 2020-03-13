@@ -116,6 +116,38 @@ A recursive descent selector is the `**` as it is in XPath.
 
 * A path of `/**/zip` will give back the zip prop values in the JS object (descending through objects or array of objects). Result `['AL 36104','AL 36487', 'FL 32301']`.
 
+
+## Functional 
+
+Can use jxpath in a curried fashion
+
+```javascript
+const  path =  // see examples 
+const jxpath = require('@mangos/jxpath');
+
+const curry = jxpath( path ); // curried 
+
+const iterator = curry(data); // process data, re-use the curried version
+```
+
+## Ignore property names 
+
+Can use jxpath can ignore properties (especially handy if the object has circular references).
+- The third argument in the `jxpath` is a singular field containing the name of the property to ignore (recursivly found in objects).
+- The second argument in the curried form of `jxpath` is a singular field containing the name of the property to ignore (recursivly found in objects).
+
+```javascript
+const  path =  '**/[city=New York]/../firstName';
+const jxpath = require('@mangos/jxpath');
+
+// curried form
+const curry = jxpath( path ); // curried 
+const iterator = curry(data, 'parent' ); // ignore "parent" property when doing recursive descent
+
+// non curried form
+const iterator = jxpath( path, data, 'parent' ); // ignore "parent" property when doing recursive descent
+```
+
 ## Feedback
 
 We appreceate any feedback, with new ideas, to enhance this tool suite. File an issue [here](https://github.com/R-js/mangos/issues)
