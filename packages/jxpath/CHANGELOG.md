@@ -1,3 +1,6 @@
+## current
+Added eslint for typechecking
+Zero dependency package
 
 ## 1.0.10
 
