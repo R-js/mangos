@@ -66,6 +66,7 @@ function last(arr) {
 }
 
 function upp(path) {
+    let _last;
     for (_last = last(path); _last.token === tokens.SEP; _last = last(path)) {
         path.pop();
     }
@@ -125,7 +126,7 @@ function resolve(_from, ..._to) {
     }
     // "_from" is guaranteed to me from root and "to" is guaranteed not to be from "root"
     const working = clone(_from.path);
-    for (token of to.path) {
+    for (const token of to.path) {
         switch (token.token) {
             case tokens.SEP:
             case tokens.CURRENT:
@@ -135,6 +136,7 @@ function resolve(_from, ..._to) {
                 break;
             case tokens.PATHELT:
                 add(working, token);
+                break;
             default:
         }
     }

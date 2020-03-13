@@ -23,14 +23,10 @@ const {
 } = require('../lib/tokenizer');
 
 const {
-    evaluate,
     resolve,
     inferPathType,
     lexPath
 } = require('../lib/parser');
-
-
-const log = o => console.log(JSON.stringify(o));
 
 describe('filepath', () => {
     describe('resolve', () => {
@@ -589,7 +585,7 @@ describe('filepath', () => {
                 start: 23,
                 end: 31,
                 value: 'file.txt"',
-                error: 'name "file.txt\"" contains invalid characters'
+                error: 'name "file.txt"" contains invalid characters'
             }
             ]);
         });
@@ -705,7 +701,7 @@ describe('filepath', () => {
                 start: 5,
                 end: 9,
                 value: '?!{..',
-                error: 'name \"?!{..\" contains invalid characters'
+                error: 'name "?!{.." contains invalid characters'
             },
             {
                 token: '\u0001',

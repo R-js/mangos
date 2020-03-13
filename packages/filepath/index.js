@@ -3,7 +3,7 @@ const { tokens, rootTokens } = require('./lib/tokenizer');
 
 function invertObject(o) {
     const rc = {};
-    const rootTokensValues = Object.entries(o).reduce((c, [key,value]) => {
+    Object.entries(o).reduce((c, [key,value]) => {
         c[value] = key;
         return c;
     }, rc);

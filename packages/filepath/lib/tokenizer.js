@@ -1,94 +1,4 @@
 'use strict';
-const clone = require('clone');
-//from https://en.wikipedia.org/wiki/Path_(computing)
-/* 
-allowed chars in filepath names
-https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#win32-device-namespaces
-The following reserved characters:
-
-< (less than)
-> (greater than)
-: (colon)
-" (double quote)
-/ (forward slash)
-\ (backslash)
-| (vertical bar or pipe)
-? (question mark)
-* (asterisk)
-Integer value zero, sometimes referred to as the ASCII NUL character.
-
-Characters whose integer representations are in the range from 1 through 31,
- except for alternate data streams where these characters are allowed. For more information about file streams,
-  see File Streams.
-
-CON,
-PRN,
-AUX,
-NUL,
-COM1,
-COM2,
-COM3,
-COM4,
-COM5,
-COM6,
-COM7,
-COM8,
-COM9,
-LPT1,
-LPT2,
-LPT3,
-LPT4,
-LPT5,
-LPT6,
-LPT7,
-LPT8,
-LPT9.
-
-Any other character that the target file system does not allow.
-*/
-
-// nomenclature
-//* TDP = [T]raditional [D]os [P]ath
-// examples:
-//      C:\Documents\Newsletters\Summer2018.pdf             An absolute file path from the root of drive C:
-//      \Program Files\Custom Utilities\StringFinder.exe    An absolute path from the root of the current drive.
-//      2018\January.xlsx                       A relative path to a file in a subdirectory of the current directory.
-//      ..\Publications\TravelBrochure.pdf      A relative path to file in a directory that is a peer of the current directory.
-//      C:\Projects\apilibrary\apilibrary.sln  An absolute path to a file from the root of drive C:
-//      C:Projects\apilibrary\apilibrary.sln   A relative path from the current directory of the C: drive.
-// UNC  Universal naming convention (UNC) paths,
-// examples:
-//      \\system07\C$\    servername: system07 (of fully qualified netbios,  IP/FQDN address ipv4/ipv6
-//                        c$: shared name
-//      \\Server2\Share\Test\Foo.txt
-//                        servername: Server2
-//                        shared name: Share
-// DDP [D]os [D]evice [P]ath:
-//  DOS device paths are fully qualified by definition. Relative directory segments (. and ..) are not allowed. 
-// examples:
-//      \.\C:\Test\Foo.txt
-//      \\?\C:\Test\Foo.txt
-//      \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\Test\Foo.txt 
-//      \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\Test\Foo.txt
-//      \\.\BootPartition\
-//      \\.\UNC\Server\Share\Test\Foo.txt   // UNC is a "device" designation (network card?)  )))  Server\Share is the "volume"
-//      \\?\UNC\Server\Share\Test\Foo.txt
-//      \\?\server1\e:\utilities\\filecomparer\   \server1\utilities\ is the server\share
-
-//  Path normalization
-
-/*
-Almost all paths passed to Windows APIs are normalized. During normalization, Windows performs the following steps:
-Identifies the path.
-
-- Applies the current directory to partially qualified (relative) paths.
-- Canonicalizes component and directory separators.
-- Evaluates relative directory components (. for the current directory and .. for the parent directory).
-- Trims certain characters.
-
-Continue tomorrow here: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#identifying-the-path
-
-*/
 const tokens = {
     SEP: '\x01', // done
     PATHELT: '\x06',
@@ -113,7 +23,7 @@ const rootTokenValues = invertKeyValues(rootTokens);
 
 const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 
-const uncRegExp = /^(\/\/|\\\\)([^\\\/\\?\\.]+)(\/|\\)([^\\\/]+)(\/|\\)?/;
+const uncRegExp = /^(\/\/|\\\\)([^\\/\\?\\.]+)(\/|\\)([^\\/]+)(\/|\\)?/;
 
 function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
     const checkFrom = str.slice(start, end + 1);
@@ -213,23 +123,10 @@ function* posixAbsorber(str = '', start = 0, end = str.length - 1) {
 }
 
 function getCWDDOSRoot() {
-    /*
-                  cwd can be anything "tdp", "unc", and "ddp"
-
-                   PROOF:
-                   > process.chdir('//./unc/pc123/c')  // use a valid host and share on your machine
-                   > process.cwd()
-                       '\\\\.\\unc\\pc123\\c'
-
-                   PROOF:
-                   > process.chdir('//pC123/c')
-                   > process.cwd()
-                       '\\\\pc123\\c'
-               */
     const cwdPath = getCWD(); // cwd can be anything, even unc //server/share , but not //./unc/ or any other
     const ddpTokens = Array.from(ddpAbsorber(cwdPath));
     if (ddpTokens.length) {
-        return scantoken[0]; // emit the root
+        return ddpTokens[0]; // emit the root
     }
     const uncTokens = Array.from(uncAbsorber(cwdPath));
     if (uncTokens.length) {
@@ -250,11 +147,11 @@ function getCWDDOSRoot() {
 }
 
 function tdpRootNeedsCorrection(str) {
-    const match = str.match(/^[\/\\]+/);
+    const match = str.match(/^[/\\]+/);
     if (match) {
         const exclusions = regExpOrderedMapDDP.slice();
         exclusions.push(['unc', uncRegExp]);
-        const shouldNotFind = exclusions.find(([ns, regexp]) => str.match(regexp));
+        const shouldNotFind = exclusions.find(([, regexp]) => str.match(regexp));
         if (shouldNotFind) {
             return undefined;
         }
@@ -286,24 +183,26 @@ function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1) {
 
             const errors = [];
             if (toggle === 0) {
-                switch(value){
-                case '..': 
-                    token = tokens.PARENT;
-                    break;
-                case '.':
-                    token = tokens.CURRENT;
-                    break;
-                default:   
-                    const ldn = hasLegacyDeviceName(value);
-                   
-                    if (ldn) {
-                        errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
-                    }
-                    if (isInValidMSDirecotryName(value)) {
-                        errors.push(`name "${value}" contains invalid characters`);
-                    }
-                   
-                }   
+                switch (value) {
+                    case '..':
+                        token = tokens.PARENT;
+                        break;
+                    case '.':
+                        token = tokens.CURRENT;
+                        break;
+                    default:
+                        {
+                            const ldn = hasLegacyDeviceName(value);
+
+                            if (ldn) {
+                                errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
+                            }
+                            if (isInValidMSDirecotryName(value)) {
+                                errors.push(`name "${value}" contains invalid characters`);
+                            }
+                        }
+
+                }
             }
             const rc = {
                 token,
@@ -401,8 +300,6 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
 
     const server = match[2];
     const share = match[4];
-    const sep2 = '\\\\';
-    const sep = '\\';
     const value = `\\\\${server}\\${share}`;
     const endUnc = value.length - 1;
 
@@ -419,7 +316,7 @@ function* uncAbsorber(str = '', start = 0, end = str.length - 1) {
 const regExpOrderedMapDDP = [
     //  \\?\UNC\Server\Share\
     //  \\.\UNC\Server\Share\
-    ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^\/\\]+)(\/|\\)([^\/\\]+)(\/|\\)?/i],
+    ['ddpwithUNC', /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^/\\]+)(\/|\\)([^/\\]+)(\/|\\)?/i],
 
     // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\ 
     // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
@@ -482,8 +379,12 @@ function getCWD() {
     if (typeof global !== 'undefined' && global.process && global.process.cwd && typeof global.process.cwd === 'function') {
         return global.process.cwd();
     }
-    if (typeof window !== 'undefined' && window.location && window.location.pathname) {
-        return window.location.pathname;
+    if (typeof window !== 'undefined'){
+        // eslint-disable-next-line no-undef
+        if (window.location && window.location.pathname) {
+             // eslint-disable-next-line no-undef
+            return window.location.pathname;
+        }
     }
     return '/'
 }
