@@ -1,5 +1,5 @@
 const { V, addFeature, removeFeature } = require('src/proxy');
 
-modules.exports = {
+module.exports = {
     V, addFeature, removeFeature 
 };

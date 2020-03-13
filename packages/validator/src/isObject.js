@@ -1,1 +1,1 @@
-module.exports = isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
+module.exports = o => typeof o === 'object' && o !== null && !Array.isArray(o);

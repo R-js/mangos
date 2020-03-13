@@ -2,8 +2,8 @@ const chaiAsPromised = require('chai-as-promised');
 const {
     describe,
     it,
-    before,
-    after
+   // before,
+   // after
 } = require('mocha');
 const chai = require('chai');
 chai.should();
@@ -14,8 +14,8 @@ const {
 
 const {
     V,
-    addFeature,
-    removeFeature
+    //addFeature,
+    //removeFeature
 } = require('../src/proxy');
 
 describe('features tests', function () {

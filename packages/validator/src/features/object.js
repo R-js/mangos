@@ -2,6 +2,7 @@ const { features } = require('./dictionary');
 
 const $optional = Symbol.for('optional');
 const clone = require('clone');
+const isObject = require('../isObject');
 
 const {
     tokens,
@@ -69,7 +70,7 @@ features.set('object', {
                     // clone the context
                     const ctxNew = { data: ctx.data, location: clone(ctx.location) };
                     ctxNew.location.push({ token: tokens.SLASH, value: '/' }, { token: tokens.PATHPART, value: key });
-                    const [result, err, final] = schema[key](value, ctxNew);
+                    const [result, err] = schema[key](value, ctxNew);
                     if (!err) {
                         data[key] = result; // allow for transforms
                         continue;
