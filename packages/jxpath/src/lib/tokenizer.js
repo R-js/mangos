@@ -13,8 +13,7 @@ const tokens = Object.freeze({
     RECURSIVE_DESCENT: '\u000c'
 });
 
-const { min, max } = Math;
-// const clamp = (l, u, x) => max(l, min(u, x));
+const { max } = Math;
 
 function regExpSafe(exp, flags) {
     try {
@@ -24,8 +23,6 @@ function regExpSafe(exp, flags) {
         return undefined;
     }
 }
-
-const flags = 'igmsuy';
 
 function* predicateRegExpAbsorber(str = '', start = 0, end = str.length - 1) {
     if (str[start] !== '/') {

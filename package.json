@@ -4,7 +4,8 @@
   "description": "🥭🥭 A monorepo collecting data wrangling and data validation utilities (release date jan 2020).",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint packages/jxpath/src",
+    "fix": "eslint --fix packages/jxpath/src"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,13 @@
     "url": "https://github.com/R-js/mangos/issues"
   },
   "homepage": "htps://github.com/R-js/mangos#readme",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^2.5.0"
+  }
 }

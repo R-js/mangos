@@ -1,3 +1,4 @@
+'use strict';
 module.exports = function createIterator(iterator, cursor = 0) {
     const arr = Array.from(iterator);
     return ({

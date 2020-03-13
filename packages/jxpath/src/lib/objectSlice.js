@@ -1,19 +1,9 @@
+'use strict';
+
 const {
     tokens
 } = require('./tokenizer');
 const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
-
-/*
-    PATHPART: '\x01',
-    SLASH: '\x0f',
-    PARENT: '\x03',
-    CURRENT: '\x04',
-    PREDICATE_ELT_REGEXP: '\0x07',
-    PREDICATE_ELT_LITERAL: '\0x08',
-    EQUAL_TOKEN: '\0x09',
-    BRACKET_OPEN: '\0x0a',
-    BRACKET_CLOSE: '\0x0b',
-*/
 
 const predicates = {
     [tokens.BRACKET_CLOSE]: 1,
@@ -142,8 +132,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
             const newOpaque = opaque[instr.value];
             if (Array.isArray(newOpaque)) {
                 const pancaked = flatterMap(newOpaque);
-                const collect = [];
-                for (opaqueSingle of pancaked) {
+                for (const opaqueSingle of pancaked) {
                     yield *objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn), ignore);
                 }
                 return;
@@ -188,7 +177,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
                 continue;
             }
             if (Array.isArray(value)){
-                for (value2 of value){
+                for (const value2 of value){
                     const iterator3 = iterator2.fork();
                     yield *objectSlice(value2, iterator3, createParent(value2, parentFn), ignore);
                 }
