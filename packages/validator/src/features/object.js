@@ -64,7 +64,7 @@ features.set('object', {
                 const errors = [];
                 for (const key of props[partition]) {
                     const value = data[key];
-                    if (value === undefined) {
+                    if (value === undefined) { // it was optional
                         continue; // skip it
                     }
                     // clone the context
@@ -81,7 +81,7 @@ features.set('object', {
                         continue;
                     }
                     if (!err.frozen){
-                        errors.push({ frozen:true, errorMsg:`validation error at path:${formatPath(ctxNew.location)}, error: ${err}`});
+                        errors.push(`object is frozen, validation error at path:${formatPath(ctxNew.location)}, error: ${err}`);
                         continue;
                     }
                     errors.push(err); // pass through

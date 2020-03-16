@@ -9,7 +9,7 @@ function primer() {
 }
 
 const excludeSymbols = [
-    Symbol.for('nodejs.util.inspect.custom'),
+    Symbol.for('nodejs.util.inspect.custom'), // mm
 ];
 
 const isObject = require('./isObject');
@@ -38,7 +38,8 @@ function createValidatorFactory() {
                     propContext.fn = propContext.fn(prop); // this could throw
                     propContext.factory--;
                     if (propContext.factory === 0) {
-                        const assembly = new Proxy(propContext.fn, createHandler(undefined, parentAssembler /*dont use reciver*/)); // skip the isolated chain where we finalized a curried function
+                        //* create different "createHandlers" espically when finalizing optional instead of putting everything in one handler
+                        const assembly = new Proxy(propContext.fn, createHandler(undefined, parentAssembler)); // TODO, finalized
                         propContext = undefined;
                         return assembly;
                     }
@@ -57,6 +58,7 @@ function createValidatorFactory() {
                 if (prop === $optional) {
                     return optional;
                 }
+                // 
                 if (optional) { // closed!!
                     throw new TypeError(`this validator has been finalized, extend with property "internal"`);
                 }
@@ -68,12 +70,13 @@ function createValidatorFactory() {
                     optional = true;
                     return receiver;
                 }
-                const found = features.get(prop);
+                const found = features.get(prop); // TODO, replace this with a function to find a feature because you could use regexp or something like that
                 if (!found) {
                     const erMsg = `[${String(prop)}] <- this validator feature is unknown`;
                     throw new TypeError(erMsg);
                 }
                 if (found.factory > 0) {
+                    /*TODO: instead of clone copy the freature, manually not blind clone*/
                     return new Proxy(primer /*use dummy just in case*/, createHandler(clone(found), parentAssembler || receiver));
                     // V.object({..., a:V.hello, ...});
                     // V.object

@@ -2,8 +2,8 @@ const chaiAsPromised = require('chai-as-promised');
 const {
     describe,
     it,
-   // before,
-   // after
+    // before,
+    // after
 } = require('mocha');
 const chai = require('chai');
 chai.should();
@@ -68,20 +68,21 @@ describe('features tests', function () {
             const checker = V.any([
                 string, integer, object
             ]);
-            const result = checker({ a: 4 }) // 
+            const result = checker({ a: 4 }) //its an object so its ok 
             expect(result).to.deep.equal([{ a: 4 }, undefined]);
         });
-        it('match object validator in the set', () => {
+        it('nested any validator', () => {
             const checker = V.object({
                 person: V.object({ age: V.any([string, integer, object]) }).closed
             }).closed;
             const result = checker({ person: { age: 24 } }) // 
-            expect(result).to.deep.equal([undefined,
-                [{
-                    frozen: true,
-                    errorMsg: 'validation error at path:/person/age, error: none of the "any" set of validation functions approved the input'
-                }],
-                undefined]);
+            expect(result).to.deep.equal([
+                undefined,
+                [
+                    'object is frozen, validation error at path:/person/age, error: none of the "any" set of validation functions approved the input'
+                ],
+                undefined
+            ]);
         });
     });
     describe('regexp', () => {
@@ -110,12 +111,12 @@ describe('features tests', function () {
             expect(result).to.deep.equal([undefined, 'is not a function']);
         });
         it('invalidate a non function with wrong arguments', () => {
-             // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
             const result = V.function(3)(function func1(a, b) { });
             expect(result).to.deep.equal([undefined, 'function [func1] does not have the required number of manditory arguments: 3']);
         });
         it('invalidate a anonymous function', () => {
-             // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
             const result = V.function(3)((a, b) => { });
             expect(result).to.deep.equal([undefined, 'function [anonymous] does not have the required number of manditory arguments: 3']);
         });
@@ -151,7 +152,9 @@ describe('features tests', function () {
             const result = checkNAW(data);
             expect(result).to.deep.equal([
                 undefined,
-                [{ frozen: true, errorMsg: 'validation error at path:/address/state, error: element "TN" could not be found at /dictionary/states' }], // array of errors
+                [
+                    'object is frozen, validation error at path:/address/state, error: element "TN" could not be found at /dictionary/states'
+                ],
                 undefined
             ]);
         });
@@ -280,6 +283,11 @@ describe('features tests', function () {
             const checker = () => V.object({});
             expect(checker).to.throw('the JS validator object does not have any properties defined');
         });
+        it('not fully configured object should throw Error', () => {
+            const checker = () => V.object({ a: V.integer() })();
+            expect(checker).to.throw('feature "object" has not been finalized');
+        });
+
         it('incomplete schema object construction', () => {
             const checker = () => V.object({
                 a: V.number()
@@ -310,16 +318,16 @@ describe('features tests', function () {
             }).closed;
 
             const result = checkNAW(data);
-            expect(result).to.deep.equal([undefined,
-                [{
-                    frozen: true,
-                    errorMsg: 'validation error at path:/address/houseNr, error: 342 is not between 400 and Infinity inclusive'
-                },
-                {
-                    frozen: true,
-                    errorMsg: 'validation error at path:/address/appartment, error: value type is not of type string: boolean'
-                }],
-                undefined]);
+            expect(result).to.deep.equal(
+                [
+                    undefined,
+                    [
+                        'object is frozen, validation error at path:/address/houseNr, error: 342 is not between 400 and Infinity inclusive',
+                        'object is frozen, validation error at path:/address/appartment, error: value type is not of type string: boolean'
+                    ],
+                    undefined
+                ]
+            );
         });
         it('object with scalar properties some optional', () => {
             it('empty schema object construction', () => {
@@ -361,6 +369,7 @@ describe('features tests', function () {
                 id: 1234,
                 lastName: 'Kazan'
             }, undefined, undefined]);
+            
             const result4 = checker({
                 id: 1234
             });
