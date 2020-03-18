@@ -28,6 +28,68 @@ require('./features/regexp');
 require('./features/any');
 require('./features/ifFalsy');
 
+function sink(){
+    return undefined;
+}
+
+function err(){
+    return new TypeError(`you cannot do that with this object`);
+}
+
+/*
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
+handler.getPrototypeOf()
+A trap for Object.getPrototypeOf.
+handler.setPrototypeOf()
+A trap for Object.setPrototypeOf.
+handler.isExtensible()
+A trap for Object.isExtensible.
+handler.preventExtensions()
+A trap for Object.preventExtensions.
+handler.getOwnPropertyDescriptor()
+A trap for Object.getOwnPropertyDescriptor.
+handler.defineProperty()
+A trap for Object.defineProperty.
+handler.has()
+A trap for the in operator.
+handler.get()
+A trap for getting property values.
+handler.set()
+A trap for setting property values.
+handler.deleteProperty()
+A trap for the delete operator.
+handler.ownKeys()
+A trap for Object.getOwnPropertyNames and Object.getOwnPropertySymbols.
+handler.apply()
+A trap for a function call.
+handler.construct()
+A trap for the new operator.
+*/
+
+function defaultHandler(){
+    return {
+        getPrototypeOf: sink,
+        setPrototypeOf: err,
+        isExtensible: sink,
+        preventExtent
+            
+    };
+}
+
+// the validator under construction
+function createConstructionHandler(propContext, parentAssembler) {
+    return Object.freeze({
+        getPrototypeOf: ()
+    });
+}
+
+// the the validator is finalized and only needs to be called
+function createCallingValidator(propContext, parentAssembler) { // people can still add optional to this!!
+   const callingHandler = Object.freeze({
+});
+
+
 function createValidatorFactory() {
     function createHandler(propContext, parentAssembler) {
         let optional = false;
@@ -90,13 +152,13 @@ function createValidatorFactory() {
             apply: function (target /* the primer, or fn in the chain */, thisArg /* the proxy object */, argumentList) {
                 // finalizing a feature via completing calling the curried function
                 if (propContext && propContext.factory > 0) {
-                    if (thisArg === undefined){
+                    if (thisArg === undefined) {
                         throw new TypeError(`feature "${propContext.name}" has not been finalized`);
                     }
                     const temp = {
                         ...propContext,
                         fn: propContext.fn(...argumentList) // this can throw!!
-                        
+
                     };
                     Object.assign(propContext, temp);
                     propContext.factory--;
