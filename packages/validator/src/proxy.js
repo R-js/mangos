@@ -69,19 +69,20 @@ A trap for the new operator.
 
 function defaultHandler(){
     return {
-        getPrototypeOf: sink,
-        setPrototypeOf: err,
-        isExtensible: sink,
-        preventExtent
-            
+        getPrototypeOf: () => {}, //there is no prototype
+        setPrototypeOf: () => false, // cannot set prototype
+        isExtensible: () => false, // not extendable
+        preventExtensions:  () => true, // prevent extensions
+        getOwnPropertyDescriptor: () => undefined, // no property descriptor in format {...}
+        defineProperty: () =>false ,// definitions always fail, in strict mode will throw a TypedError exception
+        has: ()=> false, // has no properties via "in"
+        get: ()=> undefined, // "override" most likely
+        set: ()=> false, // setting failed and in strict mode will though prototype exception
+        deleteProperty: () => false, // deletions not possible
+        ownKeys: ()=>[], // no keys
+        apply:()=> undefined, // "override" most likely
+        construct: () => {} // return emoty object
     };
-}
-
-// the validator under construction
-function createConstructionHandler(propContext, parentAssembler) {
-    return Object.freeze({
-        getPrototypeOf: ()
-    });
 }
 
 // the the validator is finalized and only needs to be called
