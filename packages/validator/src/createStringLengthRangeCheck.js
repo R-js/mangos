@@ -23,11 +23,11 @@ module.exports = function createStringLengthRangeCheck(m, n) {
     }
     return function isInRange(str) {
             if (typeof str !== 'string'){
-                    return [null, `value type is not of type string: ${typeof str}`];        
+                    return [undefined, `value type is not of type string: ${typeof str}`];        
             }
             if (str.length >= m && str.length <= n) {
-                    return [str, null];
+                    return [str];
             }
-            return [null, `string of length:${str.length} is not between ${m} and ${n} inclusive`];
+            return [undefined, `string of length:${str.length} is not between ${m} and ${n} inclusive`];
     }
 }

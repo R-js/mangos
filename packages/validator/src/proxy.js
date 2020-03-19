@@ -38,6 +38,7 @@ function defaultHandler() {
 function onlyCall(prevProxy) {
     const proto = defaultHandler();
     const onlyCall = Object.assign(proto, {
+        getPrototypeOf: () => Object.getPrototypeOf(Function),
         apply: function (target /* the primer, or fn in the chain */, thisArg /* the proxy object */, argumentList) {
             // "only call" the call sequence it is reversed
             let [data, err, sortcircuitfinal] = target(...argumentList);
@@ -53,16 +54,18 @@ function onlyCall(prevProxy) {
 function selectOrCall(prevProxy) { // people can still add optional to this!!
     const proto = defaultHandler();
     const selectOrCallingHandler = Object.assign(proto, {
+        getPrototypeOf: () => Object.getPrototypeOf(Function), //there is no prototype
         apply: function (target /* the primer, or fn in the chain */, thisArg /* the proxy object */, argumentList) {
             if (prevProxy) {
                 const [data, err, final] = prevProxy(...argumentList); // call up the chain first
                 if (err || final) { // imediatly stop
-                    return [data, err || null, final || null];
+                    return [data, err, final];
                 }
+                return target(...data);
             }
-            throw new TypeError(`you didnt not specify any features for this validator`);
+            return [[...argumentList], undefined, undefined];
         },
-        get: function (target , prop, receiver) {
+        get: function (target, prop, receiver) {
             const found = features.get(prop);
             if (!found) {
                 const erMsg = `[${String(prop)}] <- this feature is unknown`;
@@ -71,10 +74,10 @@ function selectOrCall(prevProxy) { // people can still add optional to this!!
             const { factory, name, fn, final } = found;
             if (factory > 0) {
                 const o = { factory, name, fn };
-                return new Proxy(target, construct(o, prevProxy));
+                return new Proxy(fn, construct(o, receiver));
             }
             if (final) { // there 
-                if (prevProxy){                
+                if (prevProxy) {
                     return new Proxy(fn, onlyCall(receiver));
                 }
                 throw new TypeError(`finalizing validators like ${prop} cannot be used by themselves`);
@@ -88,13 +91,26 @@ function selectOrCall(prevProxy) { // people can still add optional to this!!
 function construct(propContext, prevProxy) {
     const proto = defaultHandler();
     const constructionHandler = Object.assign(proto, {
-        get: function (target /**/, prop, receiver /* Proxy */) {
-            propContext.fn = propContext.fn(prop); // this could throw
-            propContext.factory--;
-            if (propContext.factory === 0) {
-                return new Proxy(propContext.fn, selectOrCall(prevProxy)); //  //passon the prev prxyif the construction is done, so the handler must be select or call
+        get: function (target /**/, prop, /*receiver Proxy */) {
+            const { factory, name, fn } = propContext;
+            const o = { factory, name, fn };
+            o.fn = o.fn(prop); // this could throw
+            o.factory--;
+            if (o.factory === 0) {
+                return new Proxy(o.fn, selectOrCall(prevProxy)); //  //passon the prev prxyif the construction is done, so the handler must be select or call
             }
-            return receiver; // not done yet
+            return new Proxy(o.fn, construct(o, prevProxy)); //  //pa
+        },
+        apply: function (target /* the primer, or fn in the chain */, thisArg /* the proxy object */, argumentList) {
+            const { factory, name, fn } = propContext;
+            const o = { factory, name, fn };
+            o.fn = o.fn(...argumentList); // this could throw
+            o.factory--;
+
+            if (o.factory === 0) {
+                return new Proxy(o.fn, selectOrCall(prevProxy)); //  //passon the prev prxyif the construction is done, so the handler must be select or call
+            }
+            return new Proxy(o.fn, construct(o, prevProxy));
         }
     });
     return constructionHandler;
