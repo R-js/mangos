@@ -1,19 +1,6 @@
 'use strict';
-const clone = require('clone');
 const { features } = require('./features/dictionary');
-const $optional = Symbol.for('optional');
-const $marker = Symbol.for('ladybug');
-function primer() {
-    /* noop primer  */
-    throw new TypeError(`Internal Error: you reached a dead-stop function, please file this Error on as an issue on github: `)
-}
-
-const excludeSymbols = [
-    Symbol.for('nodejs.util.inspect.custom'), // mm
-];
-
 const isObject = require('./isObject');
-
 
 require('./features/boolean');
 require('./features/object');
@@ -27,45 +14,6 @@ require('./features/function');
 require('./features/regexp');
 require('./features/any');
 require('./features/ifFalsy');
-
-function sink() {
-    return undefined;
-}
-
-function err() {
-    return new TypeError(`you cannot do that with this object`);
-}
-
-/*
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
-
-handler.getPrototypeOf()
-A trap for Object.getPrototypeOf.
-handler.setPrototypeOf()
-A trap for Object.setPrototypeOf.
-handler.isExtensible()
-A trap for Object.isExtensible.
-handler.preventExtensions()
-A trap for Object.preventExtensions.
-handler.getOwnPropertyDescriptor()
-A trap for Object.getOwnPropertyDescriptor.
-handler.defineProperty()
-A trap for Object.defineProperty.
-handler.has()
-A trap for the in operator.
-handler.get()
-A trap for getting property values.
-handler.set()
-A trap for setting property values.
-handler.deleteProperty()
-A trap for the delete operator.
-handler.ownKeys()
-A trap for Object.getOwnPropertyNames and Object.getOwnPropertySymbols.
-handler.apply()
-A trap for a function call.
-handler.construct()
-A trap for the new operator.
-*/
 
 function defaultHandler() {
     return {
@@ -156,7 +104,9 @@ function construct(propContext, prevProxy) {
 
 
 function createValidatorFactory() {
-    const primer = () => {};
+    const primer = () => {
+        throw new TypeError(`Internal Error: you reached a dead-stop function, please file this Error on as an issue on github: `);
+    };
     const handler = selectOrCall();
     return new Proxy(primer, handler);
 }
