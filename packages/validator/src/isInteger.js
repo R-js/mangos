@@ -1,9 +1,9 @@
 module.exports  = function isInteger(i) {
     if (typeof i !== 'number') {
-            return [null, 'not a number'];
+            return [undefined, 'not a number'];
     }
     if (Number.isInteger(i)) {
-            return [i, null];
+            return [i, undefined];
     }
-    return [null, 'not an integer']
+    return [undefined, 'not an integer']
 };

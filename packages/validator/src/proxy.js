@@ -14,6 +14,7 @@ require('./features/function');
 require('./features/regexp');
 require('./features/any');
 require('./features/ifFalsy');
+require('./features/optional');
 
 function defaultHandler() {
     return {
@@ -68,12 +69,11 @@ function selectOrCall(prevProxy) { // people can still add optional to this!!
         get: function (target, prop, receiver) {
             const found = features.get(prop);
             if (!found) {
-                const erMsg = `[${String(prop)}] <- this feature is unknown`;
-                throw new TypeError(erMsg);
+                throw new TypeError(`[${prop}] <- this feature is unknown`);
             }
             const { factory, name, fn, final } = found;
             if (factory > 0) {
-                const o = { factory, name, fn };
+                const o = { factory, name, fn, final };
                 return new Proxy(fn, construct(o, receiver));
             }
             if (final) { // there 
@@ -92,22 +92,27 @@ function construct(propContext, prevProxy) {
     const proto = defaultHandler();
     const constructionHandler = Object.assign(proto, {
         get: function (target /**/, prop, /*receiver Proxy */) {
-            const { factory, name, fn } = propContext;
-            const o = { factory, name, fn };
+            const { factory, name, fn, final } = propContext;
+            const o = { factory, name, fn, final };
             o.fn = o.fn(prop); // this could throw
             o.factory--;
             if (o.factory === 0) {
+                if (final){
+                    return new Proxy(fn, onlyCall(prevProxy));
+                } 
                 return new Proxy(o.fn, selectOrCall(prevProxy)); //  //passon the prev prxyif the construction is done, so the handler must be select or call
             }
             return new Proxy(o.fn, construct(o, prevProxy)); //  //pa
         },
         apply: function (target /* the primer, or fn in the chain */, thisArg /* the proxy object */, argumentList) {
-            const { factory, name, fn } = propContext;
-            const o = { factory, name, fn };
+            const { factory, name, fn, final } = propContext;
+            const o = { factory, name, fn, final };
             o.fn = o.fn(...argumentList); // this could throw
             o.factory--;
-
             if (o.factory === 0) {
+                if (final){
+                    return new Proxy(fn, onlyCall(prevProxy));
+                } 
                 return new Proxy(o.fn, selectOrCall(prevProxy)); //  //passon the prev prxyif the construction is done, so the handler must be select or call
             }
             return new Proxy(o.fn, construct(o, prevProxy));

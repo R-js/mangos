@@ -25,19 +25,19 @@ module.exports = function setInteger(integer = false) {
                 }
                 return function isInRange(i) {
                         if (typeof i !== 'number') {
-                                return [null, `${i} is not a number`];
+                                return [undefined, `${i} is not a number`];
                         }
                         if (integer) {
                                 const [, err] = isInteger(i);
                                 if (err) {
-                                        return [null, `${i} is not an integer`];
+                                        return [undefined, `${i} is not an integer`];
                                 }
                         }
                         if (i >= m && i <= n) {
-                                return [i, null];
+                                return [i, undefined];
 
                         }
-                        return [null, `${i} is not between ${m} and ${n} inclusive`];
+                        return [undefined, `${i} is not between ${m} and ${n} inclusive`];
                 };
         }
 }

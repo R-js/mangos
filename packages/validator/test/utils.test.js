@@ -247,11 +247,11 @@ describe('utilities', function () {
                 5,
                 'nada',
                 undefined,
-                null,
+                undefined,
                 {}
             ],
                 undefined,
-                null
+                undefined
             ]);
             const res1 = find({
                 hello: 'world'
@@ -261,8 +261,8 @@ describe('utilities', function () {
             }, undefined]);
             const res2 = find(undefined);
             expect(res2).to.deep.equal([undefined, undefined]);
-            const res3 = find(null);
-            expect(res3).to.deep.equal([null, undefined]);
+            const res3 = find(undefined);
+            expect(res3).to.deep.equal([undefined, undefined]);
             const res4 = find([
                 1,
                 2,
@@ -270,7 +270,7 @@ describe('utilities', function () {
                 5,
                 'nadax',
                 undefined,
-                null
+                undefined
             ]);
             expect(res4).to.deep.equal([undefined, '"1,2,4,5,nadax,," not found in list'])
             const res5 = find([
@@ -281,7 +281,7 @@ describe('utilities', function () {
                 5,
                 'nada',
                 undefined,
-                null
+                undefined
             ]);
             expect(res5).to.deep.equal([
                 [
@@ -292,7 +292,7 @@ describe('utilities', function () {
                     5,
                     'nada',
                     undefined,
-                    null
+                    undefined
                 ], undefined
             ]);
 
@@ -300,7 +300,7 @@ describe('utilities', function () {
     });
     describe('isObject  tests', () => {
         it('isObject', () => {
-            const data = [{}, null, undefined, new Date, []];
+            const data = [{}, undefined, undefined, new Date, []];
             expect(isObject(data[0])).to.be.true;
             expect(isObject(data[1])).to.be.false;
             expect(isObject(data[2])).to.be.false;
@@ -333,9 +333,9 @@ describe('utilities', function () {
             expect(result1).to.be.false;
             expect(result2).to.be.true;
         });
-        it('compare nulls', () => {
-            const result1 = equals(null, undefined);
-            const result2 = equals(null, null);
+        it('compare undefineds', () => {
+            const result1 = equals(undefined, null);
+            const result2 = equals(undefined, undefined);
             expect(result1).to.be.false;
             expect(result2).to.be.true;
         });
@@ -418,10 +418,10 @@ describe('utilities', function () {
     });
     describe('scalar tests', () => {
         it('isInteger', () => {
-            expect(isInt(1)).to.deep.equal([1, null]);
-            expect(isInt(1.4)).to.deep.equal([null, 'not an integer']);
-            expect(isInt(-Infinity)).to.deep.equal([null, 'not an integer']);
-            expect(isInt({})).to.deep.equal([null, 'not a number']);
+            expect(isInt(1)).to.deep.equal([1, undefined]);
+            expect(isInt(1.4)).to.deep.equal([undefined, 'not an integer']);
+            expect(isInt(-Infinity)).to.deep.equal([undefined, 'not an integer']);
+            expect(isInt({})).to.deep.equal([undefined, 'not a number']);
         });
         it('createStringLengthRangeCheck', () => {
             expect(() => createStringLengthRangeCheck(-1, 12)).to.throw('lower boundery m:-1 should be >= 0');
@@ -432,19 +432,19 @@ describe('utilities', function () {
             expect(() => createStringLengthRangeCheck(4, NaN)).to.throw('upper boundery n is a NaN');
             const checker = createStringLengthRangeCheck(2, 10);
             const result1 = checker('some string longer the 10 chars');
-            expect(result1).to.deep.equal([null, 'string of length:31 is not between 2 and 10 inclusive']);
+            expect(result1).to.deep.equal([undefined, 'string of length:31 is not between 2 and 10 inclusive']);
             const result2 = checker('x'); // to short
-            expect(result2).to.deep.equal([null, 'string of length:1 is not between 2 and 10 inclusive']);
+            expect(result2).to.deep.equal([undefined, 'string of length:1 is not between 2 and 10 inclusive']);
             const result3 = checker('hello');
-            expect(result3).to.deep.equal(['hello', null]);
+            expect(result3).to.deep.equal(['hello', undefined]);
         });
         it('createRangeCheck', () => {
             const createRangeCheck = checkNumberRange(false);
             const checker = createRangeCheck(1, 2);
             const result1 = checker(34);
-            expect(result1).to.deep.equal([null, '34 is not between 1 and 2 inclusive']);
+            expect(result1).to.deep.equal([undefined, '34 is not between 1 and 2 inclusive']);
             const result2 = checker(1.2);
-            expect(result2).to.deep.equal([1.2, null]);
+            expect(result2).to.deep.equal([1.2, undefined]);
             expect(() => createRangeCheck(4, 2)).to.throw('lower boundery m:4 should be lower then upper boundery n:2');
             expect(() => createRangeCheck('1', 2)).to.throw('lower boundery m:<string>1 MUST be of type number');
             expect(() => createRangeCheck(1, '2')).to.throw('upper boundery n:<string>2 MUST be of type number');
@@ -455,38 +455,38 @@ describe('utilities', function () {
     describe('type conversions', () => {
         it('conversion to number', () => {
             const data = ['34234', 'xxEAZE', 4234];
-            expect(convertToNumber(data[0])).to.deep.equal([34234, null]);
-            expect(convertToNumber(data[1])).to.deep.equal([null, 'cannot convert to number']);
-            expect(convertToNumber(data[2])).to.deep.equal([4234, null]);
+            expect(convertToNumber(data[0])).to.deep.equal([34234, undefined]);
+            expect(convertToNumber(data[1])).to.deep.equal([undefined, 'cannot convert to number']);
+            expect(convertToNumber(data[2])).to.deep.equal([4234, undefined]);
         });
         describe('conversion to boolean', () => {
             const data = [{
                 in: 'true',
-                out: [true, null]
+                out: [true, undefined]
             },
             {
                 in: 'TrUE',
-                out: [true, null]
+                out: [true, undefined]
             },
             {
                 in: 'False',
-                out: [false, null]
+                out: [false, undefined]
             },
             {
                 in: 'Falsex',
-                out: [null, 'cannot convert to boolean']
+                out: [undefined, 'cannot convert to boolean']
             },
             {
                 in: false,
-                out: [false, null]
+                out: [false, undefined]
             },
             {
                 in: true,
-                out: [true, null]
+                out: [true, undefined]
             },
             {
-                in: null,
-                out: [null, 'cannot convert to boolean for other then string type']
+                in: undefined,
+                out: [undefined, 'cannot convert to boolean for other then string type']
             }
             ];
             for (const elt of data) {
@@ -494,7 +494,8 @@ describe('utilities', function () {
                 it(msg, () => {
                     const input = elt.in; // copy value from closure, because changed in next iteration
                     const output = elt.out;
-                    expect(convertToBoolean(input)).to.deep.equal(output);
+                    const act = convertToBoolean(input);
+                    expect(act).to.deep.equal(output);
                 });
             }
         });
@@ -505,50 +506,50 @@ describe('utilities', function () {
                 const [arr, err] = isStringArray({
                     a: 1
                 });
-                expect(arr).to.be.null;
+                expect(arr).to.be.undefined;
                 expect(err).to.equal('collection is not a array [object Object]');
             });
             it('empty array', () => {
                 const [arr, err] = isStringArray([]);
-                expect(arr).to.be.null;
+                expect(arr).to.be.undefined;
                 expect(err).to.equal('collection is not an empty array');
             });
             it('array of strings', () => {
                 const data = ['a string', 'i like startrek'];
                 const [arr, err] = isStringArray(data);
-                expect(err).to.be.null;
+                expect(err).to.be.undefined;
                 expect(arr).to.deep.equal(data);
             });
             it('array of non strings', () => {
                 const data = [1, Symbol.for('zup'), true, 'a string', 'i like startrek'];
                 const [arr, err] = isStringArray(data);
-                expect(arr).to.be.null;
+                expect(arr).to.be.undefined;
                 expect(err).equal('not all elements were strings');
             });
         });
         describe('isNumberArray', () => {
             it('empty array test', () => {
                 const [arr, err] = isNumberArray([]);
-                expect(arr).to.be.null;
+                expect(arr).to.be.undefined;
                 expect(err).to.equal('collection is not an empty array');
             });
             it('array of numbers', () => {
                 const data = [1, 334, 2345, NaN, Infinity];
                 const [arr, err] = isNumberArray(data);
-                expect(err).to.be.null;
+                expect(err).to.be.undefined;
                 expect(arr).to.deep.equal(data);
             });
         });
         describe('isBooleanArray', () => {
             it('empty array test', () => {
                 const [arr, err] = isBooleanArray([]);
-                expect(arr).to.be.null;
+                expect(arr).to.be.undefined;
                 expect(err).to.equal('collection is not an empty array');
             });
             it('array of booleans', () => {
                 const data = [false, true];
                 const [arr, err] = isBooleanArray(data);
-                expect(err).to.be.null;
+                expect(err).to.be.undefined;
                 expect(arr).to.deep.equal(data);
             });
         });

@@ -52,7 +52,10 @@ features.set('object', {
             function checkMissingProps(partition, data, errors) {
                 for (const key of props[partition]) {
                     if (!(key in data)) {
-                        if (schema[key][$optional] === false) {
+                        // could be optional, need to check now
+                        // FIX it  here
+                        const [,err,final] = schema[key](undefined);
+                        if (!(final && !err)){ 
                             errors.push(`[${String(key)}] is manditory but absent from the object`);
                         }
                     }
@@ -111,7 +114,7 @@ features.set('object', {
                         }
                     }
                     if (errors.length) {
-                        return [null, errors, null];
+                        return [undefined, errors, undefined];
                     }
                 }
 
@@ -119,7 +122,7 @@ features.set('object', {
                 checkMissingProps('symbols', obj, errors);
 
                 if (errors.length) {
-                    return [null, errors, null];
+                    return [undefined, errors, undefined];
                 }
                 // deep validation
                 const [result1, errors1] = deepValidate('strings', obj, ctx);
