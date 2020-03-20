@@ -12,7 +12,7 @@ module.exports = function createFind(objArr) {
     return function find(data){
         for (const obj of objArr){
             if (equals(obj, data)){
-                return [data, undefined];
+                return [[data], undefined];
             }
         }
         return [undefined, `"${String(data)}" not found in list`];   

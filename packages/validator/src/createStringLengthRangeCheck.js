@@ -26,7 +26,7 @@ module.exports = function createStringLengthRangeCheck(m, n) {
                     return [undefined, `value type is not of type string: ${typeof str}`];        
             }
             if (str.length >= m && str.length <= n) {
-                    return [str];
+                    return [[str], undefined, undefined];
             }
             return [undefined, `string of length:${str.length} is not between ${m} and ${n} inclusive`];
     }

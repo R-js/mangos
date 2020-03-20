@@ -121,104 +121,98 @@ describe('features tests', function () {
             expect(result).to.deep.equal([undefined, 'function [anonymous] does not have the required number of manditory arguments: 3']);
         });
     });
-    describe('ref', () => {
-        it.skip('relative path, doesnt exist', () => {
-            const data = {
-                dictionary: {
-                    states: ['TNx', 'CA']
-                },
-                firstName: 'Patrick',
-                lastName: 'Bet-David',
-                address: {
-                    streetName: 'Kodak-Drive',
-                    state: 'TN',
-                    houseNr: 342,
-                    appartment: '24A',
-                    country: 'USA'
-                }
-            };
-
-            const checkNAW = V.object({
-                firstName: V.string(),
-                lastName: V.string(),
-                address: V.object({
-                    streetName: V.string(),
-                    state: V.string(0, 2).ref('../../dictionary/states').exist,
-                    houseNr: V.integer(),
-                    appartment: V.string(0, 3)
-                }).open
-            }).open;
-            try {
-                const result = checkNAW(data);
-                console.log(result);
-            } catch (err) {
-                console.log(err);
-            }
-
-            /*expect(result).to.deep.equal([
-                undefined,
-                [
-                    'object is frozen, validation error at path:/address/state, error: element "TN" could not be found at /dictionary/states'
-                ],
-                undefined
-            ]);*/
-
-        });
-        it.skip('relative path, doesnt exist', () => {
-            const data = {
-                dictionary: {
-                    states: ['TN', 'CA']
-                },
-                firstName: 'Patrick',
-                lastName: 'Bet-David',
-                address: {
-                    streetName: 'Kodak-Drive',
-                    state: 'TN',
-                    houseNr: 342, // houseNr should be between 400 and 500
-                    appartment: '24A' // error should be a string
-                }
-            };
-
-            const checkNAW = V.object({
-                firstName: V.string(),
-                lastName: V.string(),
-                address: V.object({
-                    streetName: V.string(),
-                    state: V.string(0, 2).ref('../../dictionary/states').exist,
-                    houseNr: V.integer(),
-                    appartment: V.string(0, 3)
-                }).closed
-            }).open;
-
-            const result = checkNAW(data);
-            expect(result).to.deep.equal([
-                {
-                    dictionary: { states: ['TN', 'CA'] },
-                    firstName: 'Patrick',
-                    lastName: 'Bet-David',
-                    address:
-                    {
-                        streetName: 'Kodak-Drive',
-                        state: 'TN',
-                        houseNr: 342,
-                        appartment: '24A'
-                    }
-                },
-                undefined,
-                undefined]);
-        });
+    describe.skip('ref', () => {
+        /* it.skip('relative path, doesnt exist', () => {
+             const data = {
+                 dictionary: {
+                     states: ['TNx', 'CA']
+                 },
+                 firstName: 'Patrick',
+                 lastName: 'Bet-David',
+                 address: {
+                     streetName: 'Kodak-Drive',
+                     state: 'TN',
+                     houseNr: 342,
+                     appartment: '24A',
+                     country: 'USA'
+                 }
+             };
+ 
+             const checkNAW = V.object({
+                 firstName: V.string(),
+                 lastName: V.string(),
+                 address: V.object({
+                     streetName: V.string(),
+                     state: V.string(0, 2).ref('../../dictionary/states').exist,
+                     houseNr: V.integer(),
+                     appartment: V.string(0, 3)
+                 }).open
+             }).open;
+             try {
+                 const result = checkNAW(data);
+                 console.log(result);
+             } catch (err) {
+                 console.log(err);
+             }
+ 
+          
+ 
+         });
+         it.skip('relative path, doesnt exist', () => {
+             const data = {
+                 dictionary: {
+                     states: ['TN', 'CA']
+                 },
+                 firstName: 'Patrick',
+                 lastName: 'Bet-David',
+                 address: {
+                     streetName: 'Kodak-Drive',
+                     state: 'TN',
+                     houseNr: 342, // houseNr should be between 400 and 500
+                     appartment: '24A' // error should be a string
+                 }
+             };
+ 
+             const checkNAW = V.object({
+                 firstName: V.string(),
+                 lastName: V.string(),
+                 address: V.object({
+                     streetName: V.string(),
+                     state: V.string(0, 2).ref('../../dictionary/states').exist,
+                     houseNr: V.integer(),
+                     appartment: V.string(0, 3)
+                 }).closed
+             }).open;
+ 
+             const result = checkNAW(data);
+             expect(result).to.deep.equal([
+                 {
+                     dictionary: { states: ['TN', 'CA'] },
+                     firstName: 'Patrick',
+                     lastName: 'Bet-David',
+                     address:
+                     {
+                         streetName: 'Kodak-Drive',
+                         state: 'TN',
+                         houseNr: 342,
+                         appartment: '24A'
+                     }
+                 },
+                 undefined,
+                 undefined]);
+         });*/
 
     });
     describe('string', () => {
         it('type check with implicit length check', () => {
             const checker = V.string();
             const [r1, err1] = checker('hello world');
-            expect([r1, err1]).to.deep.equal(['hello world', undefined]);
+            expect([r1, err1]).to.deep.equal([['hello world'], undefined]);
         });
         it('type check with explicit length', () => {
             const checker = V.string(0, 10);
             const [r1, err1] = checker('123456789A'); // 10 chars
-            expect([r1, err1]).to.deep.equal(['123456789A', undefined])
+            expect([r1, err1]).to.deep.equal([['123456789A'], undefined])
             const [r2, err2] = checker('123456789ABCF'); // 15 chars, should through error
             expect([r2, err2]).to.deep.equal([undefined, 'string of length:13 is not between 0 and 10 inclusive']);
             const [r3, err3] = checker(123456); // 15 chars, should through error
@@ -251,14 +245,14 @@ describe('features tests', function () {
             const [r1, err1] = checker(-56.01);
             expect([r1, err1]).to.deep.equal([undefined, '-56.01 is not between -56 and 99 inclusive']);
             const [r2, err2] = checker(89);
-            expect([r2, err2]).to.deep.equal([89, undefined]);
+            expect([r2, err2]).to.deep.equal([[89], undefined]);
         });
         it('integer between a range', () => {
             const checker = V.integer(-56, 99);
             const [r1, err1] = checker(-56.01);
             expect([r1, err1]).to.deep.equal([undefined, '-56.01 is not an integer']);
             const [r2, err2] = checker(14);
-            expect([r2, err2]).to.deep.equal([14, undefined]);
+            expect([r2, err2]).to.deep.equal([[14], undefined]);
         });
         it('wrong range specification', () => {
             const checker = () => {
@@ -274,12 +268,12 @@ describe('features tests', function () {
                 'blue', 'red', 'orange', fn, Symbol.for('honey')
             ]).optional;
             const v1 = checker('blue');
-            expect(v1).to.deep.equal(['blue', undefined]);
+            expect(v1).to.deep.equal([['blue'], undefined]);
             const v2 = checker(Symbol.for('honey'));
-            expect(v2).to.deep.equal([Symbol.for('honey'), undefined]);
-            const v3 = checker((a, b) => console.log('hello', a, b));
-            expect(typeof v3[0]).to.equal('function');
-            expect(v3[1]).to.be.undefined;
+            expect(v2).to.deep.equal([[Symbol.for('honey')], undefined]);
+            const [d, err] = checker((a, b) => console.log('hello', a, b));
+            expect(err).to.be.undefined;
+            expect(typeof d[0]).to.equal('function');
             const v4 = checker('cyan');
             expect(v4).to.deep.equal([undefined, '"cyan" not found in list']);
         });

@@ -1,13 +1,13 @@
 const { features } = require('./dictionary');
 
-const $optional = Symbol.for('optional');
 const clone = require('clone');
 const isObject = require('../isObject');
 
 const {
-    tokens,
-    formatPath
+    tokens
 } = require('../jspath/tokenizer');
+
+const formatPath = require('../jspath/format');
 
 const isLenZero = require('../isLenZero');
 
@@ -75,7 +75,7 @@ features.set('object', {
                     ctxNew.location.push({ token: tokens.SLASH, value: '/' }, { token: tokens.PATHPART, value: key });
                     const [result, err] = schema[key](value, ctxNew);
                     if (!err) {
-                        data[key] = result; // allow for transforms
+                        data[key] = result[0]; // allow for transforms
                         continue;
                     }
                     // error, we have to add the path info
@@ -102,7 +102,7 @@ features.set('object', {
             //
             return function validateObject(obj, ctx = { data: obj, location: [] }) { // Return dummy validator
                 // validation for optional and missing props etc
-                if (typeof obj !== 'object'){
+                if (!isObject(obj)){
                     return [undefined, `data is not an object`];
                 }
                 const errors = [];

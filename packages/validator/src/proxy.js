@@ -46,7 +46,7 @@ function onlyCall(prevProxy) {
             if (err || sortcircuitfinal) { // immediatly stop
                 return [data, err, sortcircuitfinal];
             }
-            return prevProxy(...argumentList); // call up the chain first
+            return prevProxy(...data); // call up the chain first
         }
     });
     return onlyCall;

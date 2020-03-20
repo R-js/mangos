@@ -34,7 +34,7 @@ module.exports = function setInteger(integer = false) {
                                 }
                         }
                         if (i >= m && i <= n) {
-                                return [i, undefined];
+                                return [[i], undefined];
 
                         }
                         return [undefined, `${i} is not between ${m} and ${n} inclusive`];

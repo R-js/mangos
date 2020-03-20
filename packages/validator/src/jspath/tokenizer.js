@@ -7,285 +7,329 @@ const tokens = Object.freeze({
     CURRENT: '\x04',
     PREDICATE_ELT_REGEXP: '\0x07',
     PREDICATE_ELT_LITERAL: '\0x08',
-
+    EQUAL_TOKEN: '\0x09',
+    BRACKET_OPEN: '\0x0a',
+    BRACKET_CLOSE: '\0x0b',
+    RECURSIVE_DESCENT: '\u000c'
 });
 
-function createRegExp(regexpText) {
+const { max } = Math;
+
+function regExpSafe(exp, flags) {
     try {
-        return [new RegExp(regexpText), undefined]
-    } catch (err) {
-        return [undefined, String(err)];
+        return new RegExp(exp, flags);
+    }
+    catch (err) {
+        return undefined;
     }
 }
 
-const predicateElementAbsorber = {
-    name: 'clauseElt',
-    order: 0,
-    // generator
-    * fn(str, start, end) {
-        if (str[start] === '\\' && str[start + 1] === '/') {
-            // must end with '/' without previous '\\' of course
-            for (let j = start + 2; j <= end; j++) {
-                if (str[j] === '/' && str[j - 1] === '\\') {
-                    const correctedText = str.slice(start + 2, j - 1);
-                    const [value, error] = createRegExp(correctedText);
-                    yield {
-                        error,
-                        value,
-                        token: tokens.PREDICATE_ELT_REGEXP,
-                        start,
-                        end: j
-                    };
-                    return;
+function* predicateRegExpAbsorber(str = '', start = 0, end = str.length - 1) {
+    if (str[start] !== '/') {
+        return undefined;
+    }
+    // slowly absorb untill you have found another '/' without escape '\\'
+    let i = start + 1
+    while (i <= end) {
+        if (str[i] === '/' && str[i - 1] !== '\\') {
+            // check for regexp flags after the "/" token
+            let j = i+1;
+            while ('igmsuy'.includes(str[j])){
+                j++;
+            }
+            j--;
+            let flags;
+            if (j >= i+1){
+                flags = str.slice(i+1, j+1);
+            }
+            const exp = str.slice(start + 1, i);
+            const value = regExpSafe(exp, flags);
+            if (value) {
+                yield {
+                    start,
+                    end: i,
+                    value,
+                    token: tokens.PREDICATE_ELT_REGEXP
                 }
             }
-            const value = str.slice(start, end + 1);
-            return {
-                error: `no closing "/" found to end the regular expression ${value}`,
-                token: tokens.PREDICATE_ELT_REGEXP,
-                start,
-                end,
-                value
-            };
-        }
-        // absorb till end or untill you see a '=' (not delimited with a "\")
-        for (let j = start + 1; j <= end; j++) {
-            if (str[j] === '=' && str[j - 1] !== '\\') {
+            else {
                 yield {
-                    value: str.slice(start, j),
-                    token: tokens.PREDICATE_ELT_LITERAL,
+                    error: 'invalid regexp expression',
                     start,
-                    end: j - 1
-                };
+                    end: i,
+                    value: str.slice(start, i + 1),
+                    token: tokens.PREDICATE_ELT_REGEXP
+                }
+            }
+            return;
+        }
+        i++;
+    }
+    // not good, invalid regexp for sure 
+    yield {
+        error: 'invalid regexp expression, could not find ending "/"',
+        start,
+        end,
+        value: str.slice(start, end + 1),
+        token: tokens.PREDICATE_ELT_REGEXP
+    }
+}
+
+const noLValue = {
+    error: 'no L value at all',
+    token: tokens.PREDICATE_ELT_LITERAL,
+}
+
+function* absorbLExpPredicate(str = '', start = 0, end = str.length - 1) {
+    // just absorb till you find an = without escaped with \\
+    let i = start;
+    if (start >= end) {
+        yield noLValue;
+        return;
+    }
+    while (i <= end) {
+        if (str[i] === '=' && str[i - 1] !== '\\') {
+            if (i === start) {
+                yield noLValue;
                 return;
             }
+            yield {
+                value: str.slice(start, i),
+                start: start,
+                end: max(start, i - 1),
+                token: tokens.PREDICATE_ELT_LITERAL,
+            };
+            break;
         }
-        // all of it till the end
+        i++;
+    }
+    // not good
+    if (i > end) {
         yield {
+            error: 'invalid L-exp literal predicate, no following "=" found',
             value: str.slice(start, end + 1),
-            token: tokens.PREDICATE_ELT_LITERAL,
-            start,
-            end
+            start: start,
+            end,
+            token: tokens.PREDICATE_ELT_LITERAL
         };
         return;
     }
-};
+}
 
-const predicateAbsorber = {
-    name: 'clause',
-    order: 0,
-    // generator
-    * fn(str, start, end) {
-        if (!(str[start] === '[' && str[end] === ']')) {
-            return undefined; // not a clause token
-        }
-        if (end - start < 2) {
-            return undefined;
-        }
-        // find the seperator
-        let sepLoc = start + 1;
-        do {
-            sepLoc = str.indexOf('=', sepLoc);
-            if (sepLoc === -1 || sepLoc >= end - 1) {
-                return undefined;
+const noRvalue = {
+    error: 'no R value at all',
+    token: tokens.PREDICATE_ELT_LITERAL,
+}
+
+function* absorbRExpPredicate(str = '', start = 0, end = str.length - 1) {
+    // just absorb till you find an = without escaped with \\
+    if (start >= end) {
+        yield noRvalue;
+        return;
+    }
+    let i = start;
+    while (i <= end) {
+        if (str[i] === ']' && str[i - 1] !== '\\') {
+            if (i === start) {
+                yield noRvalue;
+                return;
             }
-            if (str[sepLoc - 1] === '\\') {
-                sepLoc++;
-                continue;
-            }
+            yield {
+                value: str.slice(start, i),
+                start: start,
+                end: Math.max(start, i - 1),
+                token: tokens.PREDICATE_ELT_LITERAL,
+            };
             break;
-        } while (sepLoc <= end - 1);
-        const firstToken = Array.from(predicateElementTokenizer(str, start + 1, sepLoc - 1));
-        if (firstToken.length === 0) {
-            return undefined;
         }
-        yield* firstToken;
-
-        const lastToken = Array.from(predicateElementTokenizer(str, sepLoc + 1, end - 1));
-        if (lastToken.length === 0) {
-            return undefined;
-        }
-        yield* lastToken;
+        i++;
+    }
+    // not good
+    if (i > end) {
+        yield {
+            error: 'invalid R-exp literal predicate, no following "]" found',
+            value: str.slice(start, end + 1),
+            start: start,
+            end,
+            token: tokens.PREDICATE_ELT_LITERAL
+        };
         return;
     }
+}
+
+const noClosingBracket = {
+    error: 'no closing ] found',
+    token: tokens.BRACKET_CLOSE,
 };
 
-const rootAbsorber = {
-    name: 'path',
-    order: 0,
-    * fn(str, start, end) {
-        let i = start;
-        while (i <= end) {
-            if (str[i] === '/' && str[i - 1] !== '\\') {
-                yield {
-                    token: tokens.SLASH,
-                    start: i,
-                    end: i,
-                    value: str.slice(i, i + 1)
-                };
-                i++;
-                continue;
-            }
-            // scan for next '/' or end of string
-            let i2 = i;
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-                if (!str[i2]) {
-                    if (i2 !== i) {
-                        i2--;
-                        break;
-                    }
-                }
-                if (str[i2] === '/') {
-                    if (i2 > 0 && str[i2 - 1] !== '\\') {
-                        i2--;
-                        break;
-                    }
-                }
-                i2++;
-            }
-            let i3 = i;
-            while (str[i3] === '.' && i3 <= i2) {
-                i3++;
-            }
-            if (i3 !== i) {
-                const len = i3 - i;
-                if (len === 1 || len === 2) {
-                    yield {
-                        token: len === 1 ? tokens.CURRENT : tokens.PARENT,
-                        start: i,
-                        end: i3 - 1,
-                        value: str.slice(i, i3)
-                    };
-                    i = i3;
-                    continue;
-                }
-            }
-            const toks = Array.from(predicateTokenizer(str, i, i2));
-            if (toks.length === 0) {
-                const token = {
-                    token: tokens.PATHPART,
-                    start: i,
-                    end: i2,
-                    value: str.slice(i, i2 + 1)
-                };
-                yield token;
-                i = token.end + 1;
-                continue;
-            }
-            yield* toks;
-            i = toks[toks.length - 1].end + 2;
+function* predicateHolisticAbsorber(str = '', start = 0, end = max(str.length - 1, 0)) {
+    if (str[start] !== '[') {
+        return;
+    }
+    yield {
+        token: tokens.BRACKET_OPEN,
+        value: '[',
+        start,
+        end: start
+    };
+    let i = start + 1
+    let [clause] = Array.from(predicateRegExpAbsorber(str, i, end));
+    if (clause) {
+        yield clause;
+        if (clause.end === end) {
+            return // nothing more
         }
+    }
+    else {
+        // just absorb till you find an = without escaped with \\
+        [clause] = Array.from(absorbLExpPredicate(str, i, end));
+        yield clause;
+    }
+    i = (clause.end || 0) + 1;
+    // i should be an '='
+    if (str[i] !== '=') {
+        yield {
+            token: tokens.EQUAL_TOKEN,
+            error: 'no "=" token found to seperate L-exp and R-exp predicates'
+        }
+    }
+    else {
+        yield {
+            value: '=',
+            token: tokens.EQUAL_TOKEN,
+            end: i,
+            start: i
+        }
+    }
+    i++;
+    // second predicate
+    [clause] = Array.from(predicateRegExpAbsorber(str, i, end));
+    if (clause) {
+        yield clause;
+
+    }
+    else {
+        [clause] = Array.from(absorbRExpPredicate(str, i, end));
+        yield clause;
+    }
+    if (clause.end === end) {
+        return // nothing more
+    }
+    i = (clause.end || 0) + 1;
+    if (str[i] !== ']') {
+        yield noClosingBracket;
+        return;
+    }
+    yield {
+        token: tokens.BRACKET_CLOSE,
+        value: ']',
+        start: i,
+        end: i
+    };
+}
+
+const tokenMap= {
+    '..': {
+        t:tokens.PARENT,
+        s:1
     },
-};
-
-
-function createTokenizer(lexer) {
-    return function* tokenize(str = '', start = 0, end = str.length - 1) {
-        yield* lexer.fn(str, start, end);
+    '.': {
+        t:tokens.CURRENT,
+        s:0
+    },
+    '**': {
+        t:tokens.RECURSIVE_DESCENT,
+        s:1
     }
 }
 
-const defaultTokenizer = createTokenizer(rootAbsorber);
-const predicateTokenizer = createTokenizer(predicateAbsorber);
-const predicateElementTokenizer = createTokenizer(predicateElementAbsorber);
 
-const getTokens = path => Array.from(defaultTokenizer(path));
-
-const isAbsolute = t => t.length && t[0].token === tokens.SLASH;
-
-function escape(str) { // normal -> human interface
-    return str.replace('/', '\\/');
-}
-
-const lastToken = a => a[a.length - 1] || {};
-
-function goUp(from) {
-    if (from.length === 1 && from.token === tokens.SLASH) {
+function* pathEltAbsorber(str = '', start = 0, end = str.length - 1) {
+    let i = start;
+    if (str[i] === '/' || end < start) {
+        return undefined;
+    }
+    for (i = start; i <= end; i++) {
+        if (str[i] === '/' && str[i - 1] !== '\\') {
+            break;
+        }
+    }
+    i--;
+    if (i === start) {
+        return undefined;
+    }
+    i++;
+    const value = str.slice(start, i);
+    const ti = tokenMap[value];
+    if (ti){
+        const rc = { start, end: start+ti.s, value, token: ti.t };
+        yield rc;
         return;
     }
-    // protection
-    while (from.length && from[from.length - 1].token === tokens.SLASH) {
-        from.pop();
-    }
-    if (from.length > 0) {
-        // stip trailing "/"
-        while (lastToken(from).token === tokens.SLASH) {
-            from.pop();
+    yield {
+        token: tokens.PATHPART,
+        start: start,
+        end: i - 1,
+        value
+    };
+}
+
+function* pathAbsorber(str = '', start = 0, end = str.length - 1) {
+    let i = start;
+    let tokenz;
+    while (i <= end) {
+        if (str[i] === '/' && str[i - 1] !== '\\') {
+            yield {
+                token: tokens.SLASH,
+                value: '/',
+                start: i,
+                end: i
+            };
+            i++;
+            continue;
         }
-        // strip a path name
-        while (lastToken(from).token !== tokens.SLASH) {
-            from.pop();
+        tokenz = Array.from(predicateHolisticAbsorber(str, i, end));
+        if (tokenz.length) {
+            yield* tokenz;
+            let j = tokenz.length - 1;
+            for (; j >= 0; j--) {
+                if (tokenz[j].end) {
+                    break;
+                }
+            }
+            if (j >= 0) {
+                i = tokenz[j].end + 1;
+            }
+            continue;
         }
-        // strap the '/' 
-        while (lastToken(from).token === tokens.SLASH) {
-            from.pop();
+        tokenz = Array.from(pathEltAbsorber(str, i, end));
+        if (tokenz.length) {
+            yield* tokenz;
+            let j = tokenz.length - 1;
+            for (; j >= 0; j--) {
+                if (tokenz[j].end) {
+                    break;
+                }
+            }
+            if (j >= 0) {
+                i = tokenz[j].end + 1;
+            }
+            continue;
         }
-    }
-    if (from.length === 0) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        })
-        return;
+        i++;
     }
 }
 
-function add(from, token) {
-    if (from.length === 0) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        });
-    }
-    if (from[from.length - 1].token !== tokens.SLASH) {
-        from.push({
-            token: tokens.SLASH,
-            value: '/'
-        });
-    }
-    from.push(token);
-}
 
 
-// take this out of this module at some later point
-function resolve(from, to) {
-    if (isAbsolute(to)) {
-        return to;
-    }
-    if (!isAbsolute(from)) {
-        throw new TypeError(`Internal error, object location path must be absolute`);
-    }
-    const resolved = from.slice(); //copy
-    for (const inst of to) {
-        switch (inst.token) {
-            case tokens.SLASH: // we dont care about this, as its just like a "space" between words
-                break;
-            case tokens.PARENT:
-                goUp(resolved);
-                break;
-            case tokens.CURRENT:
-                break; // skip
-            default: // case tokens.PATHPART: and dynamic variants go here
-                add(resolved, inst);
-        }
-    }
-    return resolved;
-}
-
-// take this out of this module at some later point
-function formatPath(tokens) {
-    if (tokens.length === 0) return '';
-    return tokens.map(t => t.value).join('');
-}
 
 module.exports = {
-    tokens,
-    resolve,
-    formatPath,
-    escape,
-    getTokens,
-    defaultTokenizer,
-    predicateTokenizer,
-    predicateElementTokenizer
+    predicateRegExpAbsorber,
+    regExpSafe,
+    absorbLExpPredicate,
+    absorbRExpPredicate,
+    predicateHolisticAbsorber,
+    pathEltAbsorber,
+    pathAbsorber,
+    tokens
 };
