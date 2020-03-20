@@ -455,7 +455,7 @@ describe('utilities', function () {
             expect(() => createRangeCheck(0, NaN)).to.throw('upper boundery n is a NaN');
         });
     })
-    describe.skip('type conversions', () => {
+    describe('type conversions', () => {
         it('conversion to number', () => {
             const data = ['34234', 'xxEAZE', 4234];
             expect(convertToNumber(data[0])).to.deep.equal([34234, undefined]);
@@ -503,8 +503,8 @@ describe('utilities', function () {
             }
         });
     });
-    describe.skip('helpers', () => {
-        describe.skip('isStringArray', () => {
+    describe('helpers', () => {
+        describe('isStringArray', () => {
             it('non array', () => {
                 const [arr, err] = isStringArray({
                     a: 1
@@ -543,7 +543,7 @@ describe('utilities', function () {
                 expect(arr).to.deep.equal(data);
             });
         });
-        describe.skip('isBooleanArray', () => {
+        describe('isBooleanArray', () => {
             it('empty array test', () => {
                 const [arr, err] = isBooleanArray([]);
                 expect(arr).to.be.undefined;
