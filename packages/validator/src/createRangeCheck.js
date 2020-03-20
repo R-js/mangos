@@ -23,7 +23,7 @@ module.exports = function setInteger(integer = false) {
                 if (m > n) {
                         throw new TypeError(`lower boundery m:${m} should be lower then upper boundery n:${n}`)
                 }
-                return function isInRange(i) {
+                return function isInRange(i, ...rest) {
                         if (typeof i !== 'number') {
                                 return [undefined, `${i} is not a number`];
                         }
@@ -34,7 +34,7 @@ module.exports = function setInteger(integer = false) {
                                 }
                         }
                         if (i >= m && i <= n) {
-                                return [[i], undefined];
+                                return [[i,...rest], undefined];
 
                         }
                         return [undefined, `${i} is not between ${m} and ${n} inclusive`];

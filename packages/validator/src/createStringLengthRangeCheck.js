@@ -21,12 +21,12 @@ module.exports = function createStringLengthRangeCheck(m, n) {
     if (m < 0) {
             throw new TypeError(`lower boundery m:${m} should be >= 0`);
     }
-    return function isInRange(str) {
+    return function isInRange(str, ...rest) {
             if (typeof str !== 'string'){
                     return [undefined, `value type is not of type string: ${typeof str}`];        
             }
             if (str.length >= m && str.length <= n) {
-                    return [[str], undefined, undefined];
+                    return [[str,...rest], undefined, undefined];
             }
             return [undefined, `string of length:${str.length} is not between ${m} and ${n} inclusive`];
     }

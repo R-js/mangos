@@ -1,6 +1,6 @@
 const {
    pathAbsorber,
-   tokens,
+   tokens
 } = require('../jspath/tokenizer');
 
 const resolve = require('../jspath/resolve');
@@ -10,7 +10,7 @@ const {
    features
 } = require('./dictionary');
 
-const objectSlice = require('../jspath/objectSlice');
+const jxpath = require('../jspath');
 const { equals } = require('../equals');
 
 const predicateMap = {
@@ -56,7 +56,7 @@ function arrayAbsent(valueItems, target) {
    return [valueItems, undefined];
 }
 
-function createRef(path) {
+function createRef(path, ignore) {
    if (typeof path !== 'string' || path.trim().length === 0) {
       throw new TypeError(`path:"${path}" was not a valid for the create ref featur`);
    }
@@ -67,13 +67,21 @@ function createRef(path) {
       throw new TypeError(`the path contained errors: ${errors}`);
    }
    
+   if (to[0].token !== tokens.SLASH){
+      to.unshift({
+         value: '..',
+         token: tokens.PARENT
+      });
+   }
+   
    return function (predicate) {
       if (predicate !== 'exist' && predicate !== 'absent') {
          throw new TypeError(`the "ref" feature should be finalized with "exist" or "absent"`);
       }
       return function sliceAndValidate(partition, ctx) {
-         const selector = resolve(ctx.location, to);
-         const nodelist = objectSlice(ctx.data, selector);
+       const selector = resolve(ctx.location, to);
+         const iterator = jxpath(selector, ctx.data, ignore);
+         const nodelist = Array.from(iterator);
          // depending on the "type" of the partition argument, we should do a number of things 
          // 1. if it is an array?
          //     1.a if predicate === 'exist' all elements of the array need to be accounted for
@@ -85,9 +93,9 @@ function createRef(path) {
          const fn = predicateMap[s1][predicate];
          const [result, error] = fn(partition, nodelist);
          if (error) {
-            return [result, `${error} at ${formatPath(selector)}`];
+            return [undefined, `${error} at ${formatPath(selector)}`];
          }
-         return [result, undefined];
+         return [[result], undefined];
       };
    };
 }

@@ -1,6 +1,4 @@
 const { features } = require('./dictionary');
-
-const clone = require('clone');
 const isObject = require('../isObject');
 
 const {
@@ -71,11 +69,11 @@ features.set('object', {
                         continue; // skip it
                     }
                     // clone the context
-                    const ctxNew = { data: ctx.data, location: clone(ctx.location) };
+                    const ctxNew = { data: ctx.data, location: ctx.location.slice() };
                     ctxNew.location.push({ token: tokens.SLASH, value: '/' }, { token: tokens.PATHPART, value: key });
                     const [result, err] = schema[key](value, ctxNew);
                     if (!err) {
-                        data[key] = result[0]; // allow for transforms
+                        data[key] = isObject(result) ? result: result[0]; // allow for transforms
                         continue;
                     }
                     // error, we have to add the path info
@@ -134,7 +132,7 @@ features.set('object', {
                     return [undefined, errors2, undefined];
                 }
                 // all done
-                return [result2, undefined, undefined]
+                return [[result2], undefined, undefined]
             }
         };
     }
