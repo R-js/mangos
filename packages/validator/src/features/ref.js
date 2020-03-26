@@ -1,8 +1,3 @@
-const {
-   pathAbsorber,
-   tokens
-} = require('../jspath/tokenizer');
-
 const resolve = require('../jspath/resolve');
 const formatPath = require('../jspath/format');
 
@@ -10,7 +5,8 @@ const {
    features
 } = require('./dictionary');
 
-const jxpath = require('../jspath');
+const { jxpathUseTokens: jxpath, pathAbsorber, tokens } = require('@mangos/jxpath/internals');
+
 const { equals } = require('../equals');
 
 const predicateMap = {

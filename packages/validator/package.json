@@ -1,6 +1,8 @@
 {
   "author": "jacob.bogers <jkfbogers@gmail.com>",
-  "dependencies": {},
+  "dependencies": {
+    "@mangos/jxpath": "^1.0.11"
+  },
   "description": "validator a very intuitive and extendable JS validator for JS objects",
   "devDependencies": {
     "chai": "4.2.0",

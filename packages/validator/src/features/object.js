@@ -3,7 +3,7 @@ const isObject = require('../isObject');
 
 const {
     tokens
-} = require('../jspath/tokenizer');
+} = require('@mangos/jxpath/internals');
 
 const formatPath = require('../jspath/format');
 

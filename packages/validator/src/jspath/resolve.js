@@ -1,7 +1,7 @@
 
 'use strict';
 
-const { tokens } = require('./tokenizer');
+const { tokens } = require('@mangos/jxpath/internals');
 
 const isAbsolute = t => t.length && t[0].token === tokens.SLASH;
 
