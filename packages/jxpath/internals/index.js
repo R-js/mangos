@@ -4,7 +4,7 @@ const {
 } = require('../src/lib/tokenizer');
 
 const createIterator = require('../src/lib/createIterator');
-const { objectSlice } = require('../src/lib/objectSlice');
+const objectSlice = require('../src/lib/objectSlice');
 
 
 function jxpathUseTokens(tokens, data = undefined, ignore = undefined) {
