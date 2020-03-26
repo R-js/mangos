@@ -189,7 +189,4 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
     throw new Error(`token is invvalid ${JSON.stringify(instr)}`);
 }
 
-module.exports = {
-    objectSlice,
-    createParent
-};
+module.exports = objectSlice;

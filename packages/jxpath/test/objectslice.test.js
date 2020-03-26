@@ -14,16 +14,12 @@ const {
 
 const clone = require('clone');
 
-const { objectSlice } = require('../src/lib/objectSlice');
+const objectSlice = require('../src/lib/objectSlice');
 const {
     pathAbsorber
 } = require('../src/lib/tokenizer');
 
 const createIterator = require('../src/lib/createIterator');
-
-const {
-    from: arr
-} = Array;
 
 // fictisous example ordering info
 const data = {

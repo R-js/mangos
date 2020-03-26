@@ -1,9 +1,7 @@
 const chaiAsPromised = require('chai-as-promised');
 const {
     describe,
-    it,
-    before,
-    after
+    it
 } = require('mocha');
 const chai = require('chai');
 chai.should();
@@ -13,10 +11,6 @@ const {
 } = chai;
 
 const {
-    predicateElementTokenizer,
-    predicateTokenizer,
-    defaultTokenizer,
-    getTokens,
     regExpSafe,
     absorbLExpPredicate,
     absorbRExpPredicate,
@@ -25,10 +19,6 @@ const {
     pathEltAbsorber,
     pathAbsorber
 } = require('../src/lib/tokenizer');
-
-const {
-    from: arr
-} = Array;
 
 describe('lexer', () => {
     describe('new stuff', () => {
@@ -154,7 +144,7 @@ describe('lexer', () => {
         });
         it('"[="', () => {
             const a = Array.from(predicateHolisticAbsorber('[='));
-            expect([
+            expect(a).to.deep.equal([
                 { token: '\u0000x0a', value: '[', start: 0, end: 0 },
                 { error: 'no L value at all', token: '\u0000x08' },
                 { value: '=', token: '\u0000x09', end: 1, start: 1 },

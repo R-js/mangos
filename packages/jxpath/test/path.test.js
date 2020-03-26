@@ -1,10 +1,4 @@
 const chaiAsPromised = require('chai-as-promised');
-const {
-    describe,
-    it,
-    before,
-    after
-} = require('mocha');
 const chai = require('chai');
 chai.should();
 chai.use(chaiAsPromised);
@@ -92,13 +86,11 @@ describe('path', () => {
             expect(result).to.throw('path cannot be empty or just spaces');
         });
         it('execute curried version "/customers/name" with no data', () => {
-            const copy = clone(data);
             const slice = jpath('/customers/name');
             const result = Array.from(slice()); // 
             expect(result).to.deep.equal([]);
         });
         it('ending forward slash should be ignored "/////customers/name', () => {
-            const copy = clone(data);
             const slice = jxa('/////customers/name/', data);
             expect(slice).to.deep.equal(['Ms Betty DavenPort']);
         });

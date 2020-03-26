@@ -1,4 +1,4 @@
-const { objectSlice } = require('./lib/objectSlice');
+const objectSlice = require('./lib/objectSlice');
 const { pathAbsorber } = require('./lib/tokenizer');
 const createIterator = require('./lib/createIterator');
 
