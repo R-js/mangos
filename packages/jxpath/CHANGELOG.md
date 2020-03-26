@@ -1,6 +1,12 @@
 ## current
+
+
+## 1.0.11
+
 Added eslint for typechecking
 Zero dependency package
+internals adjusted for use in  @mangos/validator package
+
 
 ## 1.0.10
 
