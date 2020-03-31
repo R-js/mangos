@@ -3,11 +3,11 @@
 module.exports = {
     diff: true,
     bail: true,
-    sort: false,
+    sort: true,
     exit: true,
     'full-trace': true,
     recursive: true,
-    extension: ['js'],
+    extension: ['test.js'],
     opts: false,
     bail: true,
     'check-leaks': true,

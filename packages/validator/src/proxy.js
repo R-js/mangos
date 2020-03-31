@@ -15,6 +15,7 @@ require('./features/regexp');
 require('./features/any');
 require('./features/ifFalsy');
 require('./features/optional');
+require('./features/filepath');
 
 function defaultHandler() {
     return {

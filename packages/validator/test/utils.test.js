@@ -31,7 +31,7 @@ const {
 
 const resolve = require('../src/jspath/resolve');
 
-describe('utilities', function () {
+describe.skip('utilities', function () {
     describe('resolve', () => {
         it('from "/p1/p2/p3/p4///p5/" to "../../n1/n2/./n5"', () => {
             const from = Array.from(pathAbsorber('/p1/p2/p3/p4///p5/'));

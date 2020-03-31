@@ -18,7 +18,7 @@ const {
     //removeFeature
 } = require('../src/proxy');
 
-describe('features tests', function () {
+describe.skip('features tests', function () {
     describe('ifFalsy', () => {
         it('correct replacement when value = "", 0, false, undefined, undefined', () => {
             const checker = V.ifFalsy('replace-with-this-string');
