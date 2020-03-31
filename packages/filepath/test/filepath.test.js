@@ -30,7 +30,8 @@ const {
 
 describe('filepath', () => {
     describe('resolve', () => {
-        it('from "//?/UNC/Server/share/", to "../../hello/world"', () => {
+        describe('test "start" and "end" tokens',()=>{
+        it('test end and start props when resolving from "//?/UNC/Server/share/", to "../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../hello/world');
             const renderPath = answer.path.map(m => m.value).join('');
             const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
@@ -59,6 +60,7 @@ describe('filepath', () => {
             const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
             expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
         });
+    });
 
         it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
