@@ -47,7 +47,7 @@
     "coverage": "nyc mocha",
     "lint": "eslint src/**/*.js",
     "lint:other": "eslint test/**/*.js",
-    "test": "mocha"
+    "test": "cross-env NODE_PATH=./ mocha"
   },
   "version": "0.0.1",
   "mocha": {
