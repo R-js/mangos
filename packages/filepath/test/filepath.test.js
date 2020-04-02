@@ -30,37 +30,37 @@ const {
 
 describe('filepath', () => {
     describe('resolve', () => {
-        describe('test "start" and "end" tokens',()=>{
-        it('test end and start props when resolving from "//?/UNC/Server/share/", to "../../hello/world"', () => {
-            const answer = resolve('//?/UNC/Server/share/', '../../hello/world');
-            const renderPath = answer.path.map(m => m.value).join('');
-            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
-            expect(fidelity).to.equal('\\\\?\\UNC\\Server\\share\\hello\\world');
-            expect(answer).to.deep.equal({
-                path: [
-                    {
-                        token: '\u0005',
-                        value: '\\\\?\\UNC\\Server\\share',
-                        start: 0,
-                        end: 19
-                    },
-                    { token: '\u0001', start: 20, end: 20, value: '\\' },
-                    { token: '\u0006', start: 21, end: 31, value: 'hello' },
-                    { token: '\u0001', start: 32, end: 32, value: '\\' },
-                    { token: '\u0006', start: 33, end: 49, value: 'world' }
-                ],
-                type: 'devicePath'
+        describe('test "start" and "end" tokens', () => {
+            it('test end and start props when resolving from "//?/UNC/Server/share/", to "../../hello/world"', () => {
+                const answer = resolve('//?/UNC/Server/share/', '../../hello/world');
+                const renderPath = answer.path.map(m => m.value).join('');
+                const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
+                expect(fidelity).to.equal('\\\\?\\UNC\\Server\\share\\hello\\world');
+                expect(answer).to.deep.equal({
+                    path: [
+                        {
+                            token: '\u0005',
+                            value: '\\\\?\\UNC\\Server\\share',
+                            start: 0,
+                            end: 19
+                        },
+                        { token: '\u0001', start: 20, end: 20, value: '\\' },
+                        { token: '\u0006', start: 21, end: 31, value: 'hello' },
+                        { token: '\u0001', start: 32, end: 32, value: '\\' },
+                        { token: '\u0006', start: 33, end: 49, value: 'world' }
+                    ],
+                    type: 'devicePath'
+                });
+            });
+            it('from "", to ""', () => {
+                const answer = resolve();
+                // since the answer is the current working directory we test with "fidelity" heuristic
+                const cwd = path.resolve();
+                const renderPath = answer.path.map(m => m.value).join('');
+                const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
+                expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
             });
         });
-        it('from "", to ""', () => {
-            const answer = resolve();
-            // since the answer is the current working directory we test with "fidelity" heuristic
-            const cwd = path.resolve();
-            const renderPath = answer.path.map(m => m.value).join('');
-            const fidelity = answer.path.map(m => renderPath.slice(m.start, m.end + 1)).join('');
-            expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
-        });
-    });
 
         it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
@@ -188,7 +188,7 @@ describe('filepath', () => {
     });
     describe('inferPathType', () => {
         it('path "c:\\Users\\" interpreted as dos and unix types', () => {
-            const answer = Array.from(inferPathType('c:\\Users\\', { posix: true, dos: true}));
+            const answer = Array.from(inferPathType('c:\\Users\\', { posix: true, dos: true }));
             expect(answer).to.deep.equal([{
                 "dos": {
                     "path": [{

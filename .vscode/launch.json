@@ -13,7 +13,10 @@
             "program": "${workspaceFolder}/packages/validator/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/packages/validator",
             "internalConsoleOptions": "openOnSessionStart",
-            "stopOnEntry": false
+            "stopOnEntry": false,
+            "env":{
+                "NODE_PATH":"${workspaceFolder}/packages/validator"
+            }
         },
         {
             "type": "node",

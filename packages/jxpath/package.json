@@ -11,6 +11,7 @@
     "nyc": "14.1.1",
     "cross-env": "7.0.2"
   },
+  "type": "module",
   "keywords": [
     "data",
     "data-wrangling",
