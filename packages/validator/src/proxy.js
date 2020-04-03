@@ -16,6 +16,7 @@ require('./features/any');
 require('./features/ifFalsy');
 require('./features/optional');
 require('./features/filepath');
+require('./features/url');
 
 function defaultHandler() {
     return {

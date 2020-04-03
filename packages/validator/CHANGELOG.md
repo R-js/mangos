@@ -1,4 +1,5 @@
 ##  0.0.2 (unreleased)
+- 'url' feature added and tested
 - xref uses @mangos/jxpath/internals
 - proxy is re-written to have different handlers depending on what state the validator is in during construction
 - all regression tests now working for the re-write

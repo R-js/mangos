@@ -1,22 +1,7 @@
-const chaiAsPromised = require('chai-as-promised');
-const {
-  describe,
-  it,
-  // before,
-  // after
-} = require('mocha');
-const chai = require('chai');
-chai.should();
-chai.use(chaiAsPromised);
-const {
-  expect
-} = chai;
 
-const {
-  V,
-  //addFeature,
-  //removeFeature
-} = require('src/proxy');
+'use strict'
+const { expect } = require('chai')
+const { V } = require('src/proxy');
 
 
 describe('filepath feature', function () {
