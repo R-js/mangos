@@ -3,17 +3,6 @@
 const { expect } = require('chai')
 const { V } = require('src/proxy');
 
-const pick = (...props) => o => {
-  const rc = {};
-  for (const key of props) {
-    if (o[key]) {
-      rc[key] = o[key]
-    }
-  }
-
-  return rc;
-}
-
 describe('url feature', function () {
   const urlFull = 'https://tools.ietf.org/html/rfc3986#page-6';
   it(`validate "${urlFull}"`, () => {

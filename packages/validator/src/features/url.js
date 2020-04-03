@@ -1,5 +1,5 @@
 const { features } = require('./dictionary');
-const { URL } = require('url');
+const { URL } = require('url'); // TODO: transform with rollup to make webclient/node agnostic
 
 features.set('url', {
   factory: 0,
@@ -7,12 +7,14 @@ features.set('url', {
   fn: url => {
     try {
       const u = new URL(url);
-      // It uses symbols in node, but in browser (chrome) it doesnt,
-      // in chrome, props are not queriable with getOwnPropertyDescriptors,
-      // nor with getOwnPropertySymbols
-      // nor with getOwnPropertyNames
-      // 
-      // so only workable solution for both is be explicit in grabbing props
+      // Node: 
+      //  -- It uses private symbols in the URL instance to hide props and methods
+      // Chrome
+      //  -- inaccessible with getOwnPropertyDescriptors,
+      //     nor with getOwnPropertySymbols
+      //     nor with getOwnPropertyNames
+      // Solution:
+      //  -- so only workable solution for both is be explicit in grabbing props
       const { href, origin, protocol, username, password, host, hostname, port, pathname, search, hash } = u;
       const o = { 
          href,
