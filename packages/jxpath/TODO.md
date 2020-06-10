@@ -1,1 +1,1 @@
-- document requrie('@mangos/jxpath/internals') module
+- document requre('@mangos/jxpath/internals') module

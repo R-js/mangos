@@ -1,5 +1,6 @@
 ## current
 
+- `.gitignored` renamed to `.gitignore`
 
 ## 1.0.11
 
