@@ -1,10 +1,18 @@
 
 # filepath
 
-_Part of the monorepo [mangos](https://github.com/R-js/mangos)_
+This is a filepath parsing _(LL(1) parser)_ and manipulation tool. It returns a parse tree describing the file path.
 
-_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
-filepath tool is to analyze and manipulate (join, validate and infer os path types) filepath based on the string value.
+- joins lexed path names
+- infer the most likely OS file type(s) (plural) based on file name only.
+- validates path strings, (checks for forbidden characters.. etc)for the various os filetypes
+
+FilePath tool complements the nodejs `path` module, parsing the following path types.
+
+_Part of the monorepo [mangos][mango-mono-repo]_
+
+_Support the work by starring this [repo](https://github.com/R-js/mangos) on github._
+
 
 It handles the following paths types:
 
@@ -192,6 +200,29 @@ const result = resolve(dos,posi); // the last asbolute Path defines resulting pa
 */
 ```
 
+Example 4:
+
+```javascript
+const { resolve } = require('@mangos/filepath');
+
+// current working directory is "/home/user1" (on a posix filesystem)
+const result = resolve('h1','h2');
+//->
+/*
+{ path:
+   [{ token: '\u0002', start: 0, end: 0, value: '/' },
+    { token: '\u0006', start: 1, end: 4, value: 'home' },
+    { token: '\u0001', start: 5, end: 5, value: '/' },
+    { token: '\u0006', start: 6, end: 10, value: 'user1' },
+    { token: '\u0001', start: 11, end: 11, value: '/' },
+    { token: '\u0006', start: 12, end: 13, value: 'h1' },
+    { token: '\u0001', start: 14, end: 14, value: '/' },
+    { token: '\u0006', start: 15, end: 16, value: 'h2' }
+],
+ type: 'posix' }
+*/
+```
+
 ## Types
 
 ### `Token-ID`
@@ -288,4 +319,5 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [tdp]: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#traditional-dos-paths
 [posix]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap03.html#tag_03_266
 [object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
+[mango-mono-repo]: https://github.com/R-js/mangos
 

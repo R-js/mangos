@@ -327,8 +327,18 @@ const [result, errors] = checkData( data );        // data as defined in the USE
 
 # filepath
 
-filepath tool is to analyze and manipulate (join, validate and infer) filepath based on the string value.
+This is a filepath parsing _(LL(1) parser)_ and manipulation tool. It returns a parse tree describing the file path.
 
+[Full Api Doc](packages/filepath/README.md)
+
+FilePath tool complements the nodejs `path` module, parsing the following path types.
+
+| path type    | description                                                                            |
+|--------------|----------------------------------------------------------------------------------------|
+| `unc`        | microsoft unc filepath                                                                 |
+| `dos`        | traditional doth path                                                                  |
+| `devicePath` | dos device path, alos allowing for dos devicepath descibing UNC `//./UNC/Server/Share` |
+| `posix`      | posix path                                                                             |
 
 
 ## Feedback

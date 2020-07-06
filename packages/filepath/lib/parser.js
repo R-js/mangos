@@ -1,6 +1,4 @@
 
-const clone = require('clone');
-
 const {
     posixAbsorber,
     tdpAbsorber,
@@ -39,6 +37,10 @@ function lexPath(path = '', options = {}) {
 
 function filterErr(t) {
     return t.error !== undefined;
+}
+
+function clonePath(path){
+    return Array.from({ length: path.length }, (v,i) => Object.assign({}, path[i]));
 }
 
 function createPathProcessor(path) {
@@ -104,28 +106,30 @@ function resolve(_from, ..._to) {
     if (_from && _from.firstError) {
         throw TypeError(`"from" path contains errors: ${getErrors(_from)}`)
     }
+    if (_from === undefined){
+        _from = lexPath(getCWD());
+    }
+    if (!(_from.path[0].token in rootTokenValues)){
+        _to.unshift(_from);
+        _from = lexPath(getCWD());
+    }
     let to = _to.shift()
     to = lexPath(to);
     if (to && to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
-    if (_from === undefined && to === undefined) {
-        return lexPath(getCWD());
+    if (to === undefined){
+        return _from;
     }
     if (to.path && to.path[0].token in rootTokenValues) {
+        _from = to;
         if (_to.length === 0) {
-            return clone(to);
+            return _from;
         }
         return resolve(to, ..._to);
     }
-    // "to" argument is not root
-    // if "_from" is not root then resolve it wth cwd()
-    if (!(_from.path && _from.path[0].token in rootTokenValues)) {
-        const cwd = lexPath(getCWD());
-        _from = resolve(cwd, _from);
-    }
     // "_from" is guaranteed to me from root and "to" is guaranteed not to be from "root"
-    const working = clone(_from.path);
+    const working = clonePath(_from.path);
     for (const token of to.path) {
         switch (token.token) {
             case tokens.SEP:

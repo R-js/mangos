@@ -1,5 +1,5 @@
 const chaiAsPromised = require('chai-as-promised');
-
+const path = require('path');
 const {
     describe,
     it,
@@ -8,8 +8,6 @@ const {
 const chai = require('chai');
 chai.should();
 chai.use(chaiAsPromised);
-
-const path = require('path');
 
 const {
     expect
@@ -61,6 +59,16 @@ describe('filepath', () => {
                 expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
             });
         });
+        it('from $current working dir', ()=>{
+            const there = process.cwd();
+            const cwd =lexPath(there)
+            console.log(cwd);
+            const sameAsCWD = resolve('');
+            const fileInCWD = resolve('./h1','h2','h3')
+            const fidelity1 = fileInCWD.path.map(m => m.value).join('');
+            expect(fidelity1.toLowerCase()).to.equal(process.cwd().toLowerCase()+path.sep+['h1','h2','h3'].join(path.sep));
+            expect(sameAsCWD.path.map(m=>m.value).join('').toLowerCase()).to.equal(process.cwd().toLowerCase())
+        })
 
         it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
             const answer = resolve('//?/UNC/Server/share/', '../../../../../hello/world');
