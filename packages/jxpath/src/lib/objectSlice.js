@@ -60,6 +60,7 @@ function approve(opaque, clauses) {
     }
 }
 
+// recursive flatMap
 function flatterMap(array) {
     const result = [];
     for (const item of array) {
