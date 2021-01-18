@@ -1,6 +1,6 @@
 # mangos
 
-🥭🥭 A monorepo collecting data wrangling and data validation utilities (release date jan 2020).
+🥭🥭 A monorepo collecting data wrangling and data validation utilities.
 
 
 The current collection of tools is listed below, new tools are planned for the future, create an [issue](issues) to propose new features, new tools, and/or bug findings.
@@ -10,7 +10,6 @@ Support this repo by ⭐ starring it.
 **Table of Contents**
 - [mangos](#mangos)
   - [JXPath](#jxpath) xpath for js objects.
-  - [JValidator](#jvalidator)  intuite, functional rich and efficient validator for js objects.
   - [filepath](#filepath) filepath tool to join and analyze paths of type `UNC`, `MS traditional`, `MS Device path`, and `Posix`.
 
 # JXPath
