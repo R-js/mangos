@@ -1,26 +1,17 @@
 
 # JXPath
 
-_Part of the [mangos](https://github.com/R-js/mangos) monorepo of data wrangling tools._
+JXPath is a query langauge for JavaScript Objects (parsed JSON).
 
-JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
-
-_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+Enhancements over jsonpath include:
+ - parent operator `../`
+ - query using regular expressions (on both property names and their values)
+ - recursive descent operator `**`
+ - lazy tree walking
 
 ```bash
 npm install @mangos/jxpath
 ```
-
-### Differences with XPath
-
-JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
-
-### Differences with json-path
-
-- `jxpath` is very efficient slicing extreemly large JS objects without creating intermediate results (its a generator function returning an iterator, aka "just in time"/"lazy" slicing of the JS object data).
-- `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
-- `jxpath` has full regular expression to select for both property names and property values
-
 ## Query operators overview
 
 | operator            | jxpath            | example                                                       |
@@ -147,6 +138,9 @@ const iterator = curry(data, 'parent' ); // ignore "parent" property when doing 
 // non curried form
 const iterator = jxpath( path, data, 'parent' ); // ignore "parent" property when doing recursive descent
 ```
+
+_Support the work by starring this [repo](https://github.com/R-js/mangos) on github.
+_Part of the [mangos](https://github.com/R-js/mangos) monorepo of data wrangling tools._
 
 ## Feedback
 

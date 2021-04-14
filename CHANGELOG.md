@@ -1,4 +1,8 @@
 # JXPath 
+##  1.0.1 
+
+- Adjusting the documentation of jxpath
+
 ## 1.0.0
 
 - First production release

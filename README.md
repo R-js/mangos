@@ -16,21 +16,16 @@ Support this repo by ⭐ starring it.
 
 [Full APi doc](packages/jxpath/README.md)
 
-JXPath is an adaption of XPath query language for XML, but applied to JS objects (hidrated from json or yaml files).
+JXPath is a query langauge for JavaScript Objects (parsed JSON).
+
+Enhancements over jsonpath include:
+ - parent operator `../`
+ - query using regular expressions (on both property names and their values)
+ - recursive descent operator `**`
 
 ```bash
 npm install @mangos/jxpath
 ```
-
-### Differences with XPath
-
-JS Objects (unlike XML) dont have attributes. This means JXPath query language omits XPath constructs that select attributes.
-
-### Differences with json-path
-
-- `jxpath` is very efficient slicing extreemly large JS objects without creating intermediate results (its a generator function returning an iterator, aka "just in time"/"lazy" slicing of the JS object data).
-- `jxpath` has a parent operater `/../` unavailable in `json-path`, in json-path the `/../` this is a recursive descent operator
-- `jxpath` has full regular expression to select for both property names and property values
 
 ## Query operators overview
 
