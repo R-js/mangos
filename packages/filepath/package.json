@@ -1,6 +1,6 @@
 {
   "name": "@mangos/filepath",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "filepath parses UNC (long and short and cmd aliases) local filesystem path, and unix paths, checks for invalid path characters",
   "keywords": [
     "filepath",

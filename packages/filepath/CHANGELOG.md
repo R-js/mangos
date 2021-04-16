@@ -1,5 +1,12 @@
 ## current
 
+
+## "0.0.8"
+  ### fixes
+    - corrected a link in package/filepath/readme.md
+
+
+
 ## "0.0.7"
 
  ### fixes

@@ -259,7 +259,7 @@ For the `token` values, see this [list](#token-id)
 ### `PathObject`
 
 - The function [inferPathType](#inferpathtypepath-options) returns an iterator of PathObject
-- The function [lexPath][#lexpathpathoptions] returns a single instance of `PathObject`
+- The function [lexPath](#lexpathpathoptions) returns a single instance of `PathObject`
 
 ```typescript
 interface PathObject {
