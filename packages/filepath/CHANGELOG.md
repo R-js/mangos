@@ -1,5 +1,10 @@
 ## current
 
+## "0.0.7"
+
+ ### fixes
+ - corrected homepage property in package.json, points now to valid readme of the package "filelist" in the mono-repo "mangos".
+
 ## "0.0.6"
  ### changes
  - The functions `inferPathType` and `lexPath` return the same Pathobject.

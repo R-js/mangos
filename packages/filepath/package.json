@@ -1,6 +1,6 @@
 {
   "name": "@mangos/filepath",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "filepath parses UNC (long and short and cmd aliases) local filesystem path, and unix paths, checks for invalid path characters",
   "keywords": [
     "filepath",
@@ -11,7 +11,7 @@
     "lfs",
     "device path"
   ],
-  "homepage": "https://github.com/R-js/mangos/packages/filepath#readme",
+  "homepage": "https://github.com/R-js/mangos/blob/master/packages/filepath/README.md",
   "bugs": {
     "url": "https://github.com/R-js/mangos.git",
     "email": "info@mail.jacob-bogers.com"
