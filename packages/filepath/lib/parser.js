@@ -20,16 +20,12 @@ const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
 function lexPath(path = '', options = {}) {
     if (typeof path === 'string') {
-        const rc = {};
         const iterator = inferPathType(path, options);
         const step = iterator.next(); // only get the first one (is also the most likely one)
         if (step.done) {
             return undefined;
         }
-        const ns = Object.getOwnPropertyNames(step.value)[0];
-        Object.assign(rc, step.value[ns]);
-        rc.type = ns;
-        return rc;
+        return step.value;
     }
     return path; // its not a string
 }
@@ -44,15 +40,13 @@ function clonePath(path) {
 
 function createPathProcessor(path) {
     return function (ns, absorber) {
-        const rc = {};
+        // get all path tokens at once
         const _tokens = Array.from(absorber(path));
-        if (_tokens.length === 0) {
-            return undefined;
-        }
-        rc[ns] = { path: _tokens };
+        if (_tokens.length === 0) return;
+        const rc = { type:ns, path:_tokens };
         const firstError = _tokens.find(filterErr);
         if (firstError) {
-            rc[ns].firstError = firstError;
+            rc.firstError = firstError;
         }
         return rc;
     };
