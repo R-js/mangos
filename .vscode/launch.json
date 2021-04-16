@@ -6,6 +6,7 @@
     "configurations": [
 
 
+
         {
             "type": "node",
             "request": "launch",
@@ -31,7 +32,7 @@
             "type": "node",
             "request": "launch",
             "name": "filepath",
-            "program": "${workspaceFolder}/packages/filepath/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/packages/filepath/test.js",
             "cwd": "${workspaceFolder}/packages/filepath",
             "internalConsoleOptions": "openOnSessionStart",
             "stopOnEntry": false

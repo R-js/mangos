@@ -1,4 +1,3 @@
-'use strict';
 const tokens = {
     SEP: '\x01', // done
     PATHELT: '\x06',
@@ -34,10 +33,7 @@ function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
 }
 
 function inferPlatform() {
-    if (typeof global !== undefined && global.process && global.process.platform && typeof global.process.platform === 'string') {
-        return global.process.platform === 'win32' ? 'win32' : 'posix';
-    }
-    return 'browser';
+    return globalThis?.navigator?.platform || globalThis?.process?.platform || 'posix';
 }
 
 const forbiddenRegExp = new RegExp(`[<>:"/\\|?*<\u0000}]`);
@@ -73,11 +69,11 @@ function validSep(s) {
 // hard to infer , '\\' tokens are actually legal in linux xfs, etx4, etc
 function* posixAbsorber(str = '', start = 0, end = str.length - 1) {
 
-    const selectorPosix = [{
+    const selectorPosix = [{                            // explicit posix
         fn: (str, start, end) => lookSuccessive(str, s => s !== '/', start, end),
         t: tokens.PATHELT
     },
-    {
+    {                                                   // explicit posix
         fn: (str, start, end) => lookSuccessive(str, s => s === '/', start, end),
         t: tokens.SEP
     }
@@ -279,7 +275,7 @@ function* tdpAbsorber(str = '', start = 0, end = str.length - 1) {
         };
         i = start + 2;
     }
-    // also a unix path would work if it is winsos system
+    // also a unix path would work if it is win32 system
     yield* tdpBodyAbsorber(str, i, end);
 }
 

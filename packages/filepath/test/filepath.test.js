@@ -61,8 +61,7 @@ describe('filepath', () => {
         });
         it('from $current working dir', ()=>{
             const there = process.cwd();
-            const cwd =lexPath(there)
-            console.log(cwd);
+            const cwd =lexPath(there);
             const sameAsCWD = resolve('');
             const fileInCWD = resolve('./h1','h2','h3')
             const fidelity1 = fileInCWD.path.map(m => m.value).join('');

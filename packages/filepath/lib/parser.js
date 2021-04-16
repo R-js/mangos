@@ -1,4 +1,3 @@
-
 const {
     posixAbsorber,
     tdpAbsorber,
@@ -24,7 +23,7 @@ function lexPath(path = '', options = {}) {
         const rc = {};
         const iterator = inferPathType(path, options);
         const step = iterator.next(); // only get the first one (is also the most likely one)
-        if (step.done){
+        if (step.done) {
             return undefined;
         }
         const ns = Object.getOwnPropertyNames(step.value)[0];
@@ -39,8 +38,8 @@ function filterErr(t) {
     return t.error !== undefined;
 }
 
-function clonePath(path){
-    return Array.from({ length: path.length }, (v,i) => Object.assign({}, path[i]));
+function clonePath(path) {
+    return Array.from({ length: path.length }, (v, i) => Object.assign({}, path[i]));
 }
 
 function createPathProcessor(path) {
@@ -106,10 +105,10 @@ function resolve(_from, ..._to) {
     if (_from && _from.firstError) {
         throw TypeError(`"from" path contains errors: ${getErrors(_from)}`)
     }
-    if (_from === undefined){
+    if (_from === undefined) {
         _from = lexPath(getCWD());
     }
-    if (!(_from.path[0].token in rootTokenValues)){
+    if (!(_from.path[0].token in rootTokenValues)) {
         _to.unshift(_from);
         _from = lexPath(getCWD());
     }
@@ -118,7 +117,7 @@ function resolve(_from, ..._to) {
     if (to && to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
-    if (to === undefined){
+    if (to === undefined) {
         return _from;
     }
     if (to.path && to.path[0].token in rootTokenValues) {
@@ -153,24 +152,16 @@ function resolve(_from, ..._to) {
 }
 
 function getSeperator() {
-    if (typeof global !== 'undefined' && global.process && global.process.platform) {
-        if (global.process.platform === 'win32') {
-            return '\\';
-        }
+    const platform = globalThis?.navigator?.platform || globalThis?.process?.platform || 'posix';
+    if (platform === 'win32') {
+        return '\\';
     }
     return '/';
 }
 
 function defaultOptions(options = {}) {
     if (Object.keys(options).filter(f => allNamespaces.includes(f)).length === 0) {
-        let platform;
-        // node?
-        if (typeof global !== 'undefined' && global.process && global.process.platform) {
-            platform = global.process.platform;
-
-        } else { // browser 
-            platform = 'posix';
-        }
+        const platform = globalThis?.navigator?.platform || globalThis?.process?.platform || 'posix';
         Object.assign(options, {
             unc: platform === 'win32',
             dos: platform === 'win32',
@@ -187,10 +178,10 @@ function defaultOptions(options = {}) {
 function* inferPathType(path, options = {}) {
     defaultOptions(options);
     const processor = createPathProcessor(path);
-    const filtered = allNamespaces.filter(f=> options[f])
+    const filtered = allNamespaces.filter(f => options[f])
     for (const ns of filtered) {
         const result = processor(ns, absorberMapping[ns]);
-        if (result){
+        if (result) {
             yield result;
         }
     }
