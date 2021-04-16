@@ -19,15 +19,15 @@ const absorberMapping = {
 const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
 function lexPath(path = '', options = {}) {
-    if (typeof path === 'string') {
-        const iterator = inferPathType(path, options);
-        const step = iterator.next(); // only get the first one (is also the most likely one)
-        if (step.done) {
-            return undefined;
-        }
-        return step.value;
+    if (typeof path !== 'string') {
+        return path;
     }
-    return path; // its not a string
+    const iterator = inferPathType(path, options);
+    const step = iterator.next(); // only get the first one (is also the most likely one)
+    if (step.done) {
+        return undefined;
+    }
+    return step.value;
 }
 
 function filterErr(t) {
@@ -43,7 +43,7 @@ function createPathProcessor(path) {
         // get all path tokens at once
         const _tokens = Array.from(absorber(path));
         if (_tokens.length === 0) return;
-        const rc = { type:ns, path:_tokens };
+        const rc = { type: ns, path: _tokens };
         const firstError = _tokens.find(filterErr);
         if (firstError) {
             rc.firstError = firstError;

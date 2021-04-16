@@ -1,5 +1,12 @@
 ## current
 
+## "0.0.6"
+ ### changes
+ - The functions `inferPathType` and `lexPath` return the same Pathobject.
+   - `inferPathType` returns an iterator of PathObject
+   - `lextPath` returns a singular PathObject 
+ - README adjusted
+
 ## "0.0.5"
 
 use globalThis and optional chainging to make platform detection agnostic in node and browser (globalhis.navigator.platform)

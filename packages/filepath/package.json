@@ -1,15 +1,7 @@
 {
-  "author": "jacob.bogers <jkfbogers@gmail.com>",
-  "dependencies": {},
+  "name": "@mangos/filepath",
+  "version": "0.0.6",
   "description": "filepath parses UNC (long and short and cmd aliases) local filesystem path, and unix paths, checks for invalid path characters",
-  "devDependencies": {
-    "chai": "4.2.0",
-    "chai-as-promised": "7.1.1",
-    "cross-env": "7.0.2",
-    "eslint": "6.8.0",
-    "mocha": "6.2.2",
-    "nyc": "14.1.1"
-  },
   "keywords": [
     "filepath",
     "unc",
@@ -19,9 +11,25 @@
     "lfs",
     "device path"
   ],
+  "homepage": "https://github.com/R-js/mangos/packages/filepath#readme",
+  "bugs": {
+    "url": "https://github.com/R-js/mangos.git",
+    "email": "info@mail.jacob-bogers.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/R-js/mangos.git",
+    "directory": "packages/filepath"
+  },
   "license": "MIT",
+  "author": "jacob.bogers <jkfbogers@gmail.com>",
   "main": "index.js",
-  "name": "@mangos/filepath",
+  "scripts": {
+    "coverage": "nyc mocha",
+    "test": "mocha",
+    "lint": "eslint lib/**/*js",
+    "lint:other": "eslint test/**/*.js"
+  },
   "nyc": {
     "instrument": true,
     "reporter": [
@@ -29,16 +37,13 @@
       "text"
     ]
   },
-  "repository": {
-    "directory": "packages/filepath",
-    "type": "git",
-    "url": "https://github.com/R-js/mangos.git"
-  },
-  "scripts": {
-    "coverage": "nyc mocha",
-    "test": "mocha",
-    "lint": "eslint lib/**/*js",
-    "lint:other": "eslint test/**/*.js"
-  },
-  "version": "0.0.5"
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "cross-env": "7.0.2",
+    "eslint": "6.8.0",
+    "mocha": "6.2.2",
+    "nyc": "14.1.1"
+  }
 }

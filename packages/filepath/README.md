@@ -16,12 +16,12 @@ _Support the work by starring this [repo](https://github.com/R-js/mangos) on git
 
 It handles the following paths types:
 
-| path type    | description                                                                            |
-|--------------|----------------------------------------------------------------------------------------|
-| `unc`        | microsoft unc filepath                                                                 |
-| `dos`        | traditional doth path                                                                  |
-| `devicePath` | dos device path, alos allowing for dos devicepath descibing UNC `//./UNC/Server/Share` |
-| `posix`      | posix path                                                                             |
+| path type    | description                                                                                  |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| `unc`        | microsoft unc filepath                                                                       |
+| `dos`        | traditional dos path (tdp) path                                                              |
+| `devicePath` | dos device path (ddp), alos allowing for dos devicepath descibing UNC `//./UNC/Server/Share` |
+| `posix`      | posix path                                                                                   |
 
 
 Works in browser and in node.
@@ -39,7 +39,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 ```
 
 | function        | description                                                                           |
-|-----------------|---------------------------------------------------------------------------------------|
+| --------------- | ------------------------------------------------------------------------------------- |
 | `inferPathType` | guess the os file type based on the path string purely, multiple matches are possible |
 | `lexPath`       | lexer for path string, returns token array representing the path value                |
 | `resolve`       | akin to nodejs `path.resolve`, respecting `unc` , `unc_long` and `device path` roots  |
@@ -53,7 +53,7 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
     - **dos**: [boolean][boolean] default will be set to the value of  `platform === 'win32'`. If true,interperet as a TDP (Traditional Dos Path), if not possible, `lexPath` returns undefined.
     - **devicePath**: [boolean][boolean] default will be set to value of `platform === 'win32'`. If true, interperet as DDP (Dos Device Path).
     - **posix**: [boolean][boolean] default will be set to value of `platform !== 'win32'`. If true,interpret a UNIX devivce path.
-- Returns: [iterator < inferPathObject >](#inferpathobject) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
+- Returns: [iterator < PathObject >](#pathobject) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
 
 ```javascript
 const { inferPathType } = require('@mangos/filepath');
@@ -67,17 +67,16 @@ let value, done;
 //-> value =
 /*
 {
-    devicePath:{
-        path: [ 
+    type: "devicePath",
+    path: [ 
             { 
               token: '\u0005',  // token for the root element of a "devicePath" 
               value: '\\\\?\\UNC\\c:\\Users',  //-> normalized path
               start: 0,
               end: 15 
             } 
-        ] 
-    } 
-}
+          ] 
+} 
 */
 { value, done } = iterator.next(); // less likely type path
 // -> next possible interpretation for the string
@@ -93,7 +92,7 @@ let value, done;
     - **dos**: [boolean][boolean] default will be set to the value of  `platform === 'win32'`. If true,interperet as a TDP (Traditional Dos Path), if not possible, `lexPath` returns undefined.
     - **devicePath**: [boolean][boolean] default will be set to value of `platform === 'win32'`. If true, interperet as DDP (Dos Device Path).
     - **posix**: [boolean][boolean] default will be set to value of `platform !== 'win32'`. If true,interpret a UNIX devivce path.
-- Returns: Object of type [lexPathObject](#lexpathobject). 
+- Returns: single Object of type [PathObject](#pathobject). 
 
 
 Example 1:
@@ -138,7 +137,7 @@ const result = lexPath('//Server1/share/file.txt'); // the function is agnostic 
 Resolve will work exactly like `path.resolve` but with these difference: It will respect the `devicePath` roots including the `Server` and `share` parts aswell. aka `//./unc/server/share` will seen as a root in totality.
 
 - `...paths` [string][string] A sequence of file path or paths segments, the sequence can be empty (returns current working directory)
-- Returns: Object of [lexPathObject](#lexpathobject). 
+- Returns: Object of [PathObject](#pathobject). 
 
 Example 1:
 
@@ -230,7 +229,7 @@ const result = resolve('h1','h2');
 The path lexer produces pieces of the string filepath as tokens, this is a list of all the lexer tokens
 
 | token      | value (token id) | descriptions                                  | example                                            |
-|------------|------------------|-----------------------------------------------|----------------------------------------------------|
+| ---------- | ---------------- | --------------------------------------------- | -------------------------------------------------- |
 | SEP        | `\u0001`         | filepath seperator                            | `/` or `\`                                         |
 | POSIX_ROOT | `\u0002`         | a posix root `/` at the beginning of a path   |                                                    |
 | TDP_ROOT   | `\u0003`         | root of a traditional dos path                | `c:`                                               |
@@ -257,42 +256,16 @@ interface Token {
 
 For the `token` values, see this [list](#token-id)
 
+### `PathObject`
 
-### `PathType`
-
-A representation of a sting path with an array of tokens
+- The function [inferPathType](#inferpathtypepath-options) returns an iterator of PathObject
+- The function [lexPath][#lexpathpathoptions] returns a single instance of `PathObject`
 
 ```typescript
-interface PathType { 
+interface PathObject {
+    type: 'posix'|'unc'|'dos'|'devicePath',
     path: Token[];
-    firstError?: string; // the first error in the "path" array of tokens.
-}
-```
-
-Return type of function [inferPathType][#inferpathtypepath-options]
-
-### `inferPathObject`
-
-The function [inferPathType](#inferpathtypepath-options) returns an iterator emitting values of type `inferPathObject`
-
-```typescript
-interface inferPathObject {
-    posix?: PathType;
-    unc?: PathType;
-    dos?: PathType;
-    devicePath?: PathType;
-}
-```
-
-### `lexPathObject`
-
-The function [lexPath](#lexpathpathoptions) and [resolve](#resolvepath) return a this single instance of this type
-
-```typescript
-interface lexPathObject {
-    type: 'dos'||'posix'||'devicePath'||'unc';
-    path: PathType;
-    firstError?: string; // the first error in the "path" array of tokens.
+    firstError?: string; //-> first error encounterd in the token array (from left to right)
 }
 ```
 
