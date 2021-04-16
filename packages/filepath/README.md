@@ -49,10 +49,10 @@ const {  inferPathType, lexPath,  resolve } = require('@mangos/filepath');
 
 - `path` [string][string] File path
 - `options` [Object][object]
-    - `unc`: [boolean][boolean] interperet (if possible) the `path` as a `unc` pathname, if it is not possible there will be no `unc` entry in the return value object.
-    - `dos`: [boolean][boolean] interperet (if possible) the `path` as a TDP (Traditional dos Path)
-    - `devicePath`: [boolean][boolean] interperet (if possible) the `path` as a DDP ([Dos Device Path](#ddp)).
-    - `posix`: [boolean][boolean] interpret (if possible) the `path` as a [UNIX devivce path][posix]. 
+    - **unc**: [boolean][boolean] default will be set the the value of `platform === 'win32'`. If true, interperet the path as a unc pathname, if this is not possibe, `lexPath` returns undefined.
+    - **dos**: [boolean][boolean] default will be set to the value of  `platform === 'win32'`. If true,interperet as a TDP (Traditional Dos Path), if not possible, `lexPath` returns undefined.
+    - **devicePath**: [boolean][boolean] default will be set to value of `platform === 'win32'`. If true, interperet as DDP (Dos Device Path).
+    - **posix**: [boolean][boolean] default will be set to value of `platform !== 'win32'`. If true,interpret a UNIX devivce path.
 - Returns: [iterator < inferPathObject >](#inferpathobject) an Iterator returning valid interpretations (plural) of the `path` the most likely file types first.
 
 ```javascript
@@ -89,10 +89,10 @@ let value, done;
 
 - `path` [string][string] File path.
 - `options` [Object][object]
-    - unc: [boolean][boolean] interperet (if possible) the path as a unc pathname, if it is not possible there will be no unc entry in the return value object.
-    - dos: [boolean][boolean] interperet (if possible) the path as a TDP (Traditional dos Path)
-    - devicePath: [boolean][boolean] interperet (if possible) the path as a DDP (Dos Device Path).
-    - posix: [boolean][boolean] interpret (if possible) the path as a UNIX devivce path.
+    - **unc**: [boolean][boolean] default will be set the the value of `platform === 'win32'`. If true, interperet the path as a unc pathname, if this is not possibe, `lexPath` returns undefined.
+    - **dos**: [boolean][boolean] default will be set to the value of  `platform === 'win32'`. If true,interperet as a TDP (Traditional Dos Path), if not possible, `lexPath` returns undefined.
+    - **devicePath**: [boolean][boolean] default will be set to value of `platform === 'win32'`. If true, interperet as DDP (Dos Device Path).
+    - **posix**: [boolean][boolean] default will be set to value of `platform !== 'win32'`. If true,interpret a UNIX devivce path.
 - Returns: Object of type [lexPathObject](#lexpathobject). 
 
 
