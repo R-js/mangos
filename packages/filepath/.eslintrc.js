@@ -2,11 +2,12 @@ module.exports = {
     env: {
         node: true,
         es6: true,
-        mocha: true
+        mocha: true,
+        dom: true
     },
     root: true,
     parserOptions: {
-        ecmaVersion: 2017,
+        ecmaVersion: 2020,
         sourceType: 'module'
     },
     extends:'eslint:recommended',

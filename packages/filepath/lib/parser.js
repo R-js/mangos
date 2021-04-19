@@ -1,4 +1,3 @@
-
 const {
     posixAbsorber,
     tdpAbsorber,
@@ -20,40 +19,34 @@ const absorberMapping = {
 const allNamespaces = ['devicePath', 'unc', 'dos', 'posix'];
 
 function lexPath(path = '', options = {}) {
-    if (typeof path === 'string') {
-        const rc = {};
-        const iterator = inferPathType(path, options);
-        const step = iterator.next(); // only get the first one (is also the most likely one)
-        if (step.done){
-            return undefined;
-        }
-        const ns = Object.getOwnPropertyNames(step.value)[0];
-        Object.assign(rc, step.value[ns]);
-        rc.type = ns;
-        return rc;
+    if (typeof path !== 'string') {
+        return path;
     }
-    return path; // its not a string
+    const iterator = inferPathType(path, options);
+    const step = iterator.next(); // only get the first one (is also the most likely one)
+    if (step.done) {
+        return undefined;
+    }
+    return step.value;
 }
 
 function filterErr(t) {
     return t.error !== undefined;
 }
 
-function clonePath(path){
-    return Array.from({ length: path.length }, (v,i) => Object.assign({}, path[i]));
+function clonePath(path) {
+    return Array.from({ length: path.length }, (v, i) => Object.assign({}, path[i]));
 }
 
 function createPathProcessor(path) {
     return function (ns, absorber) {
-        const rc = {};
+        // get all path tokens at once
         const _tokens = Array.from(absorber(path));
-        if (_tokens.length === 0) {
-            return undefined;
-        }
-        rc[ns] = { path: _tokens };
+        if (_tokens.length === 0) return;
+        const rc = { type: ns, path: _tokens };
         const firstError = _tokens.find(filterErr);
         if (firstError) {
-            rc[ns].firstError = firstError;
+            rc.firstError = firstError;
         }
         return rc;
     };
@@ -106,10 +99,10 @@ function resolve(_from, ..._to) {
     if (_from && _from.firstError) {
         throw TypeError(`"from" path contains errors: ${getErrors(_from)}`)
     }
-    if (_from === undefined){
+    if (_from === undefined) {
         _from = lexPath(getCWD());
     }
-    if (!(_from.path[0].token in rootTokenValues)){
+    if (!(_from.path[0].token in rootTokenValues)) {
         _to.unshift(_from);
         _from = lexPath(getCWD());
     }
@@ -118,7 +111,7 @@ function resolve(_from, ..._to) {
     if (to && to.firstError) {
         throw TypeError(`"to" path contains errors: ${getErrors(to)}`)
     }
-    if (to === undefined){
+    if (to === undefined) {
         return _from;
     }
     if (to.path && to.path[0].token in rootTokenValues) {
@@ -153,24 +146,16 @@ function resolve(_from, ..._to) {
 }
 
 function getSeperator() {
-    if (typeof global !== 'undefined' && global.process && global.process.platform) {
-        if (global.process.platform === 'win32') {
-            return '\\';
-        }
+    const platform = globalThis?.navigator?.platform || globalThis?.process?.platform || 'posix';
+    if (platform === 'win32') {
+        return '\\';
     }
     return '/';
 }
 
 function defaultOptions(options = {}) {
     if (Object.keys(options).filter(f => allNamespaces.includes(f)).length === 0) {
-        let platform;
-        // node?
-        if (typeof global !== 'undefined' && global.process && global.process.platform) {
-            platform = global.process.platform;
-
-        } else { // browser 
-            platform = 'posix';
-        }
+        const platform = globalThis?.navigator?.platform || globalThis?.process?.platform || 'posix';
         Object.assign(options, {
             unc: platform === 'win32',
             dos: platform === 'win32',
@@ -187,10 +172,10 @@ function defaultOptions(options = {}) {
 function* inferPathType(path, options = {}) {
     defaultOptions(options);
     const processor = createPathProcessor(path);
-    const filtered = allNamespaces.filter(f=> options[f])
+    const filtered = allNamespaces.filter(f => options[f])
     for (const ns of filtered) {
         const result = processor(ns, absorberMapping[ns]);
-        if (result){
+        if (result) {
             yield result;
         }
     }
