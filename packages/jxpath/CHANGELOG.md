@@ -1,5 +1,11 @@
 ## current
 
+# 1.0.12
+
+## changes
+ changed package.json "type" to "commonjs"
+  
+
 - `.gitignored` renamed to `.gitignore`
 
 ## 1.0.11
