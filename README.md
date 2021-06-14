@@ -146,7 +146,7 @@ Lets ask some simple questions/queries and see how to to use JXPath to slice and
 ```javascript
     const jxpath = require('@mangos/jxpath');
     const iterator = jxpath('/**/unit_price');
-    //-> [ 'Tammy Bryant', 'Roy White', 'Walter Turner' ]
+    //-> [ 42.01, 42.01 ]
 ```
 
 
