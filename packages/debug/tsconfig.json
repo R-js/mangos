@@ -1,0 +1,7 @@
+{
+  "extends": "@vercel/style-guide/typescript",
+  "compilerOptions": {
+    "target": "ES2019"
+  },
+  "include": ["src/"]
+}
