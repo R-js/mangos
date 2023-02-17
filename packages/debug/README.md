@@ -1,6 +1,6 @@
-# @mango/debug
+# @mangos/debug
 
-@mango/debug is an esm (and also a commonjs) ultra fast mini-logger written in typescript.
+@mangos/debug is an esm (and also a commonjs) ultra fast mini-logger written in typescript.
 
 It was created because the current version of npm `debug` does not have an esm module.
 
@@ -16,7 +16,7 @@ It was created because the current version of npm `debug` does not have an esm m
 ## Installation
 
 ```bash
-npm i @mango/debug
+npm i @mangos/debug
 ```
 
 ### Quick Example
@@ -26,7 +26,7 @@ This example shows the main features
 _index.js_
 
 ```typescript
-import debug from './dist/esm/index.mjs';
+import debug from '@mangos/debug';
 
 // logger for namespace "worker#1"
 const printer1 = debug('worker#1');
@@ -110,7 +110,7 @@ Properties on `Printer`:
 _index.js_
 
 ```typescript
-import debug from '@mango/debug';
+import debug from '@mangos/debug';
 
 import assert from 'node:assert';
 
@@ -162,7 +162,7 @@ env DEBUG="*,-accounts" node index.js
 Change the value of `DEBUG` in localStorage and call the function `evalAllNS()` to re-evaluate the enabling of all existing printers.
 
 ```typescript
-import { evalAllNS } from '@mango/debug';
+import { evalAllNS } from '@mangos/debug';
 
 window.localStorage.setItem('DEBUG', '*,-login'); // or do this manually in dev console
 // must call this afterwards to effect changes
@@ -174,7 +174,7 @@ evalAllNS(); // re-evaluate currently existing Printers/Namespaces
 The `DEBUG` environment variable value is copied to an internal state at process startup. This internal value can be changed via `setConfig`
 
 ```typescript
-import { setConfig } from '@mango/debug';
+import { setConfig } from '@mangos/debug';
 
 setConfig({ namespaces: '*,!-blog123' }); //this will override the value of "DEBUG".
 ```
@@ -201,7 +201,7 @@ The default value of `DEBUG_COLORS` will be taken as "true".
 Change the value of `DEBUG_COLORS` in localStorage and call the function `evalAllNS()` to re-evaluate the enabling of all existing printers.
 
 ```typescript
-import { evalAllNS } from '@mango/debug';
+import { evalAllNS } from '@mangos/debug';
 
 window.localStorage.setItem('DEBUG_COLORS', 'F'); // or do this manually in dev console
 
@@ -214,7 +214,7 @@ evalAllNS(); // re-evaluate currently existing Printers/Namespaces
 The `DEBUG_COLORS` environment variable value is copied to an internal state at process startup. This internal value can be changed via `setConfig`.
 
 ```typescript
-import { setConfig } from '@mango/debug';
+import { setConfig } from '@mangos/debug';
 
 setConfig({ useColors: false }); //this will override the value of "DEBUG_COLORS".
 ```
@@ -237,7 +237,7 @@ Value will be regarded as true if it matches **case insensitive** comparison `"T
 Change the value of `DEBUG_HIDE_DATE` in localStorage and call the function `evalAllNS()` to re-evaluate the enabling of all existing printers.
 
 ```typescript
-import { evalAllNS } from '@mango/debug';
+import { evalAllNS } from '@mangos/debug';
 
 window.localStorage.setItem('DEBUG_HIDE_DATE', 'F'); // or do this manually in dev console
 
@@ -250,7 +250,7 @@ evalAllNS(); // re-evaluate currently existing Printers/Namespaces
 The `DEBUG_HIDE_DATE` environment variable value is copied to an internal state at process startup. This internal value can be changed via `setConfig`.
 
 ```typescript
-import { setConfig } from '@mango/debug';
+import { setConfig } from '@mangos/debug';
 
 // equal to DEBUG_HIDE_DATE=true
 setConfig({ showDate: false }); //this will override the value of "DEBUG_COLORS".
@@ -274,7 +274,7 @@ function getConfig(): Config;
 Example:
 
 ```typescript
-import { setConfig, getConfig } from '@mango/debug';
+import { setConfig, getConfig } from '@mangos/debug';
 
 setConfig({ namespace: 'worker*' });
 

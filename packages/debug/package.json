@@ -1,6 +1,6 @@
 {
   "name": "@mangos/debug",
-  "version": "0.0.9-rc4",
+  "version": "0.0.9-rc5",
   "description": "super tiny and fast logger inspired by debug",
   "repository": {
     "directory": "./packages/debug",

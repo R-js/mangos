@@ -9,7 +9,7 @@ This is a filepath parsing _(LL(1) parser)_ and manipulation tool. It returns a 
 
 FilePath tool complements the nodejs `path` module, parsing the following path types.
 
-_Part of the monorepo [mangos][mango-mono-repo]_
+_Part of the monorepo [mangos][mangos-mono-repo]_
 
 _Support the work by starring this [repo](https://github.com/R-js/mangos) on github._
 
@@ -292,5 +292,5 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [tdp]: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#traditional-dos-paths
 [posix]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap03.html#tag_03_266
 [object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
-[mango-mono-repo]: https://github.com/R-js/mangos
+[mangos-mono-repo]: https://github.com/R-js/mangos
 
