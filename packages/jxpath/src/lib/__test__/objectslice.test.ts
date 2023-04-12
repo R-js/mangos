@@ -1,17 +1,3 @@
-const chaiAsPromised = require('chai-as-promised');
-const {
-    describe,
-    it
-} = require('mocha');
-
-const chai = require('chai');
-chai.should();
-chai.use(chaiAsPromised);
-
-const {
-    expect
-} = chai;
-
 const clone = require('clone');
 
 const objectSlice = require('../src/lib/objectSlice');
@@ -132,7 +118,7 @@ describe('objectSlice', () => {
                 shop: 'WalMart'
             }]);
         });
-       
+
         it('not select anything "/customers/orderItems/[nonexistingKey=\\/111\\/]"', () => {
             const copy = clone(data);
             const path = '/customers/orderItems/[/nonexistingKey/=/111/]';
@@ -218,22 +204,28 @@ describe('objectSlice', () => {
             const copy = clone(data);
             const iterator = createIterator(Array.from(pathAbsorber('/**/zip')));
             const result = Array.from(objectSlice(copy, iterator));
-            expect(result).to.deep.equal(['PA 17557','NJ 07457','NY 11236']);
+            expect(result).to.deep.equal(['PA 17557', 'NJ 07457', 'NY 11236']);
         });
         it('recursive descent "/**/zip/../"', () => {
             const copy = clone(data);
             const iterator = createIterator(Array.from(pathAbsorber('/**/zip/../')));
             const result = Array.from(objectSlice(copy, iterator));
-            expect(result).to.deep.equal([ { streetName: 'E Main St, New Holland',
-            zip: 'PA 17557',
-            houseNr: 331 },
-          { streetName: 'NJ-23 Riverdale',
-            zip: 'NJ 07457',
-            houseNr: 48,
-            state: 'NJ' },
-          { zip: 'NY 11236',
-            streetName: 'Devonshire Dr.Brooklyn',
-            houseNumber: 72 } ]);
+            expect(result).to.deep.equal([{
+                streetName: 'E Main St, New Holland',
+                zip: 'PA 17557',
+                houseNr: 331
+            },
+            {
+                streetName: 'NJ-23 Riverdale',
+                zip: 'NJ 07457',
+                houseNr: 48,
+                state: 'NJ'
+            },
+            {
+                zip: 'NY 11236',
+                streetName: 'Devonshire Dr.Brooklyn',
+                houseNumber: 72
+            }]);
         });
     });
 });

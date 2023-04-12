@@ -1,6 +1,13 @@
-.nyc_output
+.jest-cache
+.vscode
 coverage
 node_modules
-test
-
-
+scripts
+src
+tools
+.eslintrc.cjs
+.gitignore
+.npmrc
+jest.config.cjs
+package-lock.json
+tsconfig.json

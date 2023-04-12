@@ -1,9 +1,10 @@
 'use strict';
 
+
 const {
     tokens
 } = require('./tokenizer');
-const isObject = o => typeof o === 'object' && o !== null && !Array.isArray(o);
+
 
 const predicates = {
     [tokens.BRACKET_CLOSE]: 1,
@@ -119,7 +120,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
         }
         // test for errors, if errors basicly throw errors
         if (approve(opaque, clauses)) {
-            yield *objectSlice(opaque, iterator, parentFn, ignore);
+            yield* objectSlice(opaque, iterator, parentFn, ignore);
             return;
         }
         return;
@@ -134,11 +135,11 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
             if (Array.isArray(newOpaque)) {
                 const pancaked = flatterMap(newOpaque);
                 for (const opaqueSingle of pancaked) {
-                    yield *objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn), ignore);
+                    yield* objectSlice(opaqueSingle, iterator.fork(), createParent(opaque, parentFn), ignore);
                 }
                 return;
             }
-            yield *objectSlice(newOpaque, iterator, createParent(opaque, parentFn), ignore);
+            yield* objectSlice(newOpaque, iterator, createParent(opaque, parentFn), ignore);
             return;
         }
         return;
@@ -151,11 +152,11 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
             d,
             p
         } = parentFn();
-        yield *objectSlice(d, iterator, p, ignore);
+        yield* objectSlice(d, iterator, p, ignore);
         return;
     }
-    if (instr.token === tokens.RECURSIVE_DESCENT){
-        if (!isObject(opaque)) { 
+    if (instr.token === tokens.RECURSIVE_DESCENT) {
+        if (!isObject(opaque)) {
             return;
         }
         // absorb consequitive recursive descent tokens
@@ -164,28 +165,28 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
             return; // blind recursive descent we dont do
         }
         const iterator2 = iterator.fork();
-        iterator2.stepBackWhileTrue(p => p.value === tokens.SLASH || p.value.token !== tokens.RECURSIVE_DESCENT );
-        
-        yield *objectSlice(opaque, iterator, parentFn, ignore);
+        iterator2.stepBackWhileTrue(p => p.value === tokens.SLASH || p.value.token !== tokens.RECURSIVE_DESCENT);
+
+        yield* objectSlice(opaque, iterator, parentFn, ignore);
         // recursive descent
-        for (const [propName, value] of Object.entries(opaque)){
-            if (propName === ignore){
+        for (const [propName, value] of Object.entries(opaque)) {
+            if (propName === ignore) {
                 continue;
             }
-            if (isObject(value)){
+            if (isObject(value)) {
                 const iterator3 = iterator2.fork();
-                yield *objectSlice(value, iterator3, createParent(value, parentFn), ignore); 
+                yield* objectSlice(value, iterator3, createParent(value, parentFn), ignore);
                 continue;
             }
-            if (Array.isArray(value)){
-                for (const value2 of value){
+            if (Array.isArray(value)) {
+                for (const value2 of value) {
                     const iterator3 = iterator2.fork();
-                    yield *objectSlice(value2, iterator3, createParent(value2, parentFn), ignore);
+                    yield* objectSlice(value2, iterator3, createParent(value2, parentFn), ignore);
                 }
             }
         }
         return;
-        
+
     }
     throw new Error(`token is invvalid ${JSON.stringify(instr)}`);
 }

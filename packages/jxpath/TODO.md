@@ -1,1 +1,0 @@
-- document requre('@mangos/jxpath/internals') module
