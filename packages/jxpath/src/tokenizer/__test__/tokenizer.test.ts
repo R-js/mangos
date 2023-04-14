@@ -6,6 +6,39 @@ describe('pathTokenizer (tokenizing jxpath query)', () => {
             const tokens = Array.from(pathTokenizer(''));
             expect(tokens).toEqual([]);
         });
+        it('only "/"', () => {
+            const tokens = Array.from(pathTokenizer('/'));
+            expect(tokens).toEqual([{ type: '/', start: 0, end: 0 }]);
+        });
+        it('tokenize white space" / \t \t  /"', () => {
+            const tokens = Array.from(pathTokenizer('  /  \t \t   / '));
+            expect(tokens).toEqual([
+                { type: 'literal', start: 0, end: 1, value: '  ' },
+                { type: '/', start: 2, end: 2 },
+                { type: 'literal', start: 3, end: 10, value: '  \t \t   ' },
+                { type: '/', start: 11, end: 11 },
+                { type: 'literal', start: 12, end: 12, value: ' ' }
+            ]);
+        });
+        it('tokenize "//" (double /)', () => {
+            {
+
+                const tokens = Array.from(pathTokenizer('/ /'));
+                expect(tokens).toEqual([
+                    { type: '/', start: 0, end: 0 },
+                    { type: 'literal', start: 1, end: 1, value: ' ' },
+                    { type: '/', start: 2, end: 2 }
+                ]);
+            }
+            {
+                const tokens = Array.from(pathTokenizer('/\n/'));
+                expect(tokens).toEqual([
+                    { type: '/', start: 0, end: 0 },
+                    { type: 'literal', start: 1, end: 1, value: '\n' },
+                    { type: '/', start: 2, end: 2 }
+                ]);
+            }
+        });
     });
     describe('regression fidelity', () => {
         it('TODO', () => {

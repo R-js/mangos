@@ -202,7 +202,7 @@ function literalExpressionAbsorber(str = '', start = 0, end = str.length - 1): T
     }
     return i > end
         ? createToken('literal', start, end, str.slice(start, end + 1))
-        : createToken('literal', start, i, str.slice(start, i));
+        : createToken('literal', start, i - 1, str.slice(start, i));
 }
 /*
 interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
@@ -230,7 +230,7 @@ export default function* pathTokenizer(
     let i = start;
     while (i <= end) {
         if (str[i] === '/' && str[i - 1] !== '\\') {
-            yield createToken('/', start, start);
+            yield createToken('/', i, i);
             i++;
             continue;
         }
