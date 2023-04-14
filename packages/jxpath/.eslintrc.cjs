@@ -1,54 +1,54 @@
-const tsFilePattern = "**/*.ts";
+const tsFilePattern = '**/*.ts';
 module.exports = {
     root: true,
     env: {
         browser: true,
         es6: true,
         node: true,
-        jest: true,
+        jest: true
     },
     /* defaults */
-    parser: "@babel/eslint-parser",
+    parser: '@babel/eslint-parser',
     parserOptions: {
         ecmaVersion: 2020,
         requireConfigFile: false,
-        sourceType: "module",
-        extraFileExtensions: [".mjs", ".cjs"],
+        sourceType: 'module',
+        extraFileExtensions: ['.mjs', '.cjs'],
         babelOptions: {
             parserOpts: {
-                plugins: ["importAssertions"],
-            },
-        },
+                plugins: ['importAssertions']
+            }
+        }
     },
+    plugins: [],
+
     overrides: [
         {
             files: [tsFilePattern],
-            parser: "@typescript-eslint/parser",
+            parser: '@typescript-eslint/parser',
             parserOptions: {
                 ecmaVersion: 2020,
-                sourceType: "module",
+                sourceType: 'module',
                 tsconfigRootDir: __dirname,
-                project: ["./tsconfig.json"],
+                project: ['./tsconfig.json']
             },
-            plugins: ["@typescript-eslint"],
+            plugins: ['@typescript-eslint', 'prettier'],
             extends: [
-                "eslint:recommended",
-                "plugin:@typescript-eslint/recommended",
-                "plugin:@typescript-eslint/recommended-requiring-type-checking",
+                'eslint:recommended',
+                'plugin:@typescript-eslint/recommended',
+                'plugin:@typescript-eslint/recommended-requiring-type-checking',
+                'prettier'
             ],
             rules: {
-                "@typescript-eslint/no-explicit-any": [
-                    "error",
-                    { ignoreRestArgs: true },
-                ],
-                "@typescript-eslint/explicit-module-boundary-types": "error",
-                "@typescript-eslint/no-namespace": [
-                    "error",
-                    { allowDeclarations: true },
-                ],
-                "@typescript-eslint/no-var-requires": 0,
-                "@typescript-eslint/no-loss-of-precision": 0,
-            },
-        },
+                'prettier/prettier': 2,
+                '@typescript-eslint/no-explicit-any': ['error', { ignoreRestArgs: true }],
+                '@typescript-eslint/explicit-module-boundary-types': 'error',
+                '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }],
+                '@typescript-eslint/no-var-requires': 0,
+                '@typescript-eslint/no-loss-of-precision': 0,
+                '@typescript-eslint/require-await': 0,
+                '@typescript-eslint/no-floating-promises': 0
+            }
+        }
     ]
 };

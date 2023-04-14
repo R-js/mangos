@@ -10,7 +10,10 @@ export default function jxpath(path, data = undefined, ignore = undefined) {
         throw new Error(`path cannot be empty or just spaces`);
     }
     const tokens = Array.from(pathAbsorber(path.trim()));
-    const error = tokens.filter(f => f.error).map(m => m.error).join('\n|');
+    const error = tokens
+        .filter((f) => f.error)
+        .map((m) => m.error)
+        .join('\n|');
     if (error) {
         throw new Error(error);
     }
@@ -21,6 +24,5 @@ export default function jxpath(path, data = undefined, ignore = undefined) {
     }
     return function (data, ignore2) {
         return objectSlice(data, iterator.fork(), undefined, ignore2);
-    }
-};
-
+    };
+}

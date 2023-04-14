@@ -1,83 +1,81 @@
 type Location = {
-    start: number
-    end: number
-}
+    start: number;
+    end: number;
+};
 
 type Value = {
-    value: string
-}
+    value: string;
+};
 
 type LocationValue = Value & Location;
 
 export type TokenPredicateRegExp = Location & {
-    type: 'regexp'
-    value: RegExp
-}
+    type: 'regexp';
+    value: RegExp;
+};
 
 export type ErrorInvalidRegExp = LocationValue & {
-    type: 'error.invalid.regexp'
-}
+    type: 'error.invalid.regexp';
+};
 
 export type ErrorMissingEqualSignAfterLiteralExpression = Location & {
-    type: 'error.missing.equal.sign.after.literal'
-}
+    type: 'error.missing.equal.sign.after.literal';
+};
 
 export type ErrorInvalidRegExpNoEnding = LocationValue & {
-    type: 'error.regexp.no.ending'
-}
+    type: 'error.regexp.no.ending';
+};
 
 export type ErrorNoClosingBrack = Location & {
-    type: 'error.no.closing.bracket',
-}
+    type: 'error.no.closing.bracket';
+};
 
 export type ErrorNoLValue = {
-    type: 'error.no.L.value'
-}
+    type: 'error.no.L.value';
+};
 
 export type ErrorNoRValue = {
-    type: 'error.no.R.value'
-}
+    type: 'error.no.R.value';
+};
 
 export type ErrorNoEqualSign = LocationValue & {
-    type: 'error.no.equal.or.bracket.sign'
-}
+    type: 'error.no.equal.or.bracket.sign';
+};
 
 export type TokenSlash = Location & {
-    type: '/'
-}
+    type: '/';
+};
 
 export type TokenParent = Location & {
-    type: '..'
-}
+    type: '..';
+};
 
 export type TokenCurrent = Location & {
-    type: '.'
-}
+    type: '.';
+};
 
 export type TokenLiteral = LocationValue & {
-    type: 'literal'
-}
+    type: 'literal';
+};
 
 export type TokenEqual = Location & {
-    type: '='
-}
+    type: '=';
+};
 
 export type TokenBrackOpen = Location & {
-    type: '['
-}
+    type: '[';
+};
 
 export type TokenBrackClose = Location & {
-    type: ']'
-}
+    type: ']';
+};
 
 export type TokenRecursiveDescent = Location & {
-    type: '**'
-}
-
-
+    type: '**';
+};
 
 export type AllTokens =
-    ErrorInvalidRegExp
+    | ErrorInvalidRegExp
     | ErrorInvalidRegExpNoEnding
     | ErrorNoLValue
     | ErrorNoRValue
@@ -106,12 +104,9 @@ type TokenOfTypeMap<T extends TokenType> = AllTokenMap[T];
 
 type ValueType<T> = T extends { value: infer P } ? [P] : never[];
 
+type LocationType<T> = T extends { start: infer P; end: infer Q } ? [P, Q] : never[];
 
-type LocationType<T> = T extends { start: infer P, end: infer Q } ? [P, Q] : never[];
-
-
-type AllOptionals<T> = [...LocationType<T>, ...ValueType<T>]
-
+type AllOptionals<T> = [...LocationType<T>, ...ValueType<T>];
 
 export function createToken<
     TName extends TokenType,

@@ -1,9 +1,9 @@
 'use strict';
 module.exports = function createIterator(iterator, cursor = 0) {
     const arr = Array.from(iterator);
-    return ({
+    return {
         advanceWhileTrue(fn) {
-            const rc = { done: false};
+            const rc = { done: false };
             do {
                 if (cursor >= arr.length) {
                     rc.done = true;
@@ -19,7 +19,7 @@ module.exports = function createIterator(iterator, cursor = 0) {
             } while (true);
         },
         advanceUntillFalse(fn) {
-            const rc = { done: false};
+            const rc = { done: false };
             do {
                 if (cursor >= arr.length) {
                     rc.done = true;
@@ -35,16 +35,16 @@ module.exports = function createIterator(iterator, cursor = 0) {
                 return rc;
             } while (true);
         },
-        stepBackWhileTrue(fn){
+        stepBackWhileTrue(fn) {
             do {
-                cursor = cursor > 0 ? cursor -1: 0;
+                cursor = cursor > 0 ? cursor - 1 : 0;
                 if (cursor === 0) return false;
                 const rc = arr[cursor];
-                if (fn(rc)){
+                if (fn(rc)) {
                     continue; // will step back one more time
                 }
                 break;
-            } while(true);
+            } while (true);
         },
         next(fn) {
             const rc = { value: undefined, done: false };
@@ -66,6 +66,8 @@ module.exports = function createIterator(iterator, cursor = 0) {
         fork() {
             return createIterator(arr, cursor);
         },
-        [Symbol.iterator]: function () { return this }
-    });
-}
+        [Symbol.iterator]: function () {
+            return this;
+        }
+    };
+};

@@ -1,49 +1,32 @@
+const testRegex = ['src/tokenizer/__test__/tokenizer.test.ts'];
 
-const testRegex = [
-
-];
-
-const collectCoverageFrom = [
-    'src/lib/**/*.ts',
-];
+const collectCoverageFrom = ['src/**/*.ts'];
 
 module.exports = {
     automock: false,
     collectCoverage: true,
-    maxWorkers: "50%",
+    maxWorkers: '50%',
     collectCoverageFrom,
-    coveragePathIgnorePatterns: ['node_modules', 'test'],
+    coveragePathIgnorePatterns: ['node_modules', 'dist'],
     coverageDirectory: 'coverage',
-    coverageProvider: 'babel', //"v8" is still experimental, but use "v8" for walk through debugging
-    //coverageProvider: 'v8', //"v8" is still experimental, but use "v8" for walk through debugging
+    coverageProvider: 'babel',
     coverageReporters: ['json', 'lcov', 'text', 'clover'],
     preset: 'ts-jest',
     testEnvironment: 'node',
     verbose: true,
     cacheDirectory: '.jest-cache',
-    testPathIgnorePatterns: ['/esm/', '/commonjs/', '/types/'],
-    //testMatch: ['**/__tests__/**/*.[t]s?(x)', '**/?(*.)+(spec|test).[t]s?(x)'],
+    testPathIgnorePatterns: ['/dist/', '/node_modules/'],
     testRegex,
     transform: {
-        "\\.test\\.ts$": ["ts-jest", {
-            compiler: 'typescript',
-            tsconfig: 'tsconfig.json',
-            diagnostics: {
-                ignoreCodes: [151001],
-            },
-        }]
-    },
-    moduleNameMapper: {,
-        '^@lib/(.*)$': '<rootDir>/src/lib/$1',
-        '^lib/(.*)$': '<rootDir>/src/lib/$1'
-    },
-    //setupFiles: [
-    //    '<rootDir>/src/packages/__test__/jest-ext.d.ts'
-    //],
-    setupFilesAfterEnv: [
-        '<rootDir>/src/setupTestEnv.ts',
-        //'<rootDir>/src/packages/__test__/mock-of-debug.ts'
-    ],
+        '\\.test\\.ts$': [
+            'ts-jest',
+            {
+                compiler: 'typescript',
+                tsconfig: 'tsconfig.json',
+                diagnostics: {
+                    ignoreCodes: [151001]
+                }
+            }
+        ]
+    }
 };
-
-
