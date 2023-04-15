@@ -54,10 +54,6 @@ export type TokenIdentifier = LocationValue & {
     type: 'identifier';
 };
 
-export type ErrorNotAnIdentifier = LocationValue & {
-    type: 'error.not.an.identifier';
-};
-
 export type TokenArrayPredicate = LocationValue & {
     type: 'array.predicate';
 };
@@ -77,7 +73,6 @@ export type AllTokens =
     | ErrorNoRValue
     | ErrorNoClosingBrack
     | ErrorNoEqualSign
-    | ErrorNotAnIdentifier
     | TokenPredicateRegExp
     | TokenSlash
     | TokenParent

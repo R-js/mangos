@@ -1,4 +1,5 @@
 import regExpAbsorber, { lookAhead, lookAheadSize } from '../regexpTokenizer';
+
 describe('regexp() function test', () => {
     describe('normal operation', () => {
         it('regexp(/(?:something|nothing)/)', () => {
