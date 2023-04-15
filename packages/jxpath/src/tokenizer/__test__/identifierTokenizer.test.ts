@@ -12,6 +12,7 @@ describe('identifier recognition', () => {
         it('lookAhead', () => {
             expect(lookAhead(' ', 0)).toBe(false);
             expect(lookAhead('\\ ', 0)).toBe(true);
+            expect(lookAhead('ayz', 0)).toBe(true);
         });
         it('lookAheadSize', () => {
             expect(lookAheadSize()).toBe(1);

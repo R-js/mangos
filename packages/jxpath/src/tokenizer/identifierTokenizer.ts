@@ -12,7 +12,14 @@ export { specialChars };
 // any character that can be used as a js property name
 
 export function lookAhead(str = '', start = 0): boolean {
-    return specialChars.includes(str[start]) === false; // anything goes except for a separator
+    const { esc: e1, next: n1 } = escape(str, start);
+    if (specialChars.includes(e1)) {
+        if (n1 === start + 2) {
+            return true;
+        }
+        return false;
+    }
+    return true;
 }
 
 export function lookAheadSize(): number {
@@ -21,9 +28,6 @@ export function lookAheadSize(): number {
 
 function escape(str: string, i: number): { esc: string; next: number } {
     if (str[i] === esc) {
-        if (str[i + 1] === esc) {
-            return { esc: esc, next: i + 2 };
-        }
         return {
             esc: str[i + 1],
             next: i + 2
