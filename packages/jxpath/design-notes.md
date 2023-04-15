@@ -5,11 +5,12 @@
  
 ### `<path-separator>`
 
- `<path-separator>` is the `/` character.
+- `<path-separator> ::= '/'`.
 
 ###  `<identifier>`
 
- `<identifier>` is any code point allowed as part of a js object-property-name.
+- `<identifier>` is any code point allowed as part of a js object-property-name.
+
 Characters from this sequence need to be escaped `\\` to be included in an `<identifier>`
 **An escape sequence is a double `\\`, this is because `\` is an escape character in js itself.**
 
@@ -35,3 +36,9 @@ Example: if you want to include `{` as part of an identifier name escape it like
 An identifier character sequence is terminated when one of the above characters is encountered NON-escaped.
 
 ### `<array-predicate>`
+
+- `<array-predicate> ::= <identifier>[ <index-predicate> ]`
+- `<index-predicate> ::= 'n' <comparison-operator> <numerical-constant>`
+- `<comparison-operator> ::=` one out of the sequence `<`, `>`, `!=`, `==`, `>=`, `<=`
+- `<numerical-constant> ::=` positive integer `[1-9]{1}[0-9]*`
+
