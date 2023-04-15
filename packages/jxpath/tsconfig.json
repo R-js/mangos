@@ -1,5 +1,7 @@
 {
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts"
+],
   "typeAcquisition": {
     "enable": true,
     "disableFilenameBasedTypeAcquisition": true

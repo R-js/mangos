@@ -54,7 +54,13 @@ const inputOptions = {
     external: (id) => {
         return builtin.includes(id);
     },
-    plugins: [shims(), nodeResolve({ dedupe: ['@mangos/debug', 'ms'], exportConditions: ['import'] })]
+    plugins: [
+        shims(),
+        nodeResolve({
+            dedupe: ['@mangos/debug', 'ms'],
+            exportConditions: ['import']
+        })
+    ]
 };
 
 const esmOutputOptions = {

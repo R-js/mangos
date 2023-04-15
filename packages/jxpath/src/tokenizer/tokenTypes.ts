@@ -11,15 +11,11 @@ type LocationValue = Value & Location;
 
 export type TokenPredicateRegExp = Location & {
     type: 'regexp';
-    value: RegExp;
+    value: RegExp | string | undefined;
 };
 
 export type ErrorInvalidRegExp = LocationValue & {
     type: 'error.invalid.regexp';
-};
-
-export type ErrorMissingEqualSignAfterLiteralExpression = Location & {
-    type: 'error.missing.equal.sign.after.literal';
 };
 
 export type ErrorInvalidRegExpNoEnding = LocationValue & {
@@ -30,7 +26,7 @@ export type ErrorNoClosingBrack = Location & {
     type: 'error.no.closing.bracket';
 };
 
-export type ErrorNoLValue = {
+export type ErrorNoLValue = Location & {
     type: 'error.no.L.value';
 };
 
@@ -54,20 +50,20 @@ export type TokenCurrent = Location & {
     type: '.';
 };
 
-export type TokenLiteral = LocationValue & {
-    type: 'literal';
+export type TokenIdentifier = LocationValue & {
+    type: 'identifier';
+};
+
+export type ErrorNotAnIdentifier = LocationValue & {
+    type: 'error.not.an.identifier';
+};
+
+export type TokenArrayPredicate = LocationValue & {
+    type: 'array.predicate';
 };
 
 export type TokenEqual = Location & {
     type: '=';
-};
-
-export type TokenBrackOpen = Location & {
-    type: '[';
-};
-
-export type TokenBrackClose = Location & {
-    type: ']';
 };
 
 export type TokenRecursiveDescent = Location & {
@@ -80,16 +76,14 @@ export type AllTokens =
     | ErrorNoLValue
     | ErrorNoRValue
     | ErrorNoClosingBrack
-    | ErrorMissingEqualSignAfterLiteralExpression
     | ErrorNoEqualSign
+    | ErrorNotAnIdentifier
     | TokenPredicateRegExp
     | TokenSlash
     | TokenParent
     | TokenCurrent
-    | TokenLiteral
+    | TokenIdentifier
     | TokenEqual
-    | TokenBrackOpen
-    | TokenBrackClose
     | TokenRecursiveDescent;
 
 // lookup table
