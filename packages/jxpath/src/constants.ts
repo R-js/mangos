@@ -1,6 +1,5 @@
 const errorMsg = {
     'error.invalid.regexp': 'Invalid Regexp Expression',
-    'error.regexp.no.ending': 'Invalid Regexp Expression, could not find ending "/"',
     'error.no.closing.bracket': 'no closing ] found',
     'error.no.L.value': 'no L value at all',
     'error.no.equal.or.bracket.sign': 'invalid L-exp literal predicate, no following "=" found',

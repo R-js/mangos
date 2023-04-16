@@ -1,7 +1,7 @@
 # Design notes for the path selector query language
 
 
-## Non Terminals
+## Terminals
  
 ### `<path-separator>`
 
@@ -35,6 +35,7 @@ Example: if you want to include `{` as part of an identifier name escape it like
 
 An identifier character sequence is terminated when one of the above characters is encountered NON-escaped.
 
+## Non-Terminals
 ### `<array-predicate>`
 
 - `<array-predicate> ::= <identifier>[ <index-predicate> ]`
@@ -42,3 +43,6 @@ An identifier character sequence is terminated when one of the above characters 
 - `<comparison-operator> ::=` one out of the sequence `<`, `>`, `!=`, `==`, `>=`, `<=`
 - `<numerical-constant> ::=` positive integer `[1-9]{1}[0-9]*`
 
+## `<query>`
+
+- `<query> ::= <path-separator>? (<query> | <predicate>)`

@@ -18,10 +18,7 @@ export type ErrorInvalidRegExp = LocationValue & {
     type: 'error.invalid.regexp';
 };
 
-export type ErrorInvalidRegExpNoEnding = LocationValue & {
-    type: 'error.regexp.no.ending';
-};
-
+/*
 export type ErrorNoClosingBrack = Location & {
     type: 'error.no.closing.bracket';
 };
@@ -37,6 +34,7 @@ export type ErrorNoRValue = {
 export type ErrorNoEqualSign = LocationValue & {
     type: 'error.no.equal.or.bracket.sign';
 };
+*/
 
 export type TokenSlash = Location & {
     type: '/';
@@ -66,19 +64,42 @@ export type TokenRecursiveDescent = Location & {
     type: '**';
 };
 
+export type TokenDigit = Location & {
+    type: 'digit';
+    value: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+};
+
+export type TokenInteger = Location & {
+    type: 'integer';
+    value: number;
+};
+
+export type TokenBooleanOperator = Location & {
+    type: 'booleanOp';
+    value: '>' | '<' | '>=' | '<=' | '!=' | '==';
+};
+
+export type TokenWS = Location & {
+    type: 'whitespace';
+};
+
 export type AllTokens =
     | ErrorInvalidRegExp
-    | ErrorInvalidRegExpNoEnding
-    | ErrorNoLValue
-    | ErrorNoRValue
-    | ErrorNoClosingBrack
-    | ErrorNoEqualSign
+    // | ErrorInvalidRegExpNoEnding
+    // | ErrorNoLValue
+    // | ErrorNoRValue
+    // | ErrorNoClosingBrack
+    // | ErrorNoEqualSign
     | TokenPredicateRegExp
     | TokenSlash
     | TokenParent
     | TokenCurrent
     | TokenIdentifier
     | TokenEqual
+    | TokenWS
+    | TokenInteger
+    | TokenDigit
+    | TokenBooleanOperator
     | TokenRecursiveDescent;
 
 // lookup table

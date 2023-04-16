@@ -1,4 +1,4 @@
-export {};
+export { };
 
 // the pattern is identifier[xxxx]
 // xxx can be any of
@@ -8,3 +8,6 @@ export {};
 //  4.  n % 2 == 0
 //  5.  n >= 4
 //  6.  n <= 3
+
+// '<indentifier>['(ws)n(ws)<operator>(ws)integerToken(ws)']'
+// '<indentifier>['(ws)integerToken(ws)']'
