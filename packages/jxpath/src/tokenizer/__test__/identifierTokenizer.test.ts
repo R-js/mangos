@@ -1,6 +1,6 @@
 import identifierAbsorber, { lookAhead, lookAheadSize } from '../identifierTokenizer';
+import { esc } from '../../utils';
 
-const esc = '\\';
 const openBrack = '{';
 const at = '@';
 
@@ -13,6 +13,7 @@ describe('identifier recognition', () => {
             expect(lookAhead(' ', 0)).toBe(false);
             expect(lookAhead('\\ ', 0)).toBe(true);
             expect(lookAhead('ayz', 0)).toBe(true);
+            expect(lookAhead('ay\\\\z', 0)).toBe(true);
         });
         it('lookAheadSize', () => {
             expect(lookAheadSize()).toBe(1);
@@ -29,17 +30,24 @@ describe('identifier recognition', () => {
                 }
             `);
         });
-        it('propName indexed at the end: property\\*Name\\[ n => 1 ]', () => {
-            const name = 'property\\*Name\\[ n => 1 ]';
-            const token = identifierAbsorber(name);
-            expect(token).toMatchInlineSnapshot(`
-                {
-                  "end": 15,
-                  "start": 0,
-                  "type": "identifier",
-                  "value": "property\\*Name\\[",
-                }
-            `);
-        });
+        {
+            const data = `${esc}${openBrack}${esc}${esc}${at}`;
+            it(`propName with escaped chars: ${data}`, () => {
+                const token = identifierAbsorber(data);
+                expect(token).toEqual({ type: 'identifier', start: 0, end: 3, value: `${openBrack}${esc}` });
+            });
+        }
+        {
+            const data = `property${esc}*Name${esc}[n => 1 ]`;
+            it(`propName indexed at the end: ${data}`, () => {
+                const token = identifierAbsorber(data);
+                expect(token).toEqual({
+                    end: 16,
+                    start: 0,
+                    type: 'identifier',
+                    value: 'property*Name[n'
+                });
+            });
+        }
     });
 });

@@ -1,11 +1,10 @@
 import { createToken, TokenPredicateRegExp, ErrorInvalidRegExp } from './tokenTypes';
-import { regExpSafe } from '../utils';
+import { regExpSafe, escape } from '../utils';
 // we already know the first character is '/'
 // so eat everything up till the last  '/' including regexp flags
 type ReturnTypeRegExpTokenizer = TokenPredicateRegExp | ErrorInvalidRegExp;
 
 const prefix = 'regexp(/';
-const esc = '\\';
 
 export function lookAhead(str = '', start = 0): boolean {
     return str.startsWith(prefix, start);
@@ -13,19 +12,6 @@ export function lookAhead(str = '', start = 0): boolean {
 
 export function lookAheadSize(): number {
     return prefix.length;
-}
-
-function escape(str: string, i: number): { esc: string; next: number } {
-    if (str[i] === esc) {
-        if (str[i + 1] === esc) {
-            return { esc: esc + esc, next: i + 2 };
-        }
-        return {
-            esc: str[i + 1],
-            next: i + 2
-        };
-    }
-    return { esc: str[i], next: i + 1 };
 }
 
 function consumeRegexpFlags(str: string, start: number) {

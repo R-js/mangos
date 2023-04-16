@@ -1,6 +1,5 @@
 import { createToken, TokenIdentifier } from './tokenTypes';
-
-const esc = '\\';
+import { escape } from '../utils';
 
 const specialChars = '{}"\'[/>=<!+-*@ ';
 
@@ -10,11 +9,11 @@ export { specialChars };
 // so eat everything up till the last  '/' including regexp flags
 
 // any character that can be used as a js property name
-
 export function lookAhead(str = '', start = 0): boolean {
-    const { esc: e1, next: n1 } = escape(str, start);
-    if (specialChars.includes(e1)) {
-        if (n1 === start + 2) {
+    const { esc, next } = escape(str, start);
+    if (specialChars.includes(esc)) {
+        // it was escaped?
+        if (next === start + 2) {
             return true;
         }
         return false;
@@ -24,16 +23,6 @@ export function lookAhead(str = '', start = 0): boolean {
 
 export function lookAheadSize(): number {
     return 1;
-}
-
-function escape(str: string, i: number): { esc: string; next: number } {
-    if (str[i] === esc) {
-        return {
-            esc: str[i + 1],
-            next: i + 2
-        };
-    }
-    return { esc: str[i], next: i + 1 };
 }
 
 export default function identifierAbsorber(str = '', start = 0, end = str.length - 1): TokenIdentifier {
@@ -52,5 +41,5 @@ export default function identifierAbsorber(str = '', start = 0, end = str.length
     if (i > end) {
         return createToken('identifier', start, end, escaped);
     }
-    return createToken('identifier', start, i - 1, str.slice(start, i));
+    return createToken('identifier', start, i - 1, escaped);
 }

@@ -1,4 +1,5 @@
 import regExpAbsorber, { lookAhead, lookAheadSize } from '../regexpTokenizer';
+import { esc } from '../../utils';
 
 describe('regexp() function test', () => {
     describe('normal operation', () => {
@@ -21,18 +22,21 @@ describe('regexp() function test', () => {
                 value: /(?:something|nothing)/gisu
             });
         });
-        it('regexp with valid escapes regexp(/\\\\\\//ig)', () => {
-            const data = 'regexp(/\\\\\\//ig)';
-            const token = regExpAbsorber(data);
-            expect(token).toMatchInlineSnapshot(`
-                {
-                  "end": 15,
-                  "start": 0,
-                  "type": "regexp",
-                  "value": /\\\\\\\\\\\\//gi,
-                }
-            `);
-        });
+        {
+            const data = `regexp(/${esc}${esc}${esc}//ig)`;
+            it(`regexp with valid escapes ${data}`, () => {
+                const token = regExpAbsorber(data);
+                expect(token).toMatchInlineSnapshot(`
+                    {
+                      "end": 15,
+                      "start": 0,
+                      "type": "regexp",
+                      "value": /\\\\//gi,
+                    }
+                `);
+                expect('\\\\/').toBe(`${esc}${esc}/`);
+            });
+        }
         it('lookAhead', () => {
             const data = 'llk/regexp(/\\//)';
             expect(lookAhead(data, 4)).toBe(true);
