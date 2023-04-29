@@ -56,7 +56,45 @@ An identifier character sequence is terminated when one of the above characters 
 //  5\.  n == 4
 //  6\.  n != 4
 
-// <function> = upper(), lower(), distinct(), count(), not(), sum(), concat()
+// expression
+// <buildin-function> = upper(), lower(), distinct(), count(), not(), sum(), concat(), subpath(), startsWith(identifier), root(), regexp(), vb, in c()
+// identifier[array-index-expression]
+// identifier boolean-comparison build
+
+buildinFunctionName = 'upper'|'lower'|'distinct'|'count'|'sum'|'concat'|'regexp'|'groupby'|'order'|'limit'| 'rank'|'date2julian'|'julian2date'|'in'|'notIn'
+
+functionUpperCall = 'upper(' functionDistinctCall | <identifier>')'
+functionLowerCall = 'lower(' functionDistinctCall | <identifier> ')'
+functionDistinctCall = 'distinct(' functionUpperCall | functionLowerCall  | <identifier> ')'
+functionCount = 'count(' <identifier> ')'
+functionSum = 'sum(' <integer> ')'
+functionRegExp = 'regexp(' <regexpExpression> ')'
+functionGroupBy = 'groupby(' <identifier><ws>[,<ws><identifier>]* ')'
+functionOrder = 'order(' <identifier><ws>[,<ws><identifier>]* ')'
+functionLimit = 'limit(' <integer> ')'
+functionRank = 'rank('
+         functionGroupBy
+         |
+         (<identifier>[<ws><identifier>]*[, <identifier>(<ws>[<identifier>]*)
+      )
+
+
+<identifier> = everyCharacter is allowed, but
+   - "/", "[", "]", "(", ")", "," must be escaped with [ESC]"/"
+   - [ESC] must be escaped with [ESC][ESC]
+
+
+(buildinFunctionName | <functionName>)'('<ws><functionArguments><ws>')'
+
+functionName = [a-z]([a-z0-9A-Z_]+)?
+
+functionArguments = <identifier> ["," <functionArguments>]*
+
+
+
+
+
+Path.upper(identifier).is.
 
 //* 2\.  <identifier>'['<ws>?'n'?<ws>?<boolean operator><ws>?<integer><ws>?']<ws>?<boolean operator><ws>?<regexp>'
 //* 5\.  <identifier>'['<ws>?'n'?<ws>?<boolean operator><ws>?<integer><ws>?']<ws>?<boolean operator><ws>?<value>'
@@ -72,6 +110,12 @@ An identifier character sequence is terminated when one of the above characters 
 // 70\. regexp(<constant expression>)<ws>?<boolean operator><ws>?regexp()
 // 80\. regexp(<constant expression>)<boolean-operator><identifier>
 // 90\. regexp(<constant expression>)'['<ws>?'n'?<ws>?<boolean-operator><ws>?<integer><ws>?']' (only if the regexp selects a an array node)
+
+// 91 <internal-function><ws>*'('<ws>*(<internal-function-arguments>|<identifier>)<ws>*')'<ws>*
+// 92 <internal-function> ::= 'regexp'|<internal-function-sans-regexp>
+// 93 <internal-function-sans-regexp> ::= 'last'|'first'|'lower'|'upper'
+// 94 <recursion-call> ::= <internal-function-sans-regexp>'('<recursion-call>|<internal-function-arguments>|<identifier>')' 
+
 
 /*
 a. 61a,70,80,90

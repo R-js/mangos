@@ -12,16 +12,20 @@ const predicates = {
 
 function createParent(object, prevParent) {
     return (n = 0) => {
-        if (n === 0)
+        // in case someone tries to step < 0
+        if (n <= 0) {
             return {
                 d: object,
                 p: prevParent
             };
-        if (prevParent === undefined)
+        }
+        if (prevParent === undefined) {
+            console.log("I don't think this ever happens");
             return {
                 d: object,
                 p: prevParent
             }; // clamp this object as it is root
+        }
         return prevParent(n - 1);
     };
 }
@@ -152,7 +156,7 @@ function* objectSlice(opaque, iterator, parentFn = createParent(opaque, undefine
         if (!isObject(opaque)) {
             return;
         }
-        // absorb consequitive recursive descent tokens
+        // absorb consecutive recursive descent tokens
         const { done: done2 } = iterator.advanceWhileTrue(
             (p) => p.value.token == tokens.SLASH || p.value.token === tokens.RECURSIVE_DESCENT
         );
