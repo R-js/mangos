@@ -1,75 +1,78 @@
 {
-  "name": "@mangos/debug",
-  "version": "0.0.9-rc5",
-  "description": "super tiny and fast logger inspired by debug",
-  "repository": {
-    "directory": "./packages/debug",
-    "type": "git",
-    "url": "https://github.com/R-js/mangos.git"
-  },
-  "type": "module",
-  "exports": {
-    "import": "./dist/esm/index.mjs",
-    "require": "./dist/commonjs/index.cjs"
-  },
-  "types": "./dist/types/index.d.ts",
-  "sideEffects": true,
-  "license": "MIT",
-  "engines": {
-    "node": ">=16.18.1"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "license.md",
-    "screenshot-01.png",
-    "screenshot-02.png"
-  ],
-  "scripts": {
-    "test": "npm run test-nodejs",
-    "test-nodejs": "jest --env node",
-    "test-web": "jest --env jsdom",
-    "build": "node scripts/build.mjs",
-    "prepublishOnly": "npm run build",
-    "prettier-check": "prettier --check .",
-    "type-check": "tsc --noEmit",
-    "precommit": "lint-staged"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "collectCoverage": true,
-    "maxWorkers": "50%",
-    "coveragePathIgnorePatterns": [
-      "node_modules",
-      "fixture.ts",
-      "test"
-    ]
-  },
-  "prettier": "@vercel/style-guide/prettier",
-  "lint-staged": {
-    "*": [
-      "prettier --ignore-unknown --write"
+    "name": "@mangos/debug",
+    "version": "0.0.9-rc5",
+    "description": "super tiny and fast logger inspired by 'debug'",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/R-js/mangos.git",
+        "directory": "./packages/debug"
+    },
+    "license": "MIT",
+    "sideEffects": true,
+    "type": "module",
+    "main": "./dist/main.cjs.js",
+    "module": "./dist/main.es.js",
+    "typings": "./dist/main.d.ts",
+    "exports": {
+        "import": "./dist/esm/index.mjs",
+        "require": "./dist/commonjs/index.cjs"
+    },
+    "types": "./dist/types/index.d.ts",
+    "files": [
+        "dist",
+        "README.md",
+        "license.md",
+        "screenshot-01.png",
+        "screenshot-02.png"
     ],
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --max-warnings=0 --fix"
-    ]
-  },
-  "devDependencies": {
-    "@mangos/jxpath": "1.0.13",
-    "@types/jest": "27.0.1",
-    "@vercel/style-guide": "3.0.0",
-    "escodegen": "2.0.0",
-    "eslint": "8.12.0",
-    "husky": "7.0.2",
-    "jest": "27.1.1",
-    "lint-staged": "11.1.2",
-    "prettier": "2.6.2",
-    "ts-jest": "27.0.5",
-    "ts-jest-resolver": "2.0.0",
-    "typescript": "4.6.3"
-  },
-  "dependencies": {
-    "ms": "3.0.0-canary.1"
-  }
+    "scripts": {
+        "build": "tsc && vite build",
+        "dev": "vite",
+        "coverage": "vitest run --coverage",
+        "precommit": "lint-staged",
+        "prepublishOnly": "npm run build",
+        "prettier-check": "prettier --check .",
+        "pretty": "prettier . -w",
+        "test-ci": "vitest --coverage --run",
+        "type-check": "tsc --noEmit"
+    },
+    "lint-staged": {
+        "*": [
+            "prettier --ignore-unknown --write"
+        ],
+        "*.{js,jsx,ts,tsx}": [
+            "eslint --max-warnings=0 --fix"
+        ]
+    },
+    "dependencies": {
+        "ms": "3.0.0-canary.1"
+    },
+    "devDependencies": {
+        "@mangos/jxpath": "1.0.13",
+        "@rollup/plugin-typescript": "11.1.2",
+        "@testing-library/dom": "9.3.1",
+        "@testing-library/user-event": "14.4.3",
+        "@types/escodegen": "0.0.7",
+        "@types/jest": "27.0.1",
+        "@types/node": "20.4.5",
+        "@typescript-eslint/eslint-plugin": "6.2.0",
+        "@typescript-eslint/parser": "6.2.0",
+        "@vitest/coverage-v8": "0.33.0",
+        "eslint": "8.12.0",
+        "eslint-config-prettier": "8.9.0",
+        "eslint-plugin-prettier": "5.0.0",
+        "husky": "7.0.2",
+        "jsdom": "22.1.0",
+        "lint-staged": "11.1.2",
+        "prettier": "3.0.0",
+        "rollup-plugin-typescript-paths": "1.4.0",
+        "tslib": "2.6.1",
+        "typescript": "4.6.3",
+        "vite": "4.4.7",
+        "vite-plugin-eslint": "1.8.1",
+        "vitest": "0.33.0"
+    },
+    "engines": {
+        "node": ">=18.15.0"
+    }
 }

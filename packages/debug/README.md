@@ -6,12 +6,12 @@ It was created because the current version of npm `debug` does not have an esm m
 
 ## Highlights
 
-- turn on/off logging namespace/scope logging in real time.
-- works in web agent as-well in node
-- optional tty colors or css colors separating different namespaces
-- optional shows ms (humanized time) difference between logs
-- optional shows full date time (for log files)
-- lazy conversion from data to log string (only evaluates when it logs);
+-   turn on/off logging namespace/scope logging in real time.
+-   works in web agent as-well in node
+-   optional tty colors or css colors separating different namespaces
+-   optional shows ms (humanized time) difference between logs
+-   optional shows full date time (for log files)
+-   lazy conversion from data to log string (only evaluates when it logs);
 
 ## Installation
 
@@ -83,27 +83,27 @@ function debug(ns: string): Printer;
 
 Arguments:
 
-- `ns`: namespace
+-   `ns`: namespace
 
 Returns:
 
 ```typescript
 export interface Printer {
-  // the interface is callable
-  (formatter: string, ...args: any[]): void;
-  get color(): string;
-  get diff(): number;
-  get enabled(): boolean;
-  get namespace(): string;
+    // the interface is callable
+    (formatter: string, ...args: any[]): void;
+    get color(): string;
+    get diff(): number;
+    get enabled(): boolean;
+    get namespace(): string;
 }
 ```
 
 Properties on `Printer`:
 
-- `color`: css or tty color for this logger, unless configuration option `DEBUG_COLORS` is set to `false`.
-- `diff`: time difference (ms) since the last time this `Printer` was called.
-- `enabled`: If this logger (namespace) is enabled or not. Enabling of a namespace depends on configuration option `DEBUG`.
-- `namespace`: The namespace this logger belongs to.
+-   `color`: css or tty color for this logger, unless configuration option `DEBUG_COLORS` is set to `false`.
+-   `diff`: time difference (ms) since the last time this `Printer` was called.
+-   `enabled`: If this logger (namespace) is enabled or not. Enabling of a namespace depends on configuration option `DEBUG`.
+-   `namespace`: The namespace this logger belongs to.
 
 **NOTE**: The single namespace can have multiple `Printer` instances, they all refer to the same `Printer`.
 
@@ -137,8 +137,8 @@ assert(printer1.namespace === printer2.namespace);
 
 specify as:
 
-- shell environment variable `DEBUG`
-- entry in localStorage in `window.localStorage.setItem("DEBUG", "*,-queue")`
+-   shell environment variable `DEBUG`
+-   entry in localStorage in `window.localStorage.setItem("DEBUG", "*,-queue")`
 
 Contains a list of comma separated names or patterns of namespaces to allow logging for.
 
@@ -185,8 +185,8 @@ Printers should use ansi colors (tty) or css colors (web dev console)
 
 specify as:
 
-- shell environment variable `DEBUG_COLORS`
-- entry in localStorage in `window.localStorage.setItem("DEBUG_COLORS", "F")`
+-   shell environment variable `DEBUG_COLORS`
+-   entry in localStorage in `window.localStorage.setItem("DEBUG_COLORS", "F")`
 
 the value is a boolean string
 
@@ -225,8 +225,8 @@ Printers should prefix any logging line with an ISO 8601 string.
 
 specify as:
 
-- shell environment variable `DEBUG_HIDE_DATEZ`
-- entry in localStorage in `window.localStorage.setItem("DEBUG_HIDE_DATE", "F")`
+-   shell environment variable `DEBUG_HIDE_DATEZ`
+-   entry in localStorage in `window.localStorage.setItem("DEBUG_HIDE_DATE", "F")`
 
 the value is a boolean string
 
@@ -262,10 +262,10 @@ Use the function `getConfig` to query the actively used config, (including runti
 
 ```typescript
 type Config = {
-  namespaces: string; // see DEBUG
-  showDate: boolean; // see DEBUG_HIDE_DATE
-  useColors: boolean; // see DEBUG_COLORS
-  web: boolean;
+    namespaces: string; // see DEBUG
+    showDate: boolean; // see DEBUG_HIDE_DATE
+    useColors: boolean; // see DEBUG_COLORS
+    web: boolean;
 };
 
 function getConfig(): Config;
