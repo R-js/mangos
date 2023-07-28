@@ -1,6 +1,4 @@
-import getLineInfo from '../getLineInfo';
 import { basename } from 'node:path';
-import type { LineInfo } from '../getLineInfo';
 import { globalInfo } from './fixture';
 
 import dummyFunction from './dummy-function';

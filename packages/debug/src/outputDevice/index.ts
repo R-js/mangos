@@ -1,6 +1,4 @@
-import getColorDepth from './utils/getColorDepth';
-import isTTY from './utils/isTTY';
-
+import { globalConfig } from '@src/globalsState';
 // colors for "css" colorScheme
 const cssColors = [
     '#008000',
@@ -25,16 +23,20 @@ const cssColors = [
 
 export type ColorScheme = 'css' | 'ansi2' | 'ansi16' | 'ansi256';
 
-export function createGetColorScheme(isWeb: () => boolean): () => ColorScheme {
+export function createGetColorScheme(
+    isWeb: () => boolean,
+    tty: () => boolean,
+    colorDepth: () => number
+): () => ColorScheme {
     return function getColorScheme() {
         if (isWeb()) {
             return 'css';
         }
         // node
-        if (false === isTTY()) {
+        if (false === tty()) {
             return 'ansi2';
         }
-        const depth = getColorDepth();
+        const depth = colorDepth();
         switch (depth) {
             case 1:
                 return 'ansi2';
@@ -48,28 +50,27 @@ export function createGetColorScheme(isWeb: () => boolean): () => ColorScheme {
 
 // pluggable, so easy to test
 export function createColorSelector(getScheme: () => ColorScheme) {
-    let prevColorIndex = -1;
     const colorScheme = getScheme();
 
     return function pickColor() {
         if (colorScheme === 'css') {
             // pick next one round robind stile
-            prevColorIndex = (prevColorIndex + 1) % cssColors.length;
-            const color = cssColors[prevColorIndex];
+            globalConfig.prevColorIndex = (globalConfig.prevColorIndex + 1) % cssColors.length;
+            const color = cssColors[globalConfig.prevColorIndex];
             return color;
         }
         if (colorScheme === 'ansi2') {
             return undefined; // no color, just monochrome
         }
         // ansi16 or ansi256
-        prevColorIndex = (prevColorIndex + 1) % 16;
-        if (prevColorIndex === 0) {
-            prevColorIndex++;
+        globalConfig.prevColorIndex = (globalConfig.prevColorIndex + 1) % 16;
+        if (globalConfig.prevColorIndex === 0) {
+            globalConfig.prevColorIndex++;
         }
-        if (prevColorIndex < 8) {
-            return `\u001b[${30 + prevColorIndex}m`;
+        if (globalConfig.prevColorIndex < 8) {
+            return `\u001b[${30 + globalConfig.prevColorIndex}m`;
         }
-        return `\u001b[${38 + prevColorIndex};1m`;
+        return `\u001b[${38 + globalConfig.prevColorIndex};1m`;
     };
 }
 
@@ -100,7 +101,15 @@ export function createOutputDevice(
         }
         if (colorScheme === 'css') {
             if (assignedColor) {
-                output('%c%s %c%s %c+%s', 'color:'+ assignedColor, ns, 'color:black', text, 'color:' + assignedColor, addTimeDiff(diff));
+                output(
+                    '%c%s %c%s %c+%s',
+                    'color:' + assignedColor,
+                    ns,
+                    'color:black',
+                    text,
+                    'color:' + assignedColor,
+                    addTimeDiff(diff)
+                );
             } else if (addDate) {
                 output('%s %s %s', addDate(ts), ns, text);
             } else {

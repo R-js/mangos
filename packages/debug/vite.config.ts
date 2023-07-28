@@ -23,20 +23,12 @@ export default defineConfig({
                     preserveExtensions: true
                 }),
                 typescript({
-                    sourceMap: false,
+                    sourceMap: true,
                     declaration: true,
                     outDir: 'dist/types'
                 })
             ]
         }
     },
-    plugins: [eslint()],
-    resolve: {
-        alias: [
-            {
-                find: '~',
-                replacement: path.resolve(__dirname, './src')
-            }
-        ]
-    }
+    plugins: [eslint()]
 });

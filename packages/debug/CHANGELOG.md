@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   moved to a build/test system based on `vite` and `vitest` <jkfbogers@gmail.com>
 -   introduced eslint + typescript + prettier integration <jkfbogers@gmail.com>
+-   added path aliases, making it work with vitest and vite
 
 ## [0.0.9-rc5] - 2023-feb-17 fixes
 

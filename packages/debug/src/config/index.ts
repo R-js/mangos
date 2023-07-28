@@ -1,18 +1,11 @@
-import isBrowser from './utils/isBrowser';
-import { evalAllNS } from './index';
+import { evalAllNS } from '@src/ns';
+import { globalConfig } from '@src/globalsState';
 
 export type Config = {
-    namespaces?: string | null;
-    showDate: boolean;
-    useColors: boolean;
-    web: boolean;
-};
-// globals
-const globalConfig: Config = {
-    namespaces: undefined, // what namespaces to show;
-    showDate: false,
-    useColors: true,
-    web: isBrowser()
+    namespaces: string;
+    state: number;
+    ttyColorDepth: number;
+    lastColorIndex: number;
 };
 
 export function setConfig(options: Partial<Omit<Config, 'web'>>): boolean {
@@ -46,5 +39,6 @@ export function getConfig(): Config {
             value: value
         });
     }
+
     return rc as unknown as Config;
 }

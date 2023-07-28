@@ -1,6 +1,6 @@
 export default function isTTY() {
-    if (process?.stdout?.isTTY !== undefined) {
-        return process?.stdout?.isTTY;
+    if (typeof process?.stdout?.isTTY === 'boolean') {
+        return process.stdout.isTTY;
     }
-    return true;
+    return false;
 }

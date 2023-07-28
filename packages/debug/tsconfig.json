@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "sourceMap": true,
         "target": "ESNext",
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "types": ["node", "jest", "vite/client"],
@@ -17,8 +18,11 @@
         "jsx": "preserve",
         "baseUrl": "./src",
         "paths": {
-            "~/*": ["./*"]
+            "@src/*": ["./*"],
+            "@utils/*": ["./utils/*"],
+            "@ns/*": ["./ns/*"]
         }
     },
+    "include": ["src/**/*.ts"],
     "files": ["src/index.ts"]
 }

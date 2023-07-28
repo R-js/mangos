@@ -1,12 +1,15 @@
-export default function trueOrFalse(data: string | null | undefined, defValue: boolean) {
-    if (typeof data !== 'string') {
+export default function trueOrFalse(data: string | null | undefined | boolean, defValue: boolean) {
+    if (data === null || data === undefined){
         return defValue;
     }
-    if (['false', 'f'].includes(data.toLowerCase())) {
+    if (typeof data === 'boolean'){
+        return data;
+    }
+    const low = data.toLowerCase();
+    if (low === 'f' || low === 'false'){
         return false;
     }
-    // explicit true
-    else if (['true', 't'].includes(data.toLowerCase())) {
+    if (low === 't' || low === 'true'){
         return true;
     }
     return defValue;
