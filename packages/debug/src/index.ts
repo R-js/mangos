@@ -2,7 +2,7 @@ import isBrowser from './utils/isBrowser';
 import trueOrFalse from './utils/trueOrfalse';
 import isNSSelected from './utils/nsSelected';
 import { getConfig, setConfig } from './config';
-import { createColorSelector, createGetColorScheme, createOutputDevice } from './detectOutputDevice';
+import { createColorSelector, createGetColorScheme, createOutputDevice } from './outputDevice';
 import { formatToString, addDate, addTimeDiff } from './utils/formatters';
 
 import type { LineInfo } from './utils/getLineInfo';

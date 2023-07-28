@@ -10,12 +10,11 @@
     "license": "MIT",
     "sideEffects": true,
     "type": "module",
-    "main": "./dist/main.cjs.js",
-    "module": "./dist/main.es.js",
-    "typings": "./dist/main.d.ts",
+    "main": "./dist/main.cjs",
+    "module": "./dist/main.js",
     "exports": {
-        "import": "./dist/esm/index.mjs",
-        "require": "./dist/commonjs/index.cjs"
+        "import": "./dist/main.js",
+        "require": "./dist/main.cjs"
     },
     "types": "./dist/types/index.d.ts",
     "files": [
@@ -33,7 +32,7 @@
         "prepublishOnly": "npm run build",
         "prettier-check": "prettier --check .",
         "pretty": "prettier . -w",
-        "test-ci": "vitest --coverage --run",
+        "test": "vitest --coverage --run",
         "type-check": "tsc --noEmit"
     },
     "lint-staged": {
@@ -45,7 +44,8 @@
         ]
     },
     "dependencies": {
-        "ms": "3.0.0-canary.1"
+        "ms": "3.0.0-canary.1",
+        "uninstall": "0.0.0"
     },
     "devDependencies": {
         "@mangos/jxpath": "1.0.13",

@@ -100,11 +100,11 @@ export function createOutputDevice(
         }
         if (colorScheme === 'css') {
             if (assignedColor) {
-                output('%c%s %c%s %c+%s', assignedColor, ns, 'color:black', assignedColor, addTimeDiff(diff));
+                output('%c%s %c%s %c+%s', 'color:'+ assignedColor, ns, 'color:black', text, 'color:' + assignedColor, addTimeDiff(diff));
             } else if (addDate) {
                 output('%s %s %s', addDate(ts), ns, text);
             } else {
-                output('%s %s +%s', ns, addTimeDiff(diff));
+                output('%s %s +%s', ns, text, addTimeDiff(diff));
             }
             return;
         }

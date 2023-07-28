@@ -1,4 +1,15 @@
 import { debug } from '../index';
+import { vi } from 'vitest';
+
+vi.mock('../utils/isBrowser.ts', () => {
+    return {
+        default: function() {
+            return true;
+        }
+    };
+});
+
+
 
 function delay(ts: number) {
     return new Promise((resolve) => {
