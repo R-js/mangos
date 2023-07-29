@@ -9,123 +9,67 @@ import { createGetColorScheme } from '@src/outputDevice';
 import getColorDepth from '@utils/getColorDepth';
 
 import { nsMap } from '@src/globalsState';
-import { debug } from '.';
 
-export type NSInfo = {
-    enabled: boolean;
-    reInit: () => void;
-    lastTime?: number;
-    diff?: number;
-    color?: string; // undefined if it is monochrome (ansi2 color), or the color value (ansi color code or css color value)
-};
+function hasSelectedFlag(state: number){
+    return state & 1;
+}
 
-export type Printer = {
-    (formatter: string, ...args: any[]): void;
+function hasHideDateFlag(state: number){
+    return state & 2;
+}
+
+function hasDebugColorsFlag(state: number){
+    return state & 4;
+}
+
+type PrinterState = {
     // assigned color
-    color: string;
+    color: string | undefined;
     // time difference for this printer
     diff: number;
     // enabled (getter/setter)
     enabled: boolean;
     // namespace of this printer
-    namespace: string;
-};
-export function evalAllNS() {
-    for (const info of nsMap.values()) {
-        info.reInit();
-    }
 }
 
-function fromLocalStorage(ns: string) {
-    const nsSelected = isNSSelected(ns, globalThis.localStorage.getItem('DEBUG')); // namespace comma separated list
-    const hideDate = trueOrFalse(globalThis.localStorage.getItem('DEBUG_HIDE_DATE'), true);
-    const debugColors = trueOrFalse(globalThis.localStorage.getItem('DEBUG_COLORS'), true);
-    return Number(nsSelected)*1 + Number(hideDate)*2 + Number(debugColors)*4;
-}
+export type NSInfo = {
+    namespace: string;
+    lastTime?: number;
+    diff?: number;
+    color: string; // undefined if it is monochrome (ansi2 color), or the color value (ansi color code or css color value)
+    state: number;
+};
+
+export type Printer = {
+    (formatter: string, ...args: any[]): void;
+    namespace: string;
+} & PrinterState;
 
 function fromConfig(ns: string) {
     const config = getConfig();
     const nsSelected = isNSSelected(ns, config.namespaces);
-    const hideDate = trueOrFalse(config.hideDate, true);
-    const debugColors = trueOrFalse(config.debugColors, true);
-    return Number(nsSelected)*1 + Number(hideDate)*2 + Number(debugColors)*4;
-}
-
-        if (config.showDate !== showDate) {
-            showDate = config.showDate;
-            configParamsChanged++;
-        }
-        if (config.showDate === true) {
-            if (useColors === true) {
-                configParamsChanged++;
-            }
-            useColors = false;
-        } else if (config.useColors !== useColors) {
-            useColors = config.useColors;
-            configParamsChanged++;
-        }
-        if (useColors && selectedColor === undefined && getColorScheme() !== 'ansi2') {
-            selectedColor = colorPicker();
-        }
-        if (configParamsChanged) {
-            evalAllNS();
-        }
-        return;
-    }
+    return Number(nsSelected) + hasHideDateFlag(config.state) + hasDebugColorsFlag(config.state);
 }
 
 function paramsChanges(statePrev = 0, stateNew = 0) {
     // corrections of user config
-    if (!hideDate(stateNew) && debugColors(stateNew)) {
+    if (!hasHideDateFlag(stateNew) && hasDebugColorsFlag(stateNew)) {
         // correct the bit
         stateNew = stateNew & (255 ^ 4); 
     }
     // start evaluation
-    if (nsSelected(statePrev) !== nsSelected(stateNew)) {
-        statePrev = nsSelected(stateNew) ? statePrev | 1 : statePrev & (255 ^ 1);
+    if (hasSelectedFlag(statePrev) !== hasSelectedFlag(stateNew)) {
+        statePrev = hasSelectedFlag(stateNew) ? statePrev | 1 : statePrev & (255 ^ 1);
     }
-    if (hideDate(statePrev) !== hideDate(stateNew)) {
-        statePrev = hideDate(stateNew) ? statePrev | 2 : statePrev & (255 ^ 2);
+    if (hasHideDateFlag(statePrev) !== hasHideDateFlag(stateNew)) {
+        statePrev = hasHideDateFlag(stateNew) ? statePrev | 2 : statePrev & (255 ^ 2);
     }
-    if (debugColors(statePrev) !== debugColors(stateNew)) {
-        statePrev = debugColors(stateNew) ? statePrev | 4 : statePrev & (255 ^ 4);
+    if (hasDebugColorsFlag(statePrev) !== hasDebugColorsFlag(stateNew)) {
+        statePrev = hasDebugColorsFlag(stateNew) ? statePrev | 4 : statePrev & (255 ^ 4);
     }
     return stateNew;
 }
-
-function nsSelected(state: number){
-    return state & 1;
-}
-
-function hideDate(state: number){
-    return state & 2;
-}
-
-function debugColors(state: number){
-    return state & 4;
-}
-
-function evaluateConfig(ns: string, fromLS: number) {
-    const fromLSTemp = web ? fromLocalStorage(ns):fromConfig(ns)
-    const maybeChanged = paramsChanges(fromLS, fromLSTemp);
-    if (fromLS !== maybeChanged){
-        fromLS = maybeChanged;
-    }
-        
-        // otherwise copy env vars to mem and rerun evaluateConfig
-        const nsSelectionPatternTemp = process.env['DEBUG'] || null;
-        // showDate is the inverse of DEBUG_HIDE_DATE
-        const showDateTemp = !trueOrFalse(process.env['DEBUG_HIDE_DATE'], true);
-        const useColorsTemp = trueOrFalse(process.env['DEBUG_COLORS'], true);
-        setConfig({
-            namespaces: nsSelectionPatternTemp,
-            showDate: showDateTemp,
-            useColors: useColorsTemp
-        });
-        evaluateConfig();
-    }
-}
-
+       
 const regExp = /(?<!%)%(?<formatSpec>[A-Za-z])/g;
 
 export default function createNs(ns: string, map = nsMap): Printer {
@@ -134,9 +78,10 @@ export default function createNs(ns: string, map = nsMap): Printer {
     if (ns === ''){
         throw new Error('please provide a namespace');
     }
-    let record = map.get(ns);
-    if (!record){
-        const getColorScheme = createGetColorScheme(isBrowser, isTTY, getColorDepth);
+    if (!map.has(ns)) {
+        // if we are on the web -> get from localstorage
+        // if we are on node -> get from config (because "on boot" it got it from env one time initially)
+        const state = isBrowser() ? fromLocalStorage(ns) : fromConfig(ns);
         const colorPicker = createColorSelector(getColorScheme);
         const selectedColor = colorPicker();
         const fromLS = isBrowser() ? fromLocalStorage(ns):fromConfig(ns);

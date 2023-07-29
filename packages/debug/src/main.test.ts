@@ -1,4 +1,4 @@
-import { debug } from '.';
+import { debug } from './main';
 import { vi } from 'vitest';
 
 describe('main', () => {

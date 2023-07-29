@@ -1,15 +1,22 @@
 import type { NSInfo } from './ns';
-import type { Config } from '@src/config';
-
+import type { ColorScheme } from '@src/outputDevice';
 // global assembly
 const nsMap = new Map<string, NSInfo>();
 
 // globals
-const globalConfig: Config = {
-    namespaces: '', // what namespaces to show;
+
+export type GlobalConfig = {
+    query: string;
+    state: number;
+    lastColorIndex: number;
+    colorSpace: ColorScheme;
+}
+
+const globalConfig: GlobalConfig = {
+    query: '', // what namespaces to show;
     state: 0,
-    ttyColorDepth: 0,
-    prevColorIndex: -1
+    colorSpace: 'ansi2',
+    lastColorIndex: -1,
 };
 
 export { nsMap, globalConfig };
