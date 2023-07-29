@@ -15,7 +15,7 @@ export type GlobalConfig = {
 const globalConfig: GlobalConfig = {
     query: '', // what namespaces to show;
     state: 0,
-    colorSpace: 'ansi2',
+    colorSpace: '',
     lastColorIndex: -1,
 };
 

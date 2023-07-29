@@ -1,7 +1,5 @@
 export type { LineInfo } from './utils/getLineInfo';
 export { default as getLineInfo } from './utils/getLineInfo';
-export { default as debug } from './ns';
-export { default } from './ns';
 
 import { globalConfig } from './globalsState';
 import type { GlobalConfig } from './globalsState';
@@ -12,13 +10,14 @@ import isTTY from './utils/isTTY';
 import trueOrFalse from './utils/trueOrfalse';
 import { nsMap } from './globalsState';
 import isNSSelected from './utils/nsSelected';
+import type {GlobalHumanConfig} from './main.types'; 
 
 function fromEnvironment(global: GlobalConfig) {
     const query = process.env['DEBUG'] || '';
     const hideDate = trueOrFalse(process.env['DEBUG_HIDE_DATE'], true);
     const debugColors = trueOrFalse(process.env['DEBUG_COLORS'], true);
     global.query = query;
-    global.state = (Number(hideDate) << (1 + Number(debugColors))) << 2;
+    global.state = (Number(hideDate) << 1) + (Number(debugColors) << 2 );
 }
 
 function fromOutputDevice(global: GlobalConfig) {
@@ -33,12 +32,6 @@ function fromLocalStorage(global: GlobalConfig) {
     global.query = query;
     global.state = (Number(hideDate) << (1 + Number(debugColors))) << 2;
 }
-
-export type GlobalHumanConfig = {
-    query: string;
-    hideDate: boolean;
-    debugColors: boolean;
-};
 
 export function setGlobalConfig(options: Partial<GlobalHumanConfig>) {
     // if I am in running in a User Agent, then localStorage is my only truth
@@ -58,11 +51,13 @@ export function setGlobalConfig(options: Partial<GlobalHumanConfig>) {
     if (options.debugColors) {
         globalConfig.state |= Number(options.debugColors) << 2;
     }
+    // set color capabilities of the hardware
     for (const record of nsMap.values()) {
         if (isNSSelected(record.namespace, globalConfig.query)) {
             record.state |= 1;
         }
     }
+    
 }
 
 export function getGlobalConfig() {
@@ -78,6 +73,9 @@ export function getGlobalConfig() {
 }
 
 function boot() {
+    // does this run every time the module is loaded?
+    console.log('run boot');
+    fromOutputDevice(globalConfig);
     setGlobalConfig({});
 }
 // side effect

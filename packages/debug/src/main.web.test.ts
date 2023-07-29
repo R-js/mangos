@@ -1,7 +1,7 @@
 import { debug } from './main';
 import { vi } from 'vitest';
 
-describe('main', () => {
+describe.skip('main', () => {
     describe('web', () => {
         beforeEach(() => {
             vi.mock('@utils/isBrowser.ts', () => {

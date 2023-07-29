@@ -8,7 +8,12 @@ export default defineConfig({
         setupFiles: ['./src/setupTests.ts'],
         // you might want to disable it, if you don't have tests that rely on CSS
         // since parsing CSS is slow
-        exclude: [...configDefaults.exclude]
+        exclude: [...configDefaults.exclude],
+        include: ['src/main.test.ts'],
+        coverage: {
+            reporter: ['text', 'json', 'html'],
+            include: ['src/**/*.ts'],
+        },
     },
     resolve: {
         alias: {

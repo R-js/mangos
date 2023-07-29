@@ -21,7 +21,7 @@ const cssColors = [
 // 1. the shell of the process (server side)
 // 2. browser environment
 
-export type ColorScheme = 'css' | 'ansi2' | 'ansi16' | 'ansi256';
+export type ColorScheme = 'css' | 'ansi2' | 'ansi16' | 'ansi256' | '';
 
 export function createGetColorScheme(
     isWeb: () => boolean,
@@ -55,22 +55,22 @@ export function createColorSelector(getScheme: () => ColorScheme) {
     return function pickColor() {
         if (colorScheme === 'css') {
             // pick next one round robind stile
-            globalConfig.prevColorIndex = (globalConfig.prevColorIndex + 1) % cssColors.length;
-            const color = cssColors[globalConfig.prevColorIndex];
+            globalConfig.lastColorIndex = (globalConfig.lastColorIndex + 1) % cssColors.length;
+            const color = cssColors[globalConfig.lastColorIndex];
             return color;
         }
         if (colorScheme === 'ansi2') {
             return undefined; // no color, just monochrome
         }
         // ansi16 or ansi256
-        globalConfig.prevColorIndex = (globalConfig.prevColorIndex + 1) % 16;
-        if (globalConfig.prevColorIndex === 0) {
-            globalConfig.prevColorIndex++;
+        globalConfig.lastColorIndex = (globalConfig.lastColorIndex + 1) % 16;
+        if (globalConfig.lastColorIndex === 0) {
+            globalConfig.lastColorIndex++;
         }
-        if (globalConfig.prevColorIndex < 8) {
-            return `\u001b[${30 + globalConfig.prevColorIndex}m`;
+        if (globalConfig.lastColorIndex < 8) {
+            return `\u001b[${30 + globalConfig.lastColorIndex}m`;
         }
-        return `\u001b[${38 + globalConfig.prevColorIndex};1m`;
+        return `\u001b[${38 + globalConfig.lastColorIndex};1m`;
     };
 }
 

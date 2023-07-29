@@ -4,11 +4,11 @@ import isNSSelected from '@utils/nsSelected';
 import trueOrFalse from '@utils/trueOrfalse';
 import { formatToString, addDate, addTimeDiff } from '@utils/formatters';
 import { createColorSelector, createOutputDevice } from '@src/outputDevice';
-import { getConfig, setConfig } from '@src/config';
 import { createGetColorScheme } from '@src/outputDevice';
 import getColorDepth from '@utils/getColorDepth';
 
 import { nsMap } from '@src/globalsState';
+import { getGlobalConfig } from '@src/main';
 
 function hasSelectedFlag(state: number){
     return state & 1;
@@ -46,9 +46,9 @@ export type Printer = {
 } & PrinterState;
 
 function fromConfig(ns: string) {
-    const config = getConfig();
-    const nsSelected = isNSSelected(ns, config.namespaces);
-    return Number(nsSelected) + hasHideDateFlag(config.state) + hasDebugColorsFlag(config.state);
+    const config = getGlobalConfig();
+    const nsSelected = isNSSelected(ns, config.query);
+    return Number(nsSelected) + Number(config.hideDate) << 1 + Number(config.debugColors) << 2;
 }
 
 function paramsChanges(statePrev = 0, stateNew = 0) {
@@ -71,7 +71,7 @@ function paramsChanges(statePrev = 0, stateNew = 0) {
 }
        
 const regExp = /(?<!%)%(?<formatSpec>[A-Za-z])/g;
-
+/*
 export default function createNs(ns: string, map = nsMap): Printer {
     ns = ns.trim();
     
@@ -285,3 +285,5 @@ export default function createNs(ns: string, map = nsMap): Printer {
     init();
     return createPrinter();
 }
+*/
+
