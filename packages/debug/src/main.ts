@@ -10,14 +10,14 @@ import isTTY from './utils/isTTY';
 import trueOrFalse from './utils/trueOrfalse';
 import { nsMap } from './globalsState';
 import isNSSelected from './utils/nsSelected';
-import type {GlobalHumanConfig} from './main.types'; 
+import type { GlobalHumanConfig } from './main.types';
 
 function fromEnvironment(global: GlobalConfig) {
     const query = process.env['DEBUG'] || '';
     const hideDate = trueOrFalse(process.env['DEBUG_HIDE_DATE'], true);
     const debugColors = trueOrFalse(process.env['DEBUG_COLORS'], true);
     global.query = query;
-    global.state = (Number(hideDate) << 1) + (Number(debugColors) << 2 );
+    global.state = (Number(hideDate) << 1) + (Number(debugColors) << 2);
 }
 
 function fromOutputDevice(global: GlobalConfig) {
@@ -30,7 +30,28 @@ function fromLocalStorage(global: GlobalConfig) {
     const hideDate = trueOrFalse(globalThis.localStorage.getItem('DEBUG_HIDE_DATE'), true);
     const debugColors = trueOrFalse(globalThis.localStorage.getItem('DEBUG_COLORS'), true);
     global.query = query;
-    global.state = (Number(hideDate) << (1 + Number(debugColors))) << 2;
+    global.state = (Number(hideDate) << 1) + (Number(debugColors) << 2);
+}
+
+function toLocalStorage(global: GlobalConfig) {
+    if (!global.query) {
+        localStorage.removeItem('DEBUG');
+        localStorage.removeItem('DEBUG_HIDE_DATE');
+        localStorage.removeItem('DEBUG_COLORS');
+        global.state = 6;
+        return;
+    }
+    localStorage.setItem('DEBUG', global.query);
+    console.log('global.state', global.state);
+    const debugColors = global.state & 4 ? 'true' : 'false';
+    console.log('debug_colors ->', debugColors);
+    localStorage.setItem('DEBUG_COLORS', debugColors);
+
+    localStorage.setItem('DEBUG_HIDE_DATE', global.state & 2 ? 'true' : 'false');
+}
+
+export function syncGlobalConfig() {
+    setGlobalConfig({});
 }
 
 export function setGlobalConfig(options: Partial<GlobalHumanConfig>) {
@@ -44,20 +65,29 @@ export function setGlobalConfig(options: Partial<GlobalHumanConfig>) {
     if (options.query !== undefined) {
         globalConfig.query = options.query;
     }
-    if (options.hideDate) {
-        globalConfig.state |= Number(options.hideDate) << 1;
+    if ('hideDate' in options) {
+        if (options.hideDate) {
+            globalConfig.state |= 2;
+        } else {
+            globalConfig.state &= 255 - 2;
+        }
     }
-
-    if (options.debugColors) {
-        globalConfig.state |= Number(options.debugColors) << 2;
+    if ('debugColors' in options) {
+        if (options.debugColors) {
+            globalConfig.state |= 4;
+        } else {
+            globalConfig.state &= 255 - 4;
+        }
     }
-    // set color capabilities of the hardware
+    // write back
+    if (isBrowser()) {
+        toLocalStorage(globalConfig);
+    }
     for (const record of nsMap.values()) {
         if (isNSSelected(record.namespace, globalConfig.query)) {
             record.state |= 1;
         }
     }
-    
 }
 
 export function getGlobalConfig() {
@@ -73,8 +103,6 @@ export function getGlobalConfig() {
 }
 
 function boot() {
-    // does this run every time the module is loaded?
-    console.log('run boot');
     fromOutputDevice(globalConfig);
     setGlobalConfig({});
 }
