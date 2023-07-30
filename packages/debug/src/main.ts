@@ -42,11 +42,7 @@ function toLocalStorage(global: GlobalConfig) {
         return;
     }
     localStorage.setItem('DEBUG', global.query);
-    console.log('global.state', global.state);
-    const debugColors = global.state & 4 ? 'true' : 'false';
-    console.log('debug_colors ->', debugColors);
-    localStorage.setItem('DEBUG_COLORS', debugColors);
-
+    localStorage.setItem('DEBUG_COLORS', global.state & 4 ? 'true' : 'false');
     localStorage.setItem('DEBUG_HIDE_DATE', global.state & 2 ? 'true' : 'false');
 }
 

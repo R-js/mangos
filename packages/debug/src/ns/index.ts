@@ -1,4 +1,4 @@
-import isBrowser from '@utils/isBrowser';
+/*import isBrowser from '@utils/isBrowser';
 import isTTY from '@utils/isTTY';
 import isNSSelected from '@utils/nsSelected';
 import trueOrFalse from '@utils/trueOrfalse';
@@ -10,15 +10,15 @@ import getColorDepth from '@utils/getColorDepth';
 import { nsMap } from '@src/globalsState';
 import { getGlobalConfig } from '@src/main';
 
-function hasSelectedFlag(state: number){
+function hasSelectedFlag(state: number) {
     return state & 1;
 }
 
-function hasHideDateFlag(state: number){
+function hasHideDateFlag(state: number) {
     return state & 2;
 }
 
-function hasDebugColorsFlag(state: number){
+function hasDebugColorsFlag(state: number) {
     return state & 4;
 }
 
@@ -30,7 +30,7 @@ type PrinterState = {
     // enabled (getter/setter)
     enabled: boolean;
     // namespace of this printer
-}
+};
 
 export type NSInfo = {
     namespace: string;
@@ -48,14 +48,14 @@ export type Printer = {
 function fromConfig(ns: string) {
     const config = getGlobalConfig();
     const nsSelected = isNSSelected(ns, config.query);
-    return Number(nsSelected) + Number(config.hideDate) << 1 + Number(config.debugColors) << 2;
+    return ((Number(nsSelected) + Number(config.hideDate)) << (1 + Number(config.debugColors))) << 2;
 }
 
 function paramsChanges(statePrev = 0, stateNew = 0) {
     // corrections of user config
     if (!hasHideDateFlag(stateNew) && hasDebugColorsFlag(stateNew)) {
         // correct the bit
-        stateNew = stateNew & (255 ^ 4); 
+        stateNew = stateNew & (255 ^ 4);
     }
     // start evaluation
     if (hasSelectedFlag(statePrev) !== hasSelectedFlag(stateNew)) {
@@ -69,7 +69,7 @@ function paramsChanges(statePrev = 0, stateNew = 0) {
     }
     return stateNew;
 }
-       
+
 const regExp = /(?<!%)%(?<formatSpec>[A-Za-z])/g;
 /*
 export default function createNs(ns: string, map = nsMap): Printer {
@@ -286,4 +286,3 @@ export default function createNs(ns: string, map = nsMap): Printer {
     return createPrinter();
 }
 */
-
