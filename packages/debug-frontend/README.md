@@ -1,4 +1,6 @@
-# `@mangos/debug-frontend` & `@mangos/debug`
+# `@mangos/debug-frontend`
+
+This is the frontend part of `@mangos/debug`.
 
 ## Problem statement
 
@@ -27,24 +29,26 @@ The `@mangos/debug` logging (frontend + backend) has the following,
 2. **dynamic turn off/on**: logging/tracing can be enabled and disabled while your program is running.
 3. **dynamic log destination**: logging/tracing can be routed to destinations while your program is running.
 
-## Quick Example
+## Quick Example:
+
+payment-processing-library.js
 
 ```typescript
-// payment-processing-library.js
 import debug, { register, unregister } from '@mangos/debug-frontend';
 
 // re-export to hook your payment-library to logger backend
 export { register, unregister };
 
-const logger = debug('payment-processor'); // create a logger for namespace "payment-processor"
+const printer = debug('payment-processor'); // create a logger for namespace "payment-processor"
 
 export function transmit(account: string, amount: number) {
-    logger('An amount of %d was transmitted to account %s', amount, number);
+    printer('An amount of %d was transmitted to account %s', amount, number);
 }
 ```
 
+index.js
+
 ```typescript
-// index.js
 import { transmit, register, unregister } from './payment-processing-library';
 
 // see @mangos/debug README on how to set up logging backend (transports)
@@ -69,7 +73,50 @@ Overview of all functions:
 Creates a logger attached to a namespace.
 
 ```typescript
-const logger = debug('my-namespace');
+import debug from '@mangos/debug-frontend';
+const printer = debug('my-namespace');
+
+printer('hello world'); // this message will be tagged with the namesapce "my-namespace"
 ```
 
-import debug, { register, unregister } from '@mangos/debug-frontend';
+### `Printable Interface`
+
+This is the return value of the `debug` function call.
+
+spec:
+
+```typescript
+type Printer = {
+    (formatter: string, ...args: any[]): void;
+    readonly namespace: string;
+    readonly enabled: boolean;
+};
+```
+Besides it being a callable function it has 2 properties:
+
+- `namespace`: the namespace used when creating the printer with `debug`
+- `enabled`: if the backend logging will allow logging of this namespaces to pass through.
+
+### `register`
+
+This function connects your tracing/logging calls in your code to the debug-backend.
+
+spec:
+```typescript
+function register(backend: (prefix?: string) => LoggerController, prefix?: string): void;
+```
+
+Arguments:
+- `backend`: A configured backend (see `@mangos/debug`) 
+- `prefix`: A code integrator can choose to separate conflicting namespaces (from 3rd party code) by prefixing the namespace of a library with an extra string prefix.
+
+
+### `unregister`
+
+This function undoes (detached the debug backend) the previous call to `register`.
+
+spec:
+```typescript
+function unregister(): void;
+```
+
