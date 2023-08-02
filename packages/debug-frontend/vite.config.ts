@@ -12,7 +12,7 @@ export default defineConfig({
         reportCompressedSize: true,
         lib: {
             entry: {
-                'debug-fe': path.resolve(__dirname, 'src/index.ts')
+                'index': path.resolve(__dirname, 'src/index.ts')
             },
             formats: ['cjs', 'es']
         },
