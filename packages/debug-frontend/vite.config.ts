@@ -8,7 +8,7 @@ export default defineConfig({
     build: {
         sourcemap: false,
         manifest: false,
-        minify: false,
+        minify: true,
         reportCompressedSize: true,
         lib: {
             entry: {

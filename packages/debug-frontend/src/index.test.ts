@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-import type { LoggerController, Printer } from './index.types';
+import type { LoggerController, Debug } from './index.types';
 
 type LoggerControllerEnhanced = LoggerController & {
     history: Parameters<LoggerController['send']>[];

@@ -1,6 +1,20 @@
+
+
+
 # `@mangos/debug-frontend`
 
 This is the frontend part of `@mangos/debug`.
+
+- [`@mangos/debug-frontend`](#mangosdebug-frontend)
+  - [Problem statement](#problem-statement)
+  - [Features](#features)
+  - [Quick Example:](#quick-example)
+  - [API](#api)
+    - [`createDebug`](#createdebug)
+    - [`Printable Interface`](#printable-interface)
+    - [`register`](#register)
+    - [`unregister`](#unregister)
+  - [CookBook](#cookbook)
 
 ## Problem statement
 
@@ -34,15 +48,15 @@ The `@mangos/debug` logging (frontend + backend) has the following,
 payment-processing-library.js
 
 ```typescript
-import debug, { register, unregister } from '@mangos/debug-frontend';
+import createDebug, { register, unregister } from '@mangos/debug-frontend';
 
 // re-export to hook your payment-library to logger backend
 export { register, unregister };
 
-const printer = debug('payment-processor'); // create a logger for namespace "payment-processor"
+const debug = createDebug('payment-processor'); // create a logger for namespace "payment-processor"
 
 export function transmit(account: string, amount: number) {
-    printer('An amount of %d was transmitted to account %s', amount, number);
+    debug('An amount of %d was transmitted to account %s', amount, number);
 }
 ```
 
@@ -66,27 +80,33 @@ transmit('IBAN444444555555', 10); // will most certainly not be logged
 
 ## API
 
+`@mangos/debug-frontend` has an small api surface.
+
+For Common Usage patterns see [Usage](#Usage)
+
 Overview of all functions:
 
-### `debug`
+### `createDebug`
 
-Creates a logger attached to a namespace.
+Creates a debugger attached to a namespace. You can use the same namespace name argument value (ex. "my-namespace") in different modules.
+Or create multiple debuggers within the same module.
 
 ```typescript
-import debug from '@mangos/debug-frontend';
-const printer = debug('my-namespace');
+import createDebug from '@mangos/debug-frontend';
 
-printer('hello world'); // this message will be tagged with the namesapce "my-namespace"
+const debug = createDebug('my-namespace');
+
+debug('hello world');// this message will be tagged with the namespace "my-namespace"
 ```
 
 ### `Printable Interface`
 
-This is the return value of the `debug` function call.
+This is the return value of the `createDebug` function call.
 
 spec:
 
 ```typescript
-type Printer = {
+type Debug = {
     (formatter: string, ...args: any[]): void;
     readonly namespace: string;
     readonly enabled: boolean;
@@ -94,7 +114,7 @@ type Printer = {
 ```
 Besides it being a callable function it has 2 properties:
 
-- `namespace`: the namespace used when creating the printer with `debug`
+- `namespace`: the namespace used when creating the printer with `createDebug`
 - `enabled`: if the backend logging will allow logging of this namespaces to pass through.
 
 ### `register`
@@ -120,3 +140,6 @@ spec:
 function unregister(): void;
 ```
 
+## CookBook
+
+(todo)
