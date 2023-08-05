@@ -1,20 +1,17 @@
-
-
-
 # `@mangos/debug-frontend`
 
 This is the frontend part of `@mangos/debug`.
 
-- [`@mangos/debug-frontend`](#mangosdebug-frontend)
-  - [Problem statement](#problem-statement)
-  - [Features](#features)
-  - [Quick Example:](#quick-example)
-  - [API](#api)
-    - [`createDebug`](#createdebug)
-    - [`Printable Interface`](#printable-interface)
-    - [`register`](#register)
-    - [`unregister`](#unregister)
-  - [CookBook](#cookbook)
+-   [`@mangos/debug-frontend`](#mangosdebug-frontend)
+    -   [Problem statement](#problem-statement)
+    -   [Features](#features)
+    -   [Quick Example:](#quick-example)
+    -   [API](#api)
+        -   [`createDebug`](#createdebug)
+        -   [`Printable Interface`](#printable-interface)
+        -   [`register`](#register)
+        -   [`unregister`](#unregister)
+    -   [CookBook](#cookbook)
 
 ## Problem statement
 
@@ -45,44 +42,87 @@ The `@mangos/debug` logging (frontend + backend) has the following,
 
 ## Quick Example:
 
-payment-processing-library.js
+This is an example where a general `App.js` consumes 2 modules `@mangos/payment-processing` and `@mangos/notification`
+
+Both `@mangos/payment-processing` and `@mangos/notification` are (supposedly) 3rd party modules build by seperate organsiations prefixing their debug messages with their specifc namespace. The final application, consuming both 3rd party libraries, defines the backend that will receive debug information from those libraries by calling their respective exported "register" function.
+
+**Library1: published on npm as `@mangos/payment-processing`.**
 
 ```typescript
 import createDebug, { register, unregister } from '@mangos/debug-frontend';
 
-// re-export to hook your payment-library to logger backend
+// re-export to hook to whoever consumes this library
 export { register, unregister };
 
-const debug = createDebug('payment-processor'); // create a logger for namespace "payment-processor"
+// create a logger for namespace "payment-processor"
+const debug = createDebug('payment-processor');
 
-export function transmit(account: string, amount: number) {
+// send money to an account
+export function transmitMoney(account: string, amount: number): boolean {
+    //.
+    //. do some usefull work
+    //.
     debug('An amount of %d was transmitted to account %s', amount, number);
+    return true;
 }
 ```
 
-index.js
+**Library2: published on npm as `@mangos/notification`.**
 
 ```typescript
-import { transmit, register, unregister } from './payment-processing-library';
+import createDebug, { register, unregister } from '@mangos/debug-frontend';
 
-// see @mangos/debug README on how to set up logging backend (transports)
+// re-export to hook to whoever consumes this library
+export { register, unregister };
+
+// create a logger for namespace "notification"
+const debug = createDebug('notification');
+
+// send money to an account
+export function notifyUserAccount(iban: string, message: string): boolean {
+    //.
+    //. do some usefull work
+    //.
+    debug('account %s has been notified of event: %s', iban, message);
+    return true;
+}
+```
+
+**Final application: `app.js`**
+
+```typescript
+import {
+    transmitMoney,
+    register as registerPayDebug,
+    unregister as unregisterPayDebug
+} from '@mangos/payment-processing';
+
+import { notifyUserAccount, register as registerNotify, unregister as unregisterNotify } from '@mangos/debug-frontend';
+
+// see @mangos/debug README on how to set up logging backend
+// (specific namespace enabling, destination transports, etc)
 import backendController from './setupLoggingBackend';
 
-// at any time you can register the backend for
-register(backendController);
+// debug messages will be sent to this backend
+registerPayDebug(backendController);
+registerNotify(backendController);
 
-transmit('IBAN444444555555', 10); // could be logged, depends on backend Configuration
+// could be logged, depends on backend Configuration
+transmitMoney('IBAN444444555555', 10);
+notifyUserAccount('IBAN444444555555', 'transaction successful');
 
-register();
+// detach payment module from logging backend
+unregisterPayDebug();
 
-transmit('IBAN444444555555', 10); // will most certainly not be logged
+// will most certainly NOT be logged
+transmit('IBAN444444555555', 25);
 ```
 
 ## API
 
 `@mangos/debug-frontend` has an small api surface.
 
-For Common Usage patterns see [Usage](#Usage)
+For Common Usage patterns see [Cookbook](#Cookbook)
 
 Overview of all functions:
 
@@ -93,13 +133,12 @@ Or create multiple debuggers within the same module.
 
 ```typescript
 import createDebug from '@mangos/debug-frontend';
-
 const debug = createDebug('my-namespace');
 
-debug('hello world');// this message will be tagged with the namespace "my-namespace"
+debug('hello world'); // this message will be tagged with the namesapce "my-namespace"
 ```
 
-### `Printable Interface`
+### `Debug Interface`
 
 This is the return value of the `createDebug` function call.
 
@@ -112,34 +151,37 @@ type Debug = {
     readonly enabled: boolean;
 };
 ```
+
 Besides it being a callable function it has 2 properties:
 
-- `namespace`: the namespace used when creating the printer with `createDebug`
-- `enabled`: if the backend logging will allow logging of this namespaces to pass through.
+-   **`namespace`**: the namespace used when creating the printer with `createDebug`
+-   **`enabled`**: if the backend logging will allow logging of this namespaces to pass through.
 
 ### `register`
 
 This function connects your tracing/logging calls in your code to the debug-backend.
 
 spec:
+
 ```typescript
 function register(backend: (prefix?: string) => LoggerController, prefix?: string): void;
 ```
 
 Arguments:
-- `backend`: A configured backend (see `@mangos/debug`) 
-- `prefix`: A code integrator can choose to separate conflicting namespaces (from 3rd party code) by prefixing the namespace of a library with an extra string prefix.
 
+-   **`backend`**: A configured backend (see `@mangos/debug`)
+-   **`prefix`**: A code integrator can choose to separate conflicting namespaces (from 3rd party code) by prefixing the namespace of a library with an extra string prefix.
 
 ### `unregister`
 
 This function undoes (detached the debug backend) the previous call to `register`.
 
 spec:
+
 ```typescript
 function unregister(): void;
 ```
 
 ## CookBook
 
-(todo)
+ToDo:

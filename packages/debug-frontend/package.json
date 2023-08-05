@@ -1,6 +1,6 @@
 {
     "name": "@mangos/debug-frontend",
-    "version": "0.0.1-rc3",
+    "version": "0.0.1-rc4",
     "description": "frontend-part of the tiny and fast logger inspired by 'debug'",
     "repository": {
         "type": "git",
@@ -10,7 +10,7 @@
     "license": "MIT",
     "sideEffects": true,
     "type": "module",
-    "main": "./dist/index.cjs",
+    "main": "./dist/indexcjs",
     "module": "./dist/index.js",
     "exports": {
         "import": "./dist/index.js",
