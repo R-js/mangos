@@ -39,3 +39,5 @@ export default function createNs(ns: string): Printer {
     });
     return print as Printer;
 }
+
+export type { Printer };
