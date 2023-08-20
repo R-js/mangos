@@ -1,4 +1,13 @@
-import type { LoggerController, Printer } from './index.types';
+export type Printer = {
+    (formatter: string, ...args: any[]): void;
+    readonly namespace: string;
+    readonly enabled: boolean;
+};
+
+export type LoggerController = {
+    send(namespace: string, formatter: string, ...args: any[]): void;
+    isEnabled(namespace?: string): boolean;
+};
 
 const defaultController: LoggerController = {
     send(_namespace: string, _formatter: string, ..._args: any[]) {},
@@ -39,5 +48,3 @@ export default function createNs(ns: string): Printer {
     });
     return print as Printer;
 }
-
-export type { Printer };

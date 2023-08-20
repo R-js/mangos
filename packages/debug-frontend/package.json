@@ -1,6 +1,6 @@
 {
     "name": "@mangos/debug-frontend",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "frontend-part of the tiny and fast logger inspired by 'debug'",
     "repository": {
         "type": "git",
