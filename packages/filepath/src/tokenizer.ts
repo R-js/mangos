@@ -1,15 +1,15 @@
 export const tokens = {
-	SEP: "\x01",
-	PATHELT: "\x06",
-	PARENT: "\x07",
-	CURRENT: "\x08",
+	SEP: '\x01',
+	PATHELT: '\x06',
+	PARENT: '\x07',
+	CURRENT: '\x08',
 } as const;
 
 export const tokenValues = {
-	"\x01": "SEP",
-	"\x06": "PATHELT",
-	"\x07": "PARENT",
-	"\x08": "CURRENT",
+	'\x01': 'SEP',
+	'\x06': 'PATHELT',
+	'\x07': 'PARENT',
+	'\x08': 'CURRENT',
 } as const;
 
 export type TokenType = keyof typeof tokens;
@@ -21,17 +21,17 @@ export type Range = {
 };
 
 const rootTokens = {
-	POSIX_ROOT: "\x02", // posix
-	TDP_ROOT: "\x03", // traditional dos path
-	UNC_ROOT: "\x04", // unc root
-	DDP_ROOT: "\x05", // dos device path root
+	POSIX_ROOT: '\x02', // posix
+	TDP_ROOT: '\x03', // traditional dos path
+	UNC_ROOT: '\x04', // unc root
+	DDP_ROOT: '\x05', // dos device path root
 } as const;
 
 export const rootTokenValues = {
-	"\x02": "POSIX_ROOT", // posix
-	"\x03": "TDP_ROOT", // traditional dos path
-	"\x04": "UNC_ROOT", // unc root
-	"\x05": "DDP_ROOT", // dos device path root
+	'\x02': 'POSIX_ROOT', // posix
+	'\x03': 'TDP_ROOT', // traditional dos path
+	'\x04': 'UNC_ROOT', // unc root
+	'\x05': 'DDP_ROOT', // dos device path root
 } as const;
 
 export type RootTokenType = keyof typeof rootTokens;
@@ -42,6 +42,7 @@ export type RootToken = Range & {
 	value: string;
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: its a type guard we need it to be anything
 export function isRootToken(u: any): u is RootToken {
 	return u?.token in rootTokenValues;
 }
@@ -79,7 +80,7 @@ const regExpOrderedMapDDP: RegExporderdMapDDP = {
 
 const mathMapFns = {
 	ddpwithVolumeUUID(match: RegExpMatchArray) {
-		const value = "\\\\?\\" + match[4];
+		const value = `\\\\?\\${match[4]}`;
 		return {
 			token: rootTokens.DDP_ROOT,
 			value,
@@ -113,21 +114,34 @@ const regexpLD = /(CON|PRN|AUX|NUL|COM[\\d]|LPT[\\d]|PRN)/i;
 
 const uncRegExp = /^(\/\/|\\\\)([^\\/\\?\\.]+)(\/|\\)([^\\/]+)(\/|\\)?/;
 
-function hasLegacyDeviceName(str = "", start = 0, end = str.length - 1) {
+function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
 	const match = str.slice(start, end + 1).match(regexpLD);
 	if (Array.isArray(match)) {
 		return match[0];
 	}
 }
 
-export function inferPlatform(): NodeJS.Platform {
-	// if (globalThis.navigator.userAgentData?.platform === 'Windows') {
-	//     return 'win32';
-	// }
-	if (typeof process !== "undefined") {
-		return process.platform;
+function getPlatform(): undefined | string {
+	if ('userAgentData' in navigator) {
+		return (
+			navigator.userAgentData as { platform: string }
+		).platform.toLowerCase();
 	}
-	return "linux";
+	if ('platform' in navigator) {
+		return navigator.platform.toLowerCase();
+	}
+	return process?.platform;
+}
+
+export function mapPlatformNames(): NodeJS.Platform | undefined {
+	const platform = getPlatform() ?? 'linux';
+	if (platform.includes('win')) {
+		return 'win32';
+	}
+	// if (platform.includes("mac")) {
+	// 	return "linux";
+	// }
+	return 'linux';
 }
 
 export function getCWD() {
@@ -137,15 +151,15 @@ export function getCWD() {
 	if (globalThis?.location?.pathname) {
 		return globalThis.location.pathname;
 	}
-	return "/";
+	return '/';
 }
 
-function isInValidMSDirecotryName(str = "", start = 0, end = str.length - 1) {
+function isInValidMSDirecotryName(str = '', start = 0, end = str.length - 1) {
 	return forbiddenRegExp.test(str.slice(start, end + 1));
 }
 
 export function* uncAbsorber(
-	str = "",
+	str = '',
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token | RootToken, undefined, undefined> {
@@ -179,13 +193,13 @@ export function* uncAbsorber(
 }
 
 export function* ddpAbsorber(
-	str = "",
+	str = '',
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token | RootToken, undefined, undefined> {
 	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<
 		RegExporderdMapDDP,
-		"unc"
+		'unc'
 	>)[];
 	for (const pk of pks) {
 		const match = str.match(regExpOrderedMapDDP[pk]);
@@ -230,11 +244,11 @@ function lookSuccessive(
 }
 
 function validSep(s: string | undefined) {
-	return s === "\\" || s === "/";
+	return s === '\\' || s === '/';
 }
 
 function getPosixFragment(str: string, start: number, end: number) {
-	return lookSuccessive(str, (s) => s !== "/", start, end);
+	return lookSuccessive(str, (s) => s !== '/', start, end);
 }
 function tdpFragment(str: string, start: number, end: number) {
 	return lookSuccessive(str, (s) => !validSep(s), start, end);
@@ -242,13 +256,13 @@ function tdpFragment(str: string, start: number, end: number) {
 
 // hard to infer , '\\' tokens are actually legal in linux xfs, etx4, etc
 export function* posixAbsorber(
-	str = "",
+	str = '',
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token | RootToken, undefined, undefined> {
 	// "/" start with "/" or '\' tokens should be converted to "/"
 	let i = start;
-	const root = lookSuccessive(str, (s) => s === "/", start, end);
+	const root = lookSuccessive(str, (s) => s === '/', start, end);
 	if (root) {
 		yield {
 			token: rootTokens.POSIX_ROOT,
@@ -265,10 +279,10 @@ export function* posixAbsorber(
 		if (result) {
 			const value = str.slice(i, result.end + 1);
 			let token: TokenValueType = selectorPosix[toggle % 2];
-			if (value === "..") {
+			if (value === '..') {
 				token = tokens.PARENT;
 			}
-			if (value === ".") {
+			if (value === '.') {
 				token = tokens.CURRENT;
 			}
 			yield {
@@ -283,22 +297,26 @@ export function* posixAbsorber(
 	}
 }
 
+function getDrive(str: string): [string, string] {
+	const [a, b] = str.slice(0, 2).toLowerCase().split('');
+	return [a, b];
+}
+
 function getCWDDOSRoot() {
-	const cwdPath = getCWD(); // cwd can be anything, even unc //server/share , but not //./unc/ or any other
-	const ddpTokens = Array.from(ddpAbsorber(cwdPath));
+	const ddpTokens = Array.from(ddpAbsorber(getCWD()));
 	if (ddpTokens.length) {
 		return ddpTokens[0]; // emit the root
 	}
-	const uncTokens = Array.from(uncAbsorber(cwdPath));
+	const uncTokens = Array.from(uncAbsorber(getCWD()));
 	if (uncTokens.length) {
 		return uncTokens[0];
 	}
 	// guess its normal tdp
-	const drive = cwdPath.slice(0, 2).toLowerCase();
-	if (drive[0]! >= "a" && drive[0]! <= "z" && drive[1] === ":") {
+	const drive = getDrive(getCWD());
+	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
 		return {
 			token: rootTokens.TDP_ROOT,
-			value: `${drive}`,
+			value: `${drive.join('')}`,
 			start: 0,
 			end: 1,
 		};
@@ -323,7 +341,7 @@ function tdpRootNeedsCorrection(str: string): Range | undefined {
 }
 
 function* tdpBodyAbsorber(
-	str = "",
+	str = '',
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token, undefined, undefined> {
@@ -334,24 +352,28 @@ function* tdpBodyAbsorber(
 		// let token;
 		const result = tdpFragment(str, i, end);
 		if (result) {
-			const value = toggle === 0 ? str.slice(i, result.end + 1) : "\\";
-			let token: TokenValueType = selectorPosix[toggle]!;
+			const value = toggle === 0 ? str.slice(i, result.end + 1) : '\\';
+			let token: TokenValueType = selectorPosix[toggle];
 			const errors = [];
 			if (toggle === 0) {
 				switch (value) {
-					case "..":
+					case '..':
 						token = tokens.PARENT;
 						break;
-					case ".":
+					case '.':
 						token = tokens.CURRENT;
 						break;
 					default: {
 						const ldn = hasLegacyDeviceName(value);
 						if (ldn) {
-							errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
+							errors.push(
+								`contains forbidden DOS legacy device name: ${ldn}`,
+							);
 						}
 						if (isInValidMSDirecotryName(value)) {
-							errors.push(`name "${value}" contains invalid characters`);
+							errors.push(
+								`name "${value}" contains invalid characters`,
+							);
 						}
 					}
 				}
@@ -361,7 +383,7 @@ function* tdpBodyAbsorber(
 				start: result.start,
 				end: result.end,
 				value,
-				...(errors.length && { error: errors.join("|") }),
+				...(errors.length && { error: errors.join('|') }),
 			};
 			yield rc;
 		}
@@ -371,7 +393,7 @@ function* tdpBodyAbsorber(
 }
 
 export function* tdpAbsorber(
-	str = "",
+	str = '',
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token | RootToken, undefined, undefined> {
@@ -380,8 +402,7 @@ export function* tdpAbsorber(
 	const result = tdpRootNeedsCorrection(str.slice(i, end + 1));
 	if (result) {
 		// it should not match
-		const os = inferPlatform();
-		if (os === "win32") {
+		if (mapPlatformNames() === 'win32') {
 			// in this case we need to have to current drive
 			/*
                cwd can be anything "tdp", "unc", and "ddp"
@@ -404,7 +425,7 @@ export function* tdpAbsorber(
 				str =
 					str.slice(0, start) +
 					winRoot.value +
-					"\\" +
+					'\\' +
 					str.slice(start + result.end + 1);
 				end = end + winRoot.value.length - (result.end + 1) + 1; //
 				i = start + winRoot.value.length;
@@ -428,8 +449,8 @@ export function* tdpAbsorber(
 		return;
 	}
 
-	const drive = str.slice(i, i + 2).toLowerCase();
-	if (drive[0]! >= "a" && drive[0]! <= "z" && drive[1] === ":") {
+	const drive = getDrive(str.slice(i, i + 2).toLowerCase());
+	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
 		yield {
 			token: rootTokens.TDP_ROOT,
 			value: `${drive}`,

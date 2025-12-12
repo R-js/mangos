@@ -1,6 +1,6 @@
 // import { resolve as nativeResolve } from "node:path";
-import { describe, expect, it } from "vitest";
-import { /*inferPathType,*/ resolve } from "../src/parser.js";
+import { describe, expect, it } from 'vitest';
+import { /*inferPathType,*/ resolve } from '../src/parser.js';
 
 // import {
 // 	ddpAbsorber,
@@ -9,30 +9,35 @@ import { /*inferPathType,*/ resolve } from "../src/parser.js";
 // 	uncAbsorber,
 // } from "../src/tokenizer.js";
 
-describe("filepath", () => {
-	describe("resolve", () => {
+describe('filepath', () => {
+	describe('resolve', () => {
 		describe('test "start" and "end" tokens', () => {
 			it('test end and start props when resolving from "//?/UNC/Server/share/", to "../../hello/world"', () => {
-				const answer = resolve("//?/UNC/Server/share/", "../../hello/world");
-				const renderPath = answer.path.map((m) => m.value).join("");
+				const answer = resolve(
+					'//?/UNC/Server/share/',
+					'../../hello/world',
+				);
+				const renderPath = answer.path.map((m) => m.value).join('');
 				const fidelity = answer.path
 					.map((m) => renderPath.slice(m.start, m.end + 1))
-					.join("");
-				expect(fidelity).to.equal("\\\\?\\UNC\\Server\\share\\hello\\world");
+					.join('');
+				expect(fidelity).to.equal(
+					'\\\\?\\UNC\\Server\\share\\hello\\world',
+				);
 				expect(answer).to.deep.equal({
 					path: [
 						{
-							token: "\u0005",
-							value: "\\\\?\\UNC\\Server\\share",
+							token: '\u0005',
+							value: '\\\\?\\UNC\\Server\\share',
 							start: 0,
 							end: 19,
 						},
-						{ token: "\u0001", start: 20, end: 20, value: "\\" },
-						{ token: "\u0006", start: 21, end: 31, value: "hello" },
-						{ token: "\u0001", start: 32, end: 32, value: "\\" },
-						{ token: "\u0006", start: 33, end: 49, value: "world" },
+						{ token: '\u0001', start: 20, end: 20, value: '\\' },
+						{ token: '\u0006', start: 21, end: 31, value: 'hello' },
+						{ token: '\u0001', start: 32, end: 32, value: '\\' },
+						{ token: '\u0006', start: 33, end: 49, value: 'world' },
 					],
-					type: "devicePath",
+					type: 'devicePath',
 				});
 			});
 			/*

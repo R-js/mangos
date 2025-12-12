@@ -1,0 +1,42 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"formatter": {
+		"enabled": true,
+		"includes": [
+			"src/**/*.ts",
+			"test/**/*.ts",
+			"./biome.json",
+			"./package.json",
+			"./vite.config.ts",
+			"./tsconfig.json"
+		],
+		"lineEnding": "lf",
+		"indentWidth": 4
+	},
+	"linter": {
+		"enabled": true,
+		"includes": [
+			"src/**/*.ts",
+			"test/**/*.ts",
+			"./biome.json",
+			"./package.json",
+			"vite.config.ts",
+			"./tsconfig.json"
+		],
+		"rules": {
+			"recommended": true
+		}
+	}
+}

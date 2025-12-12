@@ -1,8 +1,8 @@
 import {
 	ddpAbsorber,
 	getCWD,
-	inferPlatform,
 	isRootToken,
+	mapPlatformNames,
 	posixAbsorber,
 	type RootToken,
 	rootTokenValues,
@@ -10,7 +10,7 @@ import {
 	tdpAbsorber,
 	tokens,
 	uncAbsorber,
-} from "./tokenizer.js";
+} from './tokenizer.js';
 
 const absorberMapping = {
 	unc: uncAbsorber,
@@ -21,17 +21,17 @@ const absorberMapping = {
 
 type AbsorberKey = keyof typeof absorberMapping;
 
-export type FileSystem = "devicePath" | "unc" | "dos" | "posix";
+export type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
 
 // order of importance
 const allNamespaces: FileSystem[] = [
-	"devicePath",
-	"unc",
-	"dos",
-	"posix",
+	'devicePath',
+	'unc',
+	'dos',
+	'posix',
 ] as const;
 
-function firstPath(path = "", options = {}): ParsedPath | undefined {
+function firstPath(path = '', options = {}): ParsedPath | undefined {
 	const iterator = inferPathType(path, options);
 	const step = iterator.next(); // only get the first one (is also the most likely one)
 	if (step.done) {
@@ -74,7 +74,7 @@ function getErrors(parsed: ParsedPath) {
 			errors.push(token.error);
 			return errors;
 		}, [] as string[])
-		.join("|");
+		.join('|');
 }
 
 function last(arr: (RootToken | Token)[]) {
@@ -123,7 +123,9 @@ function firstPathFromCWD(): ParsedPath {
 function resolve(fromStr: string, ...toFragments: string[]): ParsedPath {
 	let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
 	if (firstPathFrom?.firstError) {
-		throw TypeError(`"from" path contains errors: ${getErrors(firstPathFrom)}`);
+		throw TypeError(
+			`"from" path contains errors: ${getErrors(firstPathFrom)}`,
+		);
 	}
 	// relative path? normalize!
 	if (!isRootToken(firstPathFrom.path[0])) {
@@ -196,40 +198,17 @@ function resolvePathObjects(
 	return resolvePathObjects(rc, ...toFragments);
 }
 
-function getPlatform(): undefined | string {
-	if ("userAgentData" in navigator) {
-		return (
-			navigator.userAgentData as { platform: string }
-		).platform.toLowerCase();
-	}
-	if ("platform" in navigator) {
-		return navigator.platform.toLowerCase();
-	}
-	return process?.platform;
-}
-
-function mapPlatformNames(): NodeJS.Platform | undefined {
-	const platform = getPlatform() ?? "linux";
-	if (platform.includes("win")) {
-		return "win32";
-	}
-	// if (platform.includes("mac")) {
-	// 	return "linux";
-	// }
-	return "linux";
-}
-
 function getSeperator() {
-	if (mapPlatformNames() === "win32") {
-		return "\\";
+	if (mapPlatformNames() === 'win32') {
+		return '\\';
 	}
-	return "/";
+	return '/';
 }
 
 function defaultOptions(options: InferPathOptions = {}) {
 	if (allNamespaces.every((fs) => !(fs in options))) {
 		// no fs specified at all
-		const isWindows = inferPlatform() === "win32";
+		const isWindows = mapPlatformNames() === 'win32';
 		Object.assign(options, {
 			unc: isWindows,
 			dos: isWindows,

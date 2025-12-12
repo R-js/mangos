@@ -7,7 +7,7 @@ function invertObject(o) {
         c[value] = key;
         return c;
     }, rc);
-    return rc;
+      return rc;
 }
 
 module.exports = {
