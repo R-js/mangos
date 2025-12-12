@@ -196,28 +196,31 @@ function resolvePathObjects(
 	return resolvePathObjects(rc, ...toFragments);
 }
 
-function getUserAgentData(): NodeJS.Platform | undefined {
+function getPlatform(): undefined | string {
 	if ("userAgentData" in navigator) {
-		const platform = (navigator.userAgentData as { platform: string }).platform;
-		if (platform.toLocaleLowerCase().includes("windows")) {
-			return "win32";
-		}
-		if (platform.toLowerCase().includes("linux")) {
-			return "linux";
-		}
+		return (
+			navigator.userAgentData as { platform: string }
+		).platform.toLowerCase();
 	}
-	if (navigator.platform.toLocaleLowerCase().includes("win")) {
+	if ("platform" in navigator) {
+		return navigator.platform.toLowerCase();
+	}
+	return process?.platform;
+}
+
+function mapPlatformNames(): NodeJS.Platform | undefined {
+	const platform = getPlatform() ?? "linux";
+	if (platform.includes("win")) {
 		return "win32";
 	}
-	if (navigator.platform.toLocaleLowerCase().includes("linux")) {
-		return "linux";
-	}
+	// if (platform.includes("mac")) {
+	// 	return "linux";
+	// }
+	return "linux";
 }
 
 function getSeperator() {
-	const platform: NodeJS.Platform =
-		getUserAgentData() ?? process?.platform ?? "linux";
-	if (platform === "win32") {
+	if (mapPlatformNames() === "win32") {
 		return "\\";
 	}
 	return "/";
@@ -254,4 +257,4 @@ function* inferPathType(path: string, options: InferPathOptions = {}) {
 	return;
 }
 
-export { inferPathType, resolve };
+export { type inferPathType, resolve };
