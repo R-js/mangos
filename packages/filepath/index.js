@@ -1,5 +1,5 @@
-const { inferPathType, lexPath, resolve } = require('./lib/parser');
-const { tokens, rootTokens } = require('./lib/tokenizer');
+const { inferPathType, lexPath, resolve } = require('./src/parser');
+const { tokens, rootTokens } = require('./src/tokenizer');
 
 function invertObject(o) {
     const rc = {};

@@ -1,15 +1,17 @@
 
 # filepath
 
-This is a filepath parsing _(LL(1) parser)_ and manipulation tool. It returns a parse tree describing the file path.
+_Part of the monorepo [mangos][mangos-mono-repo]_
 
-- joins lexed path names
-- infer the most likely OS file type(s) (plural) based on file name only.
+LL(1) parser utility to tokenizer microsoft modern/legacy and linux paths _unc_, _dos_, _devicePath_ and _posix_ file paths.
+
+Works in browser and in node/bun
+
+## features
+
+- infer the OS file system types based on string value only (ranked in order of most likely)
 - validates path strings, (checks for forbidden characters.. etc)for the various os filetypes
 
-FilePath tool complements the nodejs `path` module, parsing the following path types.
-
-_Part of the monorepo [mangos][mangos-mono-repo]_
 
 _Support the work by starring this [repo](https://github.com/R-js/mangos) on github._
 
@@ -23,8 +25,7 @@ It handles the following paths types:
 | `devicePath` | dos device path (ddp), alos allowing for dos devicepath descibing UNC `//./UNC/Server/Share` |
 | `posix`      | posix path                                                                                   |
 
-
-Works in browser and in node.
+## Installation
 
 ```bash
 npm install @mangos/filepath
@@ -142,7 +143,7 @@ Resolve will work exactly like `path.resolve` but with these difference: It will
 Example 1:
 
 ```javascript
-const { resolve } = require('@mangos/filepath');
+import { resolve } from '@mangos/filepath';
 
 const result = resolve('//./unc/Server1/share1/dir1/file.txt','../../../../hello/world');
 //->

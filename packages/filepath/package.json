@@ -1,49 +1,52 @@
 {
   "name": "@mangos/filepath",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "filepath parses UNC (long and short and cmd aliases) local filesystem path, and unix paths, checks for invalid path characters",
-  "keywords": [
-    "filepath",
-    "unc",
-    "posix pathname",
-    "universal naming convention",
-    "local file system",
-    "lfs",
-    "device path"
-  ],
-  "homepage": "https://github.com/R-js/mangos/blob/master/packages/filepath/README.md",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bugs": {
-    "url": "https://github.com/R-js/mangos.git",
-    "email": "info@mail.jacob-bogers.com"
+      "url": "https://github.com/R-js/mangos.git",
+      "email": "jkfbogers@gmail.com"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/R-js/mangos.git",
     "directory": "packages/filepath"
   },
-  "license": "MIT",
-  "author": "jacob.bogers <jkfbogers@gmail.com>",
-  "main": "index.js",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "package.json",
+    "LICENSE.txt"
+  ],
+  "type": "module",
   "scripts": {
-    "coverage": "nyc mocha",
-    "test": "mocha",
-    "lint": "eslint lib/**/*js",
-    "lint:other": "eslint test/**/*.js"
+    "prebuild": "npm run lint",
+    "build": "bun build src/index.ts --outfile dist/index.js",
+    "prepublishOnly": "npm run build",
+    "lint": "biome check --apply src",
+    "test": "vitest run --coverage ./test/success.spec.ts ./test/errors.spec.ts"
   },
-  "nyc": {
-    "instrument": true,
-    "reporter": [
-      "html",
-      "text"
-    ]
+  "homepage": "https://github.com/R-js/mangos/blob/master/packages/filepath/README.md",
+  "keywords": [
+    "file",
+    "path",
+    "unc",
+    "dos",
+    "linux",
+    "device path",
+    "universal naming convention",
+    "file system",
+    "lfs"
+  ],
+  "author": "jacob bogers <jkfbogers@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=v20.8.0"
   },
-  "dependencies": {},
   "devDependencies": {
-    "chai": "4.2.0",
-    "chai-as-promised": "7.1.1",
-    "cross-env": "7.0.2",
-    "eslint": "6.8.0",
-    "mocha": "6.2.2",
-    "nyc": "14.1.1"
+    "@types/node": "^25.0.0",
+    "typescript": "^5.9.3"
   }
 }
