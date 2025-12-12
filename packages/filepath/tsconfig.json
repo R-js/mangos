@@ -32,7 +32,7 @@
         "esModuleInterop": false,
         "forceConsistentCasingInFileNames": true,
         "preserveSymlinks": true,
-        "lib": ["esnext", "dom"],
+        "lib": ["ES2022", "DOM"],
         "target": "esnext",
         "explainFiles": false,
         "extendedDiagnostics": true,
