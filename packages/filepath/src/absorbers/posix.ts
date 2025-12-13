@@ -6,10 +6,6 @@ import type { RootToken } from '../types/RootToken.js';
 import type { Token } from '../types/Token.js';
 import type { TokenValueType } from '../types/TokenValue.js';
 
-function getPosixFragment(str: string, start: number, end: number) {
-	return absorbSuccessiveValues(str, (s) => s !== '/', start, end);
-}
-
 export default function* posixAbsorber(
 	str = '',
 	start = 0,
@@ -30,7 +26,8 @@ export default function* posixAbsorber(
 	let toggle = 0;
 	while (i <= end) {
 		// find pathpart
-		const result = getPosixFragment(str, i, end);
+		const coalescer = toggle === 0 ? (s?: string) => s !== '/' : (s?: string) => s === '/';
+		const result = absorbSuccessiveValues(str, coalescer, i, end);
 		if (result) {
 			const value = str.slice(i, result.end + 1);
 			let token: TokenValueType = togglePathFragment[toggle % 2];
