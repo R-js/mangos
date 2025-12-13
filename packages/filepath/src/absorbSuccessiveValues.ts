@@ -1,6 +1,6 @@
 import type { Range } from './types/Range.js';
 
-export default function lookSuccessive(
+export default function absorbSuccessiveValues(
 	str: string,
 	fn: (_: string | undefined) => boolean,
 	start: number,

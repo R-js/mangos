@@ -1,8 +1,6 @@
 function getPlatform(): undefined | string {
 	if ('userAgentData' in navigator) {
-		return (
-			navigator.userAgentData as { platform: string }
-		).platform.toLowerCase();
+		return (navigator.userAgentData as { platform: string }).platform.toLowerCase();
 	}
 	if ('platform' in navigator) {
 		return navigator.platform.toLowerCase();

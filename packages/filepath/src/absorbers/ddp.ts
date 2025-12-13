@@ -13,8 +13,7 @@ type RegExporderdMapDDP = {
 export const regExpOrderedMapDDP: RegExporderdMapDDP = {
 	//  \\?\UNC\Server\Share\
 	//  \\.\UNC\Server\Share\
-	ddpwithUNC:
-		/^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^/\\]+)(\/|\\)([^/\\]+)(\/|\\)?/i,
+	ddpwithUNC: /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^/\\]+)(\/|\\)([^/\\]+)(\/|\\)?/i,
 
 	// example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\
 	// example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
@@ -61,10 +60,7 @@ export function* ddpAbsorber(
 	start = 0,
 	end = str.length - 1,
 ): Generator<Token | RootToken, undefined, undefined> {
-	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<
-		RegExporderdMapDDP,
-		'unc'
-	>)[];
+	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
 	for (const pk of pks) {
 		const match = str.match(regExpOrderedMapDDP[pk]);
 		if (match === null) {

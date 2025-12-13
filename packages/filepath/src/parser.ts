@@ -22,12 +22,7 @@ type AbsorberKey = keyof typeof absorberMapping;
 type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
 
 // order of importance
-const allNamespaces: FileSystem[] = [
-	'devicePath',
-	'unc',
-	'dos',
-	'posix',
-] as const;
+const allNamespaces: FileSystem[] = ['devicePath', 'unc', 'dos', 'posix'] as const;
 
 function firstPath(path = '', options = {}): ParsedPath | undefined {
 	const iterator = inferPathType(path, options);
@@ -121,9 +116,7 @@ function firstPathFromCWD(): ParsedPath {
 function resolve(fromStr: string, ...toFragments: string[]): ParsedPath {
 	let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
 	if (firstPathFrom?.firstError) {
-		throw TypeError(
-			`"from" path contains errors: ${getErrors(firstPathFrom)}`,
-		);
+		throw TypeError(`"from" path contains errors: ${getErrors(firstPathFrom)}`);
 	}
 	// relative path? normalize!
 	if (!isRootToken(firstPathFrom.path[0])) {
@@ -136,10 +129,7 @@ function resolve(fromStr: string, ...toFragments: string[]): ParsedPath {
 	return resolvePathObjects(firstPathFrom, ...toFragments);
 }
 
-function resolvePathObjects(
-	from: ParsedPath,
-	...toFragments: string[]
-): ParsedPath {
+function resolvePathObjects(from: ParsedPath, ...toFragments: string[]): ParsedPath {
 	const firstToStr = toFragments.shift();
 	if (firstToStr === undefined) {
 		return from;

@@ -1,4 +1,4 @@
-import lookSuccessive from '../lookSuccessive.js';
+import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
 import { rootTokens } from '../rootTokens.js';
 import { togglePathFragment } from '../togglePathFragment.js';
 import { tokens } from '../tokens.js';
@@ -7,7 +7,7 @@ import type { Token } from '../types/Token.js';
 import type { TokenValueType } from '../types/TokenValue.js';
 
 function getPosixFragment(str: string, start: number, end: number) {
-	return lookSuccessive(str, (s) => s !== '/', start, end);
+	return absorbSuccessiveValues(str, (s) => s !== '/', start, end);
 }
 
 export default function* posixAbsorber(
@@ -17,7 +17,7 @@ export default function* posixAbsorber(
 ): Generator<Token | RootToken, undefined, undefined> {
 	// "/" start with "/" or '\' tokens should be converted to "/"
 	let i = start;
-	const root = lookSuccessive(str, (s) => s === '/', start, end);
+	const root = absorbSuccessiveValues(str, (s) => s === '/', start, end);
 	if (root) {
 		yield {
 			token: rootTokens.POSIX_ROOT,

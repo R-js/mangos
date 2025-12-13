@@ -6,17 +6,10 @@ describe('filepath', () => {
 	describe('resolve', () => {
 		describe('test "start" and "end" tokens', () => {
 			it('test end and start props when resolving from "//?/UNC/Server/share/", to "../../hello/world"', () => {
-				const answer = resolve(
-					'//?/UNC/Server/share/',
-					'../../hello/world',
-				);
+				const answer = resolve('//?/UNC/Server/share/', '../../hello/world');
 				const renderPath = answer.path.map((m) => m.value).join('');
-				const fidelity = answer.path
-					.map((m) => renderPath.slice(m.start, m.end + 1))
-					.join('');
-				expect(fidelity).to.equal(
-					'\\\\?\\UNC\\Server\\share\\hello\\world',
-				);
+				const fidelity = answer.path.map((m) => renderPath.slice(m.start, m.end + 1)).join('');
+				expect(fidelity).to.equal('\\\\?\\UNC\\Server\\share\\hello\\world');
 				expect(answer).to.deep.equal({
 					path: [
 						{

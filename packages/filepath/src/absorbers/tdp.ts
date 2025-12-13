@@ -1,6 +1,6 @@
+import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
 import getCWD from '../getCWD.js';
 import getDrive from '../getDrive.js';
-import lookSuccessive from '../lookSuccessive.js';
 import mapPlatformNames from '../platform.js';
 import { rootTokens } from '../rootTokens.js';
 import { togglePathFragment } from '../togglePathFragment.js';
@@ -60,7 +60,7 @@ function getCWDDOSRoot() {
 }
 
 function tdpFragment(str: string, start: number, end: number) {
-	return lookSuccessive(str, (s) => !validSep(s), start, end);
+	return absorbSuccessiveValues(str, (s) => !validSep(s), start, end);
 }
 
 function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
@@ -100,11 +100,7 @@ export default function* tdpAbsorber(
 					return;
 				}
 				// adjust
-				str =
-					str.slice(0, start) +
-					winRoot.value +
-					'\\' +
-					str.slice(start + result.end + 1);
+				str = `${str.slice(0, start) + winRoot.value}\\${str.slice(start + result.end + 1)}`;
 				end = end + winRoot.value.length - (result.end + 1) + 1; //
 				i = start + winRoot.value.length;
 				yield* tdpBodyAbsorber(str, i, end);
@@ -141,11 +137,7 @@ export default function* tdpAbsorber(
 	yield* tdpBodyAbsorber(str, i, end);
 }
 
-export function* tdpBodyAbsorber(
-	str = '',
-	start = 0,
-	end = str.length - 1,
-): Generator<Token, undefined, undefined> {
+export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Generator<Token, undefined, undefined> {
 	// also a unix path would work if it is winsos system
 	let toggle = 0;
 	let i = start;
@@ -167,14 +159,10 @@ export function* tdpBodyAbsorber(
 					default: {
 						const ldn = hasLegacyDeviceName(value);
 						if (ldn) {
-							errors.push(
-								`contains forbidden DOS legacy device name: ${ldn}`,
-							);
+							errors.push(`contains forbidden DOS legacy device name: ${ldn}`);
 						}
 						if (isInValidMSDirecotryName(value)) {
-							errors.push(
-								`name "${value}" contains invalid characters`,
-							);
+							errors.push(`name "${value}" contains invalid characters`);
 						}
 					}
 				}
