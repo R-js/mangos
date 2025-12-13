@@ -1,16 +1,14 @@
-import {
-	ddpAbsorber,
-	getCWD,
-	isRootToken,
-	mapPlatformNames,
-	posixAbsorber,
-	type RootToken,
-	rootTokenValues,
-	type Token,
-	tdpAbsorber,
-	tokens,
-	uncAbsorber,
-} from './tokenizer.js';
+import { ddpAbsorber } from './absorbers/ddp.js';
+import posixAbsorber from './absorbers/posix.js';
+import tdpAbsorber from './absorbers/tdp.js';
+import uncAbsorber from './absorbers/unc.js';
+import getCWD from './getCWD.js';
+import isRootToken from './isRootToken.js';
+import mapPlatformNames from './platform.js';
+import { rootTokenValues } from './rootTokenValues.js';
+import { tokens } from './tokens.js';
+import type { RootToken } from './types/RootToken.js';
+import type { Token } from './types/Token.js';
 
 const absorberMapping = {
 	unc: uncAbsorber,
