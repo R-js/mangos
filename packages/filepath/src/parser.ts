@@ -19,7 +19,7 @@ const absorberMapping = {
 
 type AbsorberKey = keyof typeof absorberMapping;
 
-export type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
+type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
 
 // order of importance
 const allNamespaces: FileSystem[] = [
@@ -217,7 +217,7 @@ function defaultOptions(options: InferPathOptions = {}) {
 	return options;
 }
 
-export type InferPathOptions = {
+type InferPathOptions = {
 	[key in FileSystem]+?: boolean;
 };
 
@@ -234,4 +234,4 @@ function* inferPathType(path: string, options: InferPathOptions = {}) {
 	return;
 }
 
-export { type inferPathType, resolve };
+export { resolve };

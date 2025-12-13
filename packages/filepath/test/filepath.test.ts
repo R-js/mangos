@@ -2,13 +2,6 @@
 import { describe, expect, it } from 'vitest';
 import { /*inferPathType,*/ resolve } from '../src/parser.js';
 
-// import {
-// 	ddpAbsorber,
-// 	posixAbsorber,
-// 	tdpAbsorber,
-// 	uncAbsorber,
-// } from "../src/tokenizer.js";
-
 describe('filepath', () => {
 	describe('resolve', () => {
 		describe('test "start" and "end" tokens', () => {
