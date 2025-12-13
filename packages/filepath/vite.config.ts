@@ -11,5 +11,21 @@ export default defineConfig({
 			include: ['src/**/*.{ts,js}'], // adjust as needed
 		},
 	},
-	build: {},
+	build: {
+		minify: false,
+		lib: {
+			entry: 'src/index.ts',
+			formats: ['es'],
+			fileName: 'index',
+		},
+		rollupOptions: {
+			output: {
+				preserveModules: true,
+				preserveModulesRoot: 'src',
+				entryFileNames: '[name].js',
+				chunkFileNames: '[name].js',
+			},
+		},
+		emptyOutDir: true,
+	},
 });

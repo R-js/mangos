@@ -6,7 +6,9 @@
 		"disableFilenameBasedTypeAcquisition": true
 	},
 	"compilerOptions": {
-		"allowUnreachableCode": true,
+		"emitDeclarationOnly": true,
+		"declarationMap": false,
+		"allowUnreachableCode": false,
 		"allowUnusedLabels": true,
 		"exactOptionalPropertyTypes": true,
 		"noImplicitAny": true,

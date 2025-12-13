@@ -7,6 +7,13 @@
 		"url": "https://github.com/R-js/mangos.git",
 		"directory": "packages/filepath"
 	},
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"types": "./dist/index.d.ts",
 	"main": "./dist/index.js",
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
@@ -27,8 +34,7 @@
 	"files": [
 		"dist",
 		"README.md",
-		"package.json",
-		"LICENSE.txt"
+		"package.json"
 	],
 	"homepage": "https://github.com/R-js/mangos/blob/master/packages/filepath/README.md",
 	"keywords": [
@@ -45,11 +51,11 @@
 	"license": "MIT",
 	"scripts": {
 		"prebuild": "npm run lint",
+		"build": "vite build && tsc",
 		"prepublishOnly": "npm run build",
 		"lint": "biome check",
 		"test": "vitest run --coverage"
 	},
 	"sideEffects": false,
-	"type": "module",
-	"types": "./dist/index.d.ts"
+	"type": "module"
 }
