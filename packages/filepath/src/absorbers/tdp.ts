@@ -63,6 +63,10 @@ function tdpFragment(str: string, start: number, end: number) {
 	return absorbSuccessiveValues(str, (s) => !validSep(s), start, end);
 }
 
+function tdpSeperator(str: string, start: number, end: number) {
+	return absorbSuccessiveValues(str, (s) => validSep(s), start, end);
+}
+
 function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
 	const match = str.slice(start, end + 1).match(regexpLD);
 	if (Array.isArray(match)) {
@@ -127,7 +131,7 @@ export default function* tdpAbsorber(
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
 		yield {
 			token: rootTokens.TDP_ROOT,
-			value: `${drive}`,
+			value: `${drive.join('')}`,
 			start: i,
 			end: i + 1,
 		};
@@ -143,7 +147,7 @@ export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Gen
 	let i = start;
 	while (i <= end) {
 		// let token;
-		const result = tdpFragment(str, i, end);
+		const result = toggle === 0 ? tdpFragment(str, i, end) : tdpSeperator(str, i, end);
 		if (result) {
 			const value = toggle === 0 ? str.slice(i, result.end + 1) : '\\';
 			let token: TokenValueType = togglePathFragment[toggle];
@@ -175,8 +179,8 @@ export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Gen
 				...(errors.length && { error: errors.join('|') }),
 			};
 			yield rc;
+			i = result.end + 1;
 		}
-		i = (result?.end ?? i) + 1;
 		toggle = ++toggle % 2;
 	}
 }

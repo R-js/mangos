@@ -1,6 +1,9 @@
-// import { resolve as nativeResolve } from "node:path";
+import { resolve as nodeResolve, sep } from 'node:path';
+import { lexPath } from '@mangos/filepath';
+// import { lexPath, resolve as mangoResolve } from '@mangos/filepath';
 import { describe, expect, it } from 'vitest';
-import { /*inferPathType,*/ resolve } from '../src/parser.js';
+import getCWD from '../src/getCWD.js';
+import { inferPathType, resolve } from '../src/parser.js';
 
 describe('filepath', () => {
 	describe('resolve', () => {
@@ -26,37 +29,30 @@ describe('filepath', () => {
 					type: 'devicePath',
 				});
 			});
-			/*
-            it('from "", to ""', () => {
+			it('from "", to ""', () => {
 				const answer = resolve();
-				// since the answer is the current working directory we test with "fidelity" heuristic
-				const cwd = path.resolve();
-				const renderPath = answer.path.map((m) => m.value).join("");
-				const fidelity = answer.path
-					.map((m) => renderPath.slice(m.start, m.end + 1))
-					.join("");
+				const cwd = nodeResolve();
+				const renderPath = answer.path.map((m) => m.value).join('');
+				const fidelity = answer.path.map((m) => renderPath.slice(m.start, m.end + 1)).join('');
 				expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
 			});
-
-            it("from $current working dir", () => {
-                const there = process.cwd();
-                const cwd = lexPath(there);
-                const sameAsCWD = resolve("");
-                const fileInCWD = resolve("./h1", "h2", "h3");
-                const fidelity1 = fileInCWD.path.map((m) => m.value).join("");
-                expect(fidelity1.toLowerCase()).to.equal(
-                    process.cwd().toLowerCase() +
-                        path.sep +
-                        ["h1", "h2", "h3"].join(path.sep),
-                );
-                expect(
-                    sameAsCWD.path
-                        .map((m) => m.value)
-                        .join("")
-                        .toLowerCase(),
-                ).to.equal(process.cwd().toLowerCase());
-            });
-
+			it('from $current working dir', () => {
+				const thereCWD = lexPath(process.cwd());
+				const sameAsCWD = resolve();
+				expect(thereCWD).toEqual(sameAsCWD);
+				const fileInCWD = resolve('./h1', 'h2/h9/', 'h3');
+				const fidelity1 = fileInCWD.path.map((m) => m.value).join('');
+				expect(fidelity1.toLowerCase()).to.equal(
+					process.cwd().toLowerCase() + sep + ['h1', 'h2', 'h9', 'h3'].join(sep),
+				);
+				expect(
+					sameAsCWD.path
+						.map((m) => m.value)
+						.join('')
+						.toLowerCase(),
+				).toBe(process.cwd().toLowerCase());
+			});
+			/*
             it('from "//?/UNC/Server/share/", to "../../../../../hello/world"', () => {
                 const answer = resolve(
                     "//?/UNC/Server/share/",

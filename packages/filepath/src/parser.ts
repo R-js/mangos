@@ -113,7 +113,7 @@ function firstPathFromCWD(): ParsedPath {
 	return firstPath(getCWD())!;
 }
 
-function resolve(fromStr: string, ...toFragments: string[]): ParsedPath {
+function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
 	let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
 	if (firstPathFrom?.firstError) {
 		throw TypeError(`"from" path contains errors: ${getErrors(firstPathFrom)}`);
@@ -197,7 +197,7 @@ function defaultOptions(options: InferPathOptions = {}) {
 	if (allNamespaces.every((fs) => !(fs in options))) {
 		// no fs specified at all
 		const isWindows = mapPlatformNames() === 'win32';
-		Object.assign(options, {
+		return Object.assign(Object.create(null), {
 			unc: isWindows,
 			dos: isWindows,
 			devicePath: isWindows,
@@ -224,4 +224,4 @@ function* inferPathType(path: string, options: InferPathOptions = {}) {
 	return;
 }
 
-export { resolve };
+export { resolve, inferPathType };

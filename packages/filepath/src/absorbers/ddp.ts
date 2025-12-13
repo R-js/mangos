@@ -25,35 +25,26 @@ export const regExpOrderedMapDDP: RegExporderdMapDDP = {
 	ddpwithTDP: /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)?/i,
 };
 
-const mathMapFns = {
+const createRootValueMap = {
 	ddpwithVolumeUUID(match: RegExpMatchArray) {
-		const value = `\\\\?\\${match[4]}`;
-		return {
-			token: rootTokens.DDP_ROOT,
-			value,
-			start: 0,
-			end: value.length - 1,
-		};
+		return `\\\\?\\${match[4]}`;
 	},
 	ddpwithUNC(match: RegExpMatchArray) {
-		const value = `\\\\?\\UNC\\${match[6]}\\${match[8]}`;
-		return {
-			token: rootTokens.DDP_ROOT,
-			value,
-			start: 0,
-			end: value.length - 1,
-		};
+		return `\\\\?\\UNC\\${match[6]}\\${match[8]}`;
 	},
 	ddpwithTDP(match: RegExpMatchArray) {
-		const value = `\\\\?\\${match[4]}`;
-		return {
-			token: rootTokens.DDP_ROOT,
-			value,
-			start: 0,
-			end: value.length - 1,
-		};
+		return `\\\\?\\${match[4]}`;
 	},
 };
+
+function createRootToken(value: string) {
+	return {
+		token: rootTokens.DDP_ROOT,
+		value,
+		start: 0,
+		end: value.length - 1,
+	};
+}
 
 export function* ddpAbsorber(
 	str = '',
@@ -66,7 +57,8 @@ export function* ddpAbsorber(
 		if (match === null) {
 			continue;
 		}
-		const record = mathMapFns[pk]?.(match);
+		const rootValue = createRootValueMap[pk](match);
+		const record = createRootToken(rootValue);
 		if (!record) {
 			continue;
 		}
