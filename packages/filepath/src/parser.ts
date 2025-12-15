@@ -4,6 +4,8 @@ import tdpAbsorber from './absorbers/tdp.js';
 import uncAbsorber from './absorbers/unc.js';
 import getCWD from './getCWD.js';
 import isRootToken from './isRootToken.js';
+import { ParsedPath } from './ParsedPath.js';
+import { ParsedPathError } from './ParsedPathError.js';
 import mapPlatformNames from './platform.js';
 import { rootTokenValues } from './rootTokenValues.js';
 import { tokens } from './tokens.js';
@@ -19,12 +21,12 @@ const absorberMapping = {
 
 type AbsorberKey = keyof typeof absorberMapping;
 
-type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
+export type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
 
 // order of importance
 const allNamespaces: FileSystem[] = ['devicePath', 'unc', 'dos', 'posix'] as const;
 
-function firstPath(path = '', options = {}): ParsedPath | undefined {
+function firstPath(path = '', options: InferPathOptions = {}): ParsedPath | ParsedPathError | undefined {
 	const iterator = inferPathType(path, options);
 	const step = iterator.next(); // only get the first one (is also the most likely one)
 	if (step.done) {
@@ -33,29 +35,33 @@ function firstPath(path = '', options = {}): ParsedPath | undefined {
 	return step.value;
 }
 
-export type ParsedPath = {
+function allPath(path = '', options: InferPathOptions = {}): (ParsedPath | ParsedPathError)[] {
+	return Array.from(inferPathType(path, options));
+}
+
+export type ParsedPathDTO = {
 	type: FileSystem;
 	path: (Token | RootToken)[];
 	firstError?: Token;
 };
 
 function createPathProcessor(path: string) {
-	return (ns: AbsorberKey): undefined | ParsedPath => {
+	return (ns: AbsorberKey): undefined | ParsedPath | ParsedPathError => {
 		// get all path tokens at once
 		const _tokens = Array.from(absorberMapping[ns](path));
 		if (_tokens.length === 0) {
 			return;
 		}
-		const rc: ParsedPath = { type: ns, path: _tokens };
+		const rc: ParsedPathDTO = { type: ns, path: _tokens };
 		const firstError = _tokens.find((t) => !isRootToken(t) && t.error);
-		if (firstError && !isRootToken(firstError)) {
-			rc.firstError = firstError;
+		if (firstError) {
+			return new ParsedPathError(rc);
 		}
-		return rc;
+		return new ParsedPath(rc);
 	};
 }
 
-function getErrors(parsed: ParsedPath) {
+function getErrors(parsed: ParsedPathDTO) {
 	return parsed.path
 		.reduce((errors, token) => {
 			if (isRootToken(token)) {
@@ -108,14 +114,14 @@ function add(_tokens: (RootToken | Token)[], token: RootToken | Token) {
 	});
 }
 
-function firstPathFromCWD(): ParsedPath {
+function firstPathFromCWD(): ParsedPathDTO {
 	// biome-ignore lint/style/noNonNullAssertion: firstPath guarantees to return result of getCWD()
 	return firstPath(getCWD())!;
 }
 
-function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
+function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath | ParsedPathError {
 	let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
-	if (firstPathFrom?.firstError) {
+	if (firstPathFrom instanceof ParsedPathError) {
 		throw TypeError(`"from" path contains errors: ${getErrors(firstPathFrom)}`);
 	}
 	// relative path? normalize!
@@ -129,7 +135,7 @@ function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
 	return resolvePathObjects(firstPathFrom, ...toFragments);
 }
 
-function resolvePathObjects(from: ParsedPath, ...toFragments: string[]): ParsedPath {
+function resolvePathObjects(from: ParsedPath, ...toFragments: string[]): ParsedPath | ParsedPathError {
 	const firstToStr = toFragments.shift();
 	if (firstToStr === undefined) {
 		return from;
@@ -140,7 +146,7 @@ function resolvePathObjects(from: ParsedPath, ...toFragments: string[]): ParsedP
 		return from;
 	}
 
-	if (firstPathTo?.firstError) {
+	if (firstPathTo instanceof ParsedPathError) {
 		throw TypeError(`"to" path contains errors: ${getErrors(firstPathTo)}`);
 	}
 
@@ -175,7 +181,7 @@ function resolvePathObjects(from: ParsedPath, ...toFragments: string[]): ParsedP
 		}
 	}
 	// finished processing all tokens
-	const rc = { ...from, path: working };
+	const rc = new ParsedPath({ ...from, path: working });
 	//  this check might seem strange at first, but it is perfectly legal to call "resolve" with
 	//  resolve(<from-path>, '../dir1/dir2/', 'dir3/dir4')
 	//  so the individual "to fragments" themselves can contain multiple directory entries,
@@ -224,4 +230,4 @@ function* inferPathType(path: string, options: InferPathOptions = {}) {
 	return;
 }
 
-export { resolve, inferPathType };
+export { resolve, resolvePathObjects, firstPath, allPath };
