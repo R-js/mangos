@@ -61,11 +61,11 @@ There are 4 exported functions:
 import { allPath, firstPath, resolve, resolvePathObject } from '@mangos/filepath';
 ```
 
-Most of the time you will be using `resolve`, `firstPath`.
+Most of the time you will be using <a href="#fn-resolve"><code>resolve</code></a>, <a href="#fn-first-path"><code>firstPath</code></a>.
 
 <h3 id="infer-path-options">Type <code>InferPathOptions</code></h3>
 
-The functions `allPath` and `firstPath` will try to tokenize a path string based on options object specified as the second argument.
+The functions <a href="#fn-all-path"><code>allPath</code></a> and <a href="#fn-first-path"><code>firstPath</code></a> will try to tokenize a path string based on options object specified as the second argument.
 
 ```typescript
 type InferPathOptions = {
@@ -76,17 +76,17 @@ type InferPathOptions = {
 }
 ```
 
-Multiple path types _can_ be tokenized from the same path string.
+Multiple path types <i>can</i> be tokenized from the same path string.
 
-The response of `allPath` will be an **array** of `ParsedPath` **or/and** `ParsedPathError` class instance, representing parsing for multiple OS path types.
+The response of <a href="#fn-all-path"><code>allPath</code></a> will be an <b>array</b> of `ParsedPath` <b>or/and</b> <a href="#parsed-path-error"><code>ParsedPathError</code></a> class instance, representing parsing for multiple OS path types.
 
 <h4 id="infer-path-options-defaults">defaults:</h4>
 
-If <code><a href="#infer-path-options">InferpathOptions</code></a></code> argument is left empty in <a href="#fn-all-path"><code>allPath</code></a> and <a href="#fn-first-path"><code>firstPath</code></a> the default will be used based on OS:
+If <a href="#infer-path-options"><code>InferpathOptions</code></a> argument is left empty in <a href="#fn-all-path"><code>allPath</code></a> and <a href="#fn-first-path"><code>firstPath</code></a> the default will be used based on OS:
 
 
-- The default for windos: `{ dos: true, devicePath: true, unc: true, posix: false }`
-- The default for unix: `{ posix: true }`
+- The default for windos: <code>{ dos: true, devicePath: true, unc: true, posix: false }</code>
+- The default for unix: <code>{ posix: true }</code>
 
 <h3 id="parsed-path"><code>ParsedPath</code> object</h3>
 
@@ -95,21 +95,21 @@ The response of a successfull path tokenization will be an ADT: `ParsedPath`.
 An instance of `ParsedPath` has the following fields/members
 
 - members:
-    - `toString(): <string>`: return the original path string
-    - `isRelative(): <boolean>`: is the a path a relative one?
+    - <code>toString(): <i>string</i></code>: return the original path string
+    - <code>isRelative(): <i>boolean</i></codes>: is the a path a relative one?
 - fields:
-    - `type: <string>`, one of the value `devicePath`, `unc`, `dos`, `posix`.
-    - `path: <Token[]>`, the path tokenized.
+    - <code>type: <i>string</i></code>: one of the value `devicePath`, `unc`, `dos`, `posix`.
+    - <code>path: <i>Token[]</i></code>: the path tokenized (see source).
 
 <h3 id="parsed-path-error"><code>ParsedPathError</code> object</h3>
 
-If a path has illigal characters or is invalid the result of a tokenization will be an ADT: `ParsedPathError`
+If a path has illigal characters or is invalid the result of a tokenization will be an ADT: <code>ParsedPathError</code>
 
 - members:
-    - `toString(): <string>`: algamation of all errors found during parsing.
+    - <code>toString(): <i>string</i></code>: algamation of all errors found during parsing.
 - attributes:
-    - `type: <string>`, one of the values `devicePath`, `unc`, `dos`, `posix`.
-    - `path: <Token[]>`, the path tokenized.
+    - <code>type: <i>string</i></code>: one of the values `devicePath`, `unc`, `dos`, `posix`.
+    - <code>path: <i>Token[]</i></code>: the path tokenized.
 
 
 <h3 id="path-type-order-of-evaluation">Path type order of evaluation</h4>
@@ -131,8 +131,8 @@ function allPath(path = '', options: InferPathOptions = {}): (ParsedPath | Parse
 
 <h5 id="fn-all-path-arguments">Arguments:</h5>
 
-- <code>path: <i>string</i> optional</code>: (<b>Default</b> is current working directory). Relative or absolute <code>path</code> conforming to one of the <a href="#supported-path">supported path types</a>. Parsed according to <a href="#infer-path-options">options</a>. 
-- <code>options: <a href="infer-path-options">InferPathOptions</a> optional</code>: Parsing limited to flags set to <code>true</code> in <a href="#infer-path-options">options</a>.
+- <code>path: <i>string</i> optional</code>: (<b>Default</b> is current working directory). Relative or absolute <code>path</code> conforming to one of the <a href="#supported-path">supported path types</a>.
+- <code>options: <i>InferPathOptions</i> optional</code>: Parsing limited to flags set to <code>true</code> in <a href="#infer-path-options">options</a>.
 
 <h5 id="fn-all-path-return">Return:</h5>
 
@@ -165,51 +165,49 @@ function firstPath(path = '', options: InferPathOptions = {}): ParsedPath | Pars
 
 <h5 id="fn-first-path-arguments">Arguments:</h5>
 
-- <code>path: <i>string</i> optional</code>: (<b>Default</b> is current working directory). Relative or absolute <code>path</code> conforming to one of the <a href="#supported-path">supported path types</a>. Parsed according to <a href="#infer-path-options">options</a>. 
-- <code>options: <a href="infer-path-options">InferPathOptions</a> optional</code>: Parsing limited to flags set to <code>true</code> in <a href="#infer-path-options">options</a>.
+- <code>path: <i>string</i> optional</code>: (<b>Default</b> is current working directory). Relative or absolute <code>path</code> conforming to one of the <a href="#supported-path">supported path types</a>.
+- <code>options: <i>InferPathOptions</i> optional</code>: Parsing limited to flags set to <code>true</code> in <a href="#infer-path-options">options</a>.
 
 <h5 id="fn-all-path-return">Return:</h5>
 
 - <code>undefined</code>: The path was not confirm to any of the types listed in <a href="#supported-path">path types</a>
 
 - <a href="#parsed-path"><code>ParsedPath</code></a>: In case of successfull parse.
-
 - <a href="#parsed-path-error"><code>ParsedPathError</code></a>: In case of legal structure but illegal characters in the path.
 
 
-<h4 id="fn-resolve-path-objects">function: <code>resolvePathObject</code></h4>
+<h4 id="fn-resolve-path-object">function: <code>resolvePathObject</code></h4>
 
 ```typescript
 function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPath | ParsedPathError;
 ```
 
-<h5 id="fn-resolve-path-objects-arguments">Arguments:</h5>
+<h5 id="fn-resolve-path-object-arguments">Arguments:</h5>
 
-- <code>from: <a  href="#parsed-path">ParsedPath</a></code>: A previously created <code><a  href="#parsed-path">ParsedPath</a></code> object via <code><a href="#fn-first-path">firstPath</a></code> function. 
+- <code>from: <i>ParsedPath</i></code>: A previously created <code><a  href="#parsed-path">ParsedPath</a></code> object via <a href="#fn-first-path"><code>firstPath</code></a> function. 
 - <code>toFragments: <i>string[]</i></code>: A sequence of paths or path segments.
 
-<h5 id="fn-resolve-path-objects-return">Return:</h5>
+<h5 id="fn-resolve-path-object-return">Return:</h5>
 
 - <a href="#parsed-path"><code>ParsedPath</code></a>: In case of successfull resolve.
 - <a href="#parsed-path-error"><code>ParsedPathError</code></a>: In case of legal structure but illegal characters in the `from` or `toFragments`.
 
-<h5 id="fn-resolve-path-objects-throws">throws:</h5>
+<h5 id="fn-resolve-path-object-throws">throws:</h5>
 
 If <code>from</code> is a <a href="#parsed-path-error"><code>ParsedPathError</code></a> an `Error` will be thrown.
 
 <h4 id="fn-resolve">function: <code>resolve</code></h4>
 
 ```typescript
-function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath | ParsedPathError;
+function resolve(fromStr: string, ...toFragments: string[]): ParsedPath | ParsedPathError;
 ```
 
 <h5 id="fn-resolve-arguments">Arguments:</h5>
 
-- <code>fromStr: <i>string</i></code>: A path according to a <a href="">path type</a>.
+- <code>fromStr: <i>string</i> optional</code>: A path according to a <a href="#supported-path">path type</a>. Defaults to current working directory if absent/undefined.
 - <code>toFragments: <i>string[]</i></code>: A sequence of paths or path segments.
 
 <h5 id="fn-resolve-return">Return:</h5>
-
 
 - <a href="#parsed-path"><code>ParsedPath</code></a>: In case of successfull resolve.
 - <a href="#parsed-path-error"><code>ParsedPathError</code></a>: In case of legal structure but illegal characters in the `from` or `toFragments`.

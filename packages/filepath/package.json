@@ -1,10 +1,10 @@
 {
 	"name": "@mangos/filepath",
-	"version": "1.0.0",
+	"version": "1.0.3",
 	"author": "jacob bogers <jkfbogers@gmail.com>",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/R-js/mangos.git",
+		"url": "git+https://github.com/R-js/mangos.git",
 		"directory": "packages/filepath"
 	},
 	"exports": {

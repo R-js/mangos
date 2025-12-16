@@ -1,11 +1,9 @@
-import type { Range } from './types/Range.js';
-
 export default function absorbSuccessiveValues(
 	str: string,
 	fn: (_: string | undefined) => boolean,
 	start: number,
 	end = str.length - 1,
-): Range | undefined {
+) {
 	let i = start;
 	let len = 0;
 	for (; i <= end; i++) {
