@@ -1,3 +1,3 @@
-import { tokens } from './tokens.js';
+import { TokenEnum } from './constants.js';
 
-export const togglePathFragment = [tokens.PATHELT, tokens.SEP] as const;
+export const togglePathFragment = [TokenEnum.PATHELT, TokenEnum.SEP] as const;

@@ -1,15 +1,10 @@
-import { rootTokens } from '../rootTokens.js';
-import type { RootToken } from '../types/RootToken.js';
-import type { Token } from '../types/Token.js';
+import { TokenEnum } from '../constants.js';
+import { Token } from '../Token.js';
 import { tdpBodyAbsorber } from './tdp.js';
 
 export const uncRegExp = /^(\/\/|\\\\)([^\\/\\?\\.]+)(\/|\\)([^\\/]+)(\/|\\)?/;
 
-export default function* uncAbsorber(
-	str = '',
-	start = 0,
-	end = str.length - 1,
-): Generator<Token | RootToken, undefined, undefined> {
+export default function* uncAbsorber(str = ''): Generator<Token, undefined, undefined> {
 	// \\system07\C$\    servername: system07 (of fully qualified netbios,  IP/FQDN address ipv4/ipv6
 	//                   c$: shared name
 	// \\Server2\Share\Test\Foo.txt
@@ -29,12 +24,7 @@ export default function* uncAbsorber(
 	const value = `\\\\${server}\\${share}`;
 	const endUnc = value.length - 1;
 
-	yield {
-		token: rootTokens.UNC_ROOT,
-		value, // delimter at the end makes my IDE (vscode) do weird stuff
-		start,
-		end: endUnc,
-	};
+	yield new Token(TokenEnum.ROOT, value, 0, endUnc);
 	// at this point is should be just a normal dos parsing
-	yield* tdpBodyAbsorber(str, endUnc + 1, end);
+	yield* tdpBodyAbsorber(str, endUnc + 1, str.length - 1);
 }

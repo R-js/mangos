@@ -1,14 +1,11 @@
 import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
+import { TokenEnum } from '../constants.js';
 import getCWD from '../getCWD.js';
 import getDrive from '../getDrive.js';
 import mapPlatformNames from '../platform.js';
-import { rootTokens } from '../rootTokens.js';
+import { Token } from '../Token.js';
 import { togglePathFragment } from '../togglePathFragment.js';
-import { tokens } from '../tokens.js';
-import type { Range } from '../types/Range.js';
-import type { RootToken } from '../types/RootToken.js';
-import type { Token } from '../types/Token.js';
-import type { TokenValueType } from '../types/TokenValue.js';
+import type { TokenValueType } from '../types/TokenValueType.js';
 import validSep from '../validSep.js';
 import { ddpAbsorber, regExpOrderedMapDDP } from './ddp.js';
 import uncAbsorber, { uncRegExp } from './unc.js';
@@ -21,7 +18,7 @@ function isInValidMSDirecotryName(str = '', start = 0, end = str.length - 1) {
 	return forbiddenRegExp.test(str.slice(start, end + 1));
 }
 
-function tdpRootNeedsCorrection(str: string): Range | undefined {
+function tdpRootNeedsCorrection(str: string) {
 	const match = str.match(/^[/\\]+/);
 	if (match === null) {
 		return;
@@ -49,12 +46,7 @@ function getCWDDOSRoot() {
 	// guess its normal tdp
 	const drive = getDrive(getCWD());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		return {
-			token: rootTokens.TDP_ROOT,
-			value: `${drive.join('')}`,
-			start: 0,
-			end: 1,
-		};
+		return new Token(TokenEnum.ROOT, `${drive.join('')}`, 0, 1);
 	}
 	return undefined;
 }
@@ -67,21 +59,18 @@ function tdpSeperator(str: string, start: number, end: number) {
 	return absorbSuccessiveValues(str, (s) => validSep(s), start, end);
 }
 
-function hasLegacyDeviceName(str = '', start = 0, end = str.length - 1) {
-	const match = str.slice(start, end + 1).match(regexpLD);
+function hasLegacyDeviceName(str: string) {
+	const match = str.match(regexpLD);
 	if (Array.isArray(match)) {
 		return match[0];
 	}
 }
 
-export default function* tdpAbsorber(
-	str = '',
-	start = 0,
-	end = str.length - 1,
-): Generator<Token | RootToken, undefined, undefined> {
-	let i = start;
+export default function* tdpAbsorber(str = ''): Generator<Token, undefined, undefined> {
+	let i = 0;
+	let end = str.length - 1;
 	// needs correction ?
-	const result = tdpRootNeedsCorrection(str.slice(i, end + 1));
+	const result = tdpRootNeedsCorrection(str.slice(i, str.length));
 	if (result) {
 		// it should not match
 		if (mapPlatformNames() === 'win32') {
@@ -96,52 +85,50 @@ export default function* tdpAbsorber(
             */
 			const winRoot = getCWDDOSRoot();
 			if (winRoot) {
-				winRoot.end += start;
-				winRoot.start += start;
 				yield winRoot; // all roots DONT have '/' token
-				if (result.end >= end) {
+				if (result.end >= str.length - 1) {
 					// we dont have rest-data
 					return;
 				}
 				// adjust
-				str = `${str.slice(0, start) + winRoot.value}\\${str.slice(start + result.end + 1)}`;
-				end = end + winRoot.value.length - (result.end + 1) + 1; //
-				i = start + winRoot.value.length;
+				str = `${winRoot.value}\\${str.slice(result.end + 1)}`;
+				end = end + winRoot.value.length - (result.end + 1) + 1;
+				i = winRoot.value.length;
 				yield* tdpBodyAbsorber(str, i, end);
 				return;
 			}
 		}
 		// illegal char!! as a dos directory name, not good at all
 		const value = str.slice(result.start, result.end + 1);
-		yield {
+		yield new Token(
+			TokenEnum.PATHELT,
 			value,
-			token: tokens.PATHELT,
-			start,
-			end: result.end,
-			error: `path ${str} contains invalid ${value} as path element`,
-		};
+			0,
+			result.end,
+			`path ${str} contains invalid ${value} as path element`,
+		);
+
 		i = result.end + 1;
 	}
 
-	if (str.slice(i, end).match(uncRegExp)) {
+	if (str.slice(i, str.length - 1).match(uncRegExp)) {
 		return;
 	}
 
 	const drive = getDrive(str.slice(i, i + 2).toLowerCase());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		yield {
-			token: rootTokens.TDP_ROOT,
-			value: `${drive.join('')}`,
-			start: i,
-			end: i + 1,
-		};
-		i = start + 2;
+		yield new Token(TokenEnum.ROOT, `${drive.join('')}`, i, i + 1);
+		i = 2;
 	}
 	// also a unix path would work if it is win32 system
-	yield* tdpBodyAbsorber(str, i, end);
+	yield* tdpBodyAbsorber(str, i, str.length - 1);
 }
 
-export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Generator<Token, undefined, undefined> {
+export function* tdpBodyAbsorber(
+	str = '',
+	start: number,
+	end = str.length - 1,
+): Generator<Token, undefined, undefined> {
 	// also a unix path would work if it is winsos system
 	let toggle = 0;
 	let i = start;
@@ -155,10 +142,10 @@ export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Gen
 			if (toggle === 0) {
 				switch (value) {
 					case '..':
-						token = tokens.PARENT;
+						token = TokenEnum.PARENT;
 						break;
 					case '.':
-						token = tokens.CURRENT;
+						token = TokenEnum.CURRENT;
 						break;
 					default: {
 						const ldn = hasLegacyDeviceName(value);
@@ -171,14 +158,9 @@ export function* tdpBodyAbsorber(str = '', start = 0, end = str.length - 1): Gen
 					}
 				}
 			}
-			const rc = {
-				token,
-				start: result.start,
-				end: result.end,
-				value,
-				...(errors.length && { error: errors.join('|') }),
-			};
-			yield rc;
+			yield errors?.length
+				? new Token(token, value, result.start, result.end, errors?.join('|'))
+				: new Token(token, value, result.start, result.end);
 			i = result.end + 1;
 		}
 		toggle = ++toggle % 2;

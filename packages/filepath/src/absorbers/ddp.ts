@@ -1,6 +1,5 @@
-import { rootTokens } from '../rootTokens.js';
-import type { RootToken } from '../types/RootToken.js';
-import type { Token } from '../types/Token';
+import { TokenEnum } from '../constants.js';
+import { Token } from '../Token.js';
 import { tdpBodyAbsorber } from './tdp.js';
 
 type RegExporderdMapDDP = {
@@ -37,20 +36,11 @@ const createRootValueMap = {
 	},
 };
 
-function createRootToken(value: string) {
-	return {
-		token: rootTokens.DDP_ROOT,
-		value,
-		start: 0,
-		end: value.length - 1,
-	};
+function createRootToken(value: string, offset = 0) {
+	return new Token(TokenEnum.ROOT, value, offset, offset + value.length - 1);
 }
 
-export function* ddpAbsorber(
-	str = '',
-	start = 0,
-	end = str.length - 1,
-): Generator<Token | RootToken, undefined, undefined> {
+export function* ddpAbsorber(str = '', start = 0, end = str.length - 1): Generator<Token, undefined, undefined> {
 	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
 	for (const pk of pks) {
 		const match = str.match(regExpOrderedMapDDP[pk]);
@@ -58,12 +48,7 @@ export function* ddpAbsorber(
 			continue;
 		}
 		const rootValue = createRootValueMap[pk](match);
-		const record = createRootToken(rootValue);
-		if (!record) {
-			continue;
-		}
-		record.start += start;
-		record.end += start;
+		const record = createRootToken(rootValue, start);
 		yield record;
 		yield* tdpBodyAbsorber(str, record.end + 1, end);
 		break;
