@@ -1,8 +1,6 @@
 import type { Token } from './Token';
 
 export interface RadixNode<T extends Token> {
-	// metrics
-	size(): number; // total number of elements under this node
 	nrLeafs(): number; // total leaf count
 	// crud
 	select(path: readonly T[]): null | RadixNode<T>;

@@ -1,4 +1,3 @@
-import { cpSync } from 'fs';
 import type { RadixNode } from './types/RadixNode.js';
 import type { Token } from './types/Token.js';
 
@@ -11,13 +10,14 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		this.#children = [];
 		this.#id = id;
 	}
-	size(): number {
-		throw new Error('Method not implemented.');
-	}
 	nrLeafs(): number {
-		throw new Error('Method not implemented.');
+		if (this.#children.length === 0) {
+			return 1;
+		}
+		return this.#children.reduce((sum, child) => {
+			return sum + child.nrLeafs();
+		}, 0);
 	}
-
 	// the path[0] must match one of its children
 	delete(path: readonly T[]): number {
 		// short circuit
