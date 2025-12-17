@@ -1,0 +1,58 @@
+{
+	"name": "@mangos/radix",
+	"version": "1.0.3",
+	"author": "jacob bogers <jkfbogers@gmail.com>",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/R-js/mangos.git",
+		"directory": "packages/radix"
+	},
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.js",
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.8",
+		"@mangos/filepath": "^1.0.3",
+		"@types/node": "^25.0.0",
+		"@vitest/coverage-v8": "^4.0.15",
+		"typescript": "^5.9.3",
+		"vite": "^7.2.7",
+		"vitest": "^4.0.15"
+	},
+	"bugs": {
+		"url": "https://github.com/R-js/mangos.git",
+		"email": "jkfbogers@gmail.com"
+	},
+	"description": "Radix implements a radix index based on tokens instead of strings",
+	"engines": {
+		"node": ">=v20.8.0"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"package.json"
+	],
+	"homepage": "https://github.com/R-js/mangos/blob/master/packages/radix/README.md",
+	"keywords": [
+		"radix",
+		"index",
+		"trie",
+		"try",
+		"ART"
+	],
+	"license": "Apache License, Version 2.0",
+	"scripts": {
+		"prebuild": "npm run lint",
+		"build": "vite build && tsc",
+		"prepublishOnly": "npm run build",
+		"lint": "biome check",
+		"test": "vitest run --coverage"
+	},
+	"sideEffects": false,
+	"type": "module"
+}
