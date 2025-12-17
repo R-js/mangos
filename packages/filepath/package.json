@@ -48,7 +48,7 @@
 		"file system",
 		"lfs"
 	],
-	"license": "MIT",
+	"license": "Apache License 2.0",
 	"scripts": {
 		"prebuild": "npm run lint",
 		"build": "vite build && tsc",
