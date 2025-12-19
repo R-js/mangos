@@ -1,6 +1,6 @@
 {
 	"name": "@mangos/radix",
-	"version": "1.0.3",
+	"version": "0.0.9",
 	"author": "jacob bogers <jkfbogers@gmail.com>",
 	"repository": {
 		"type": "git",
