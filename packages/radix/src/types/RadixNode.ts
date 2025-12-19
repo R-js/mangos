@@ -7,7 +7,8 @@ export interface RadixNode<T extends Token> {
 
 	// the path does not need to end in a terminal node, but it will delete everything under this path,
 	// returns only the number of terminals deleted
-	delete(path: readonly T[]): number;
+
+	delete(this: RadixNode<T>, path: readonly T[]): number;
 
 	// returns 0 if the path already exist
 	// returns the number of nodes adjusted including its own insert

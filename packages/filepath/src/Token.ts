@@ -21,10 +21,12 @@ export class Token {
 		return this.token === TokenEnum.ROOT;
 	}
 	equals(ot: Token) {
-		return ot.token === this.token
-			&& ot.value === this.value
-			&& ot.start === this.start 
-			&& ot.end === this.end
-			&& ot.error === this.error;
+		return (
+			ot.token === this.token &&
+			ot.value === this.value &&
+			ot.start === this.start &&
+			ot.end === this.end &&
+			ot.error === this.error
+		);
 	}
 }

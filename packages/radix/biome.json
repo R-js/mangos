@@ -3,7 +3,7 @@
 	"files": {
 		"includes": [
 			"./src/**/*.ts",
-			"./test/**/.test.ts",
+			"./test/**/*.test.ts",
 			"./biome.json",
 			"./package.json",
 			"./vite.config.ts",
