@@ -2,11 +2,11 @@ import type { RadixNode } from './types/RadixNode.js';
 import type { Token } from './types/Token.js';
 
 export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
-	#parent: RadixNodeImpl<T> | undefined;
+	#parent: RadixNodeImpl<T>;
 	#id: T;
 	#children: RadixNodeImpl<T>[];
 	constructor(id: T, parent?: RadixNodeImpl<T>) {
-		this.#parent = parent;
+		this.#parent = parent ?? this;
 		this.#children = [];
 		this.#id = id;
 	}
@@ -26,7 +26,7 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		this.#children.push(radixNode);
 		return nrNodes;
 	}
-	select(path: readonly T[]): null | RadixNode<T>  {
+	select(path: readonly T[]): null | RadixNode<T> {
 		// short circuit
 		if (path.length === 0) {
 			return null;
@@ -64,21 +64,24 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 	children() {
 		return this.#children;
 	}
-	parent(): RadixNode<T> | undefined {
+	parent(): RadixNode<T> {
 		return this.#parent;
 	}
-	pathFromRoot(): T[] { 
-		return [...(this?.parent()?.pathFromRoot() ?? []), this.id()];
+	pathFromRoot(): T[] {
+		if (this.#parent === this) {
+			return [this.#id];
+		}
+		return [...this.parent().pathFromRoot(), this.id()];
 	}
 	public id(): T {
 		return this.#id;
-    }
-	nrLeafs(): number {
+	}
+	nrTerminals(): number {
 		if (this.children().length === 0) {
 			return 1;
 		}
 		return this.children().reduce((sum: number, child) => {
-			return sum + child.nrLeafs();
+			return sum + child.nrTerminals();
 		}, 0);
 	}
 	// you can only delete terminals
@@ -87,31 +90,36 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		if (path.length === 0) {
 			return 0;
 		}
-		// nothing to do here
-		if (!path[0].equals(this.#id)){
+		// only happens if you give the wrong "root" token
+		if (!path[0].equals(this.#id)) {
 			return 0;
 		}
 		//# path[0] does equal path[0]
 
-		if (path.length === 1) { // we should be at a terminal	
-			if (this.#children.length > 0) { //, but we are not at a terminal
+		if (path.length === 1) {
+			// we should be at a terminal
+			if (this.#children.length > 0) {
+				//, but we are not at a terminal
 				return 0;
 			}
-			if (!this.#parent) { //, node need parent to delete itself
+			if (this.#parent === this) {
+				// is a root node, it cannot delete itself
 				return 0;
 			}
+			// remove myself
 			const index = this.#parent.#children.indexOf(this);
 			this.#parent.#children.splice(index, 1);
-			this.#parent = undefined;
-			return 1;		
+			this.#parent = this; // shortcircuit
+			return 1;
 		}
 		//# path length > 1
 		//# path[0] did match this id
-		if (this.#children.length === 0) { // no children to dive into
+		if (this.#children.length === 0) {
+			// no children to dive into
 			return 0;
 		}
 		// probe next child
-		const child = this.#children.find(child => child.#id.equals(path[1]));
+		const child = this.#children.find((child) => child.#id.equals(path[1]));
 		if (child === undefined) {
 			return 0;
 		}
@@ -119,12 +127,19 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		//# path[0] did match this id
 		//# path[1] did match an item in #children
 		const nrNodesChanged = child.delete(path.slice(1));
+
 		// the child has not deleted itself
-		if (child.#parent !== undefined) {
+		if (child.#parent !== child) {
 			return nrNodesChanged;
 		}
-		// no oppertunity for rollup
+
+		//# path length > 1
+		//# path[0] did match this id
+		//# path[1] did match an item in #children
+		//# child.#parent === child
+
 		if (this.#children.length > 0) {
+			// no oppertunity for rollup
 			return nrNodesChanged;
 		}
 		//# path length > 1
@@ -133,14 +148,9 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		//# after recursive delete, item in #children was removed
 		//# this.#children is an empty array
 
-		// rollup
-		if (!this.#parent) {
-			return nrNodesChanged;
-		}
-		//# this.#parent exist
 		const index = this.#parent.#children.indexOf(this);
 		this.#parent.#children.splice(index, 1);
-		this.#parent = undefined;
+		this.#parent = this;
 		return nrNodesChanged + 1;
 	}
 }

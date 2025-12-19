@@ -1,3 +1,3 @@
 export interface Token {
-    equals(other: Token): boolean;
+	equals(other: Token): boolean;
 }
