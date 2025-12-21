@@ -2,12 +2,12 @@ import { ddpAbsorber } from './absorbers/ddp.js';
 import posixAbsorber from './absorbers/posix.js';
 import tdpAbsorber from './absorbers/tdp.js';
 import uncAbsorber from './absorbers/unc.js';
-import { TokenEnum } from './constants.js';
+import { PathTokenEnum } from './constants.js';
 import getCWD from './getCWD.js';
 import { ParsedPath } from './ParsedPath.js';
 import { ParsedPathError } from './ParsedPathError.js';
 import mapPlatformNames from './platform.js';
-import { Token } from './Token.js';
+import { PathToken } from './Token.js';
 
 const absorberMapping = {
 	unc: uncAbsorber,
@@ -24,6 +24,9 @@ export type FileSystem = 'devicePath' | 'unc' | 'dos' | 'posix';
 const allNamespaces: FileSystem[] = ['devicePath', 'unc', 'dos', 'posix'] as const;
 
 function firstPath(path = '', options: InferPathOptions = {}): ParsedPath | ParsedPathError | undefined {
+	if (path === '') {
+		return undefined;
+	}
 	const iterator = inferPathType(path, options);
 	const step = iterator.next(); // only get the first one (is also the most likely one)
 	if (step.done) {
@@ -38,7 +41,7 @@ function allPath(path = '', options: InferPathOptions = {}): (ParsedPath | Parse
 
 export type ParsedPathDTO = {
 	type: FileSystem;
-	path: Token[];
+	path: PathToken[];
 	firstError?: number; // index in path at wich the first error occurs
 };
 
@@ -70,13 +73,13 @@ function getErrors(parsed: ParsedPathDTO) {
 		.join('|');
 }
 
-function last(arr: Token[]) {
+function last(arr: PathToken[]) {
 	return arr[arr.length - 1];
 }
 
-function upp(path: Token[]) {
-	let _last: Token;
-	for (_last = last(path); _last.token === TokenEnum.SEP; _last = last(path)) {
+function upp(path: PathToken[]) {
+	let _last: PathToken;
+	for (_last = last(path); _last.token === PathTokenEnum.SEP; _last = last(path)) {
 		path.pop();
 	}
 	if (_last !== path[0]) {
@@ -84,24 +87,24 @@ function upp(path: Token[]) {
 	}
 }
 
-function add(_tokens: Token[], token: Token) {
-	if (token.token === TokenEnum.SEP) {
+function add(_tokens: PathToken[], token: PathToken) {
+	if (token.token === PathTokenEnum.SEP) {
 		return; // skip this
 	}
 	let _last = last(_tokens);
 	// remove trailing Seperators
-	for (; _last.token === TokenEnum.SEP; _last = last(_tokens)) {
+	for (; _last.token === PathTokenEnum.SEP; _last = last(_tokens)) {
 		_tokens.pop();
 	}
-	_tokens.push(new Token(TokenEnum.SEP, getSeperator(), _last.end + 1, _last.end + 1));
-	_tokens.push(new Token(token.token, token.value, _last.end + 2, _last.end + +2 + token.end));
+	_tokens.push(new PathToken(PathTokenEnum.SEP, getSeperator(), _last.end + 1, _last.end + 1));
+	_tokens.push(new PathToken(token.token, token.value, _last.end + 2, _last.end + +2 + token.end));
 }
 
 function firstPathFromCWD(): ParsedPath {
 	return firstPath(getCWD()) as ParsedPath;
 }
 
-function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath | ParsedPathError {
+function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
 	let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
 	if (firstPathFrom instanceof ParsedPathError) {
 		throw TypeError(`"from" path contains errors: ${getErrors(firstPathFrom)}`);
@@ -117,7 +120,7 @@ function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath | Par
 	return resolvePathObject(firstPathFrom, ...toFragments);
 }
 
-function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPath | ParsedPathError {
+function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPath {
 	const firstToStr = toFragments.shift();
 	if (firstToStr === undefined) {
 		return from;
@@ -150,13 +153,13 @@ function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPa
 	// Use the first "tokens" to move-up, or down or side-ways fragments to
 	for (const token of firstPathTo.path) {
 		switch (token.token) {
-			case TokenEnum.SEP:
-			case TokenEnum.CURRENT:
+			case PathTokenEnum.SEP:
+			case PathTokenEnum.CURRENT:
 				break;
-			case TokenEnum.PARENT:
+			case PathTokenEnum.PARENT:
 				upp(working);
 				break;
-			case TokenEnum.PATHELT:
+			case PathTokenEnum.PATHELT:
 				add(working, token);
 				break;
 			default:

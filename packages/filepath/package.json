@@ -1,6 +1,6 @@
 {
 	"name": "@mangos/filepath",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"author": "jacob bogers <jkfbogers@gmail.com>",
 	"repository": {
 		"type": "git",

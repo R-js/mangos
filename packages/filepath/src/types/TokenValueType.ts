@@ -1,3 +1,3 @@
-import type { TokenEnum } from '../constants';
+import type { PathTokenEnum } from '../constants';
 
-export type TokenValueType = (typeof TokenEnum)[keyof typeof TokenEnum];
+export type PathTokenValueType = (typeof PathTokenEnum)[keyof typeof PathTokenEnum];

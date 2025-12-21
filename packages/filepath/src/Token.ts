@@ -1,13 +1,19 @@
-import { TokenEnum } from './constants.js';
-import type { TokenValueType } from './types/TokenValueType.js';
+import { PathTokenEnum } from './constants.js';
+import type { PathTokenValueType } from './types/TokenValueType.js';
 
-export class Token {
-	static from(o: { token: TokenValueType; value: string; start: number; end: number; error?: string }): Token {
-		return new Token(o.token, o.value, o.start, o.end, o.error);
+export class PathToken {
+	static from(o: {
+		token: PathTokenValueType;
+		value: string;
+		start: number;
+		end: number;
+		error?: string;
+	}): PathToken {
+		return new PathToken(o.token, o.value, o.start, o.end, o.error);
 	}
 	readonly error?: string;
 	constructor(
-		readonly token: TokenValueType,
+		readonly token: PathTokenValueType,
 		readonly value: string,
 		readonly start: number,
 		readonly end: number,
@@ -18,15 +24,9 @@ export class Token {
 		}
 	}
 	isRoot(): boolean {
-		return this.token === TokenEnum.ROOT;
+		return this.token === PathTokenEnum.ROOT;
 	}
-	equals(ot: Token) {
-		return (
-			ot.token === this.token &&
-			ot.value === this.value &&
-			ot.start === this.start &&
-			ot.end === this.end &&
-			ot.error === this.error
-		);
+	equals(ot: PathToken) {
+		return ot.token === this.token && ot.value === this.value && ot.error === this.error;
 	}
 }

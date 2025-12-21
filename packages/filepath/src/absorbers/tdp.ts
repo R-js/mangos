@@ -1,11 +1,11 @@
 import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
-import { TokenEnum } from '../constants.js';
+import { PathTokenEnum } from '../constants.js';
 import getCWD from '../getCWD.js';
 import getDrive from '../getDrive.js';
 import mapPlatformNames from '../platform.js';
-import { Token } from '../Token.js';
+import { PathToken } from '../Token.js';
 import { togglePathFragment } from '../togglePathFragment.js';
-import type { TokenValueType } from '../types/TokenValueType.js';
+import type { PathTokenValueType } from '../types/TokenValueType.js';
 import validSep from '../validSep.js';
 import { ddpAbsorber, regExpOrderedMapDDP } from './ddp.js';
 import uncAbsorber, { uncRegExp } from './unc.js';
@@ -46,7 +46,7 @@ function getCWDDOSRoot() {
 	// guess its normal tdp
 	const drive = getDrive(getCWD());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		return new Token(TokenEnum.ROOT, `${drive.join('')}`, 0, 1);
+		return new PathToken(PathTokenEnum.ROOT, `${drive.join('')}`, 0, 1);
 	}
 	return undefined;
 }
@@ -66,7 +66,7 @@ function hasLegacyDeviceName(str: string) {
 	}
 }
 
-export default function* tdpAbsorber(str = ''): Generator<Token, undefined, undefined> {
+export default function* tdpAbsorber(str = ''): Generator<PathToken, undefined, undefined> {
 	let i = 0;
 	let end = str.length - 1;
 	// needs correction ?
@@ -100,8 +100,8 @@ export default function* tdpAbsorber(str = ''): Generator<Token, undefined, unde
 		}
 		// illegal char!! as a dos directory name, not good at all
 		const value = str.slice(result.start, result.end + 1);
-		yield new Token(
-			TokenEnum.PATHELT,
+		yield new PathToken(
+			PathTokenEnum.PATHELT,
 			value,
 			0,
 			result.end,
@@ -117,7 +117,7 @@ export default function* tdpAbsorber(str = ''): Generator<Token, undefined, unde
 
 	const drive = getDrive(str.slice(i, i + 2).toLowerCase());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		yield new Token(TokenEnum.ROOT, `${drive.join('')}`, i, i + 1);
+		yield new PathToken(PathTokenEnum.ROOT, `${drive.join('')}`, i, i + 1);
 		i = 2;
 	}
 	// also a unix path would work if it is win32 system
@@ -128,7 +128,7 @@ export function* tdpBodyAbsorber(
 	str = '',
 	start: number,
 	end = str.length - 1,
-): Generator<Token, undefined, undefined> {
+): Generator<PathToken, undefined, undefined> {
 	// also a unix path would work if it is winsos system
 	let toggle = 0;
 	let i = start;
@@ -137,15 +137,15 @@ export function* tdpBodyAbsorber(
 		const result = toggle === 0 ? tdpFragment(str, i, end) : tdpSeperator(str, i, end);
 		if (result) {
 			const value = toggle === 0 ? str.slice(i, result.end + 1) : '\\';
-			let token: TokenValueType = togglePathFragment[toggle];
+			let token: PathTokenValueType = togglePathFragment[toggle];
 			const errors = [];
 			if (toggle === 0) {
 				switch (value) {
 					case '..':
-						token = TokenEnum.PARENT;
+						token = PathTokenEnum.PARENT;
 						break;
 					case '.':
-						token = TokenEnum.CURRENT;
+						token = PathTokenEnum.CURRENT;
 						break;
 					default: {
 						const ldn = hasLegacyDeviceName(value);
@@ -159,8 +159,8 @@ export function* tdpBodyAbsorber(
 				}
 			}
 			yield errors?.length
-				? new Token(token, value, result.start, result.end, errors?.join('|'))
-				: new Token(token, value, result.start, result.end);
+				? new PathToken(token, value, result.start, result.end, errors?.join('|'))
+				: new PathToken(token, value, result.start, result.end);
 			i = result.end + 1;
 		}
 		toggle = ++toggle % 2;

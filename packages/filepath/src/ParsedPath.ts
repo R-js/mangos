@@ -1,8 +1,8 @@
 import type { FileSystem, ParsedPathDTO } from './parser.js';
-import type { Token } from './Token.js';
+import type { PathToken } from './Token.js';
 
 export class ParsedPath {
-	readonly path: Token[];
+	readonly path: PathToken[];
 	readonly type: FileSystem;
 	constructor(parsed: ParsedPathDTO) {
 		this.type = parsed.type;

@@ -37,7 +37,7 @@ _Note: `\` needs to be escaped when using it in js code._
 ```javascript
 // node resolve
 path.resolve('//?/UNC/Server/share', '../../../txt');
-// -> ''\\\\?\\txt''  mangled unc loot
+// -> '\\\\?\\txt'  mangled unc loot
 
 // this library
 filePath.resolve('//?/UNC/Server/share', '../../../txt').toString();
@@ -59,6 +59,12 @@ There are 4 exported functions:
 
 ```typescript
 import { allPath, firstPath, resolve, resolvePathObject } from '@mangos/filepath';
+```
+
+There are 2 exported classes:
+
+```typescript
+import { ParsedPath,  ParsedPathError } from '@mangos/filepath';
 ```
 
 Most of the time you will be using <a href="#fn-resolve"><code>resolve</code></a>, <a href="#fn-first-path"><code>firstPath</code></a>.
@@ -96,10 +102,10 @@ An instance of `ParsedPath` has the following fields/members
 
 - members:
     - <code>toString(): <i>string</i></code>: return the original path string
-    - <code>isRelative(): <i>boolean</i></codes>: is the a path a relative one?
+    - <code>isRelative(): <i>boolean</i></code>: is the a path a relative one?
 - fields:
     - <code>type: <i>string</i></code>: one of the value `devicePath`, `unc`, `dos`, `posix`.
-    - <code>path: <i>Token[]</i></code>: the path tokenized (see source).
+    - <code>path: <i>FileToken[]</i></code>: the path tokenized (see source).
 
 <h3 id="parsed-path-error"><code>ParsedPathError</code> object</h3>
 
@@ -109,7 +115,7 @@ If a path has illigal characters or is invalid the result of a tokenization will
     - <code>toString(): <i>string</i></code>: algamation of all errors found during parsing.
 - attributes:
     - <code>type: <i>string</i></code>: one of the values `devicePath`, `unc`, `dos`, `posix`.
-    - <code>path: <i>Token[]</i></code>: the path tokenized.
+    - <code>path: <i>FileToken[]</i></code>: the path tokenized.
 
 
 <h3 id="path-type-order-of-evaluation">Path type order of evaluation</h4>
@@ -179,7 +185,7 @@ function firstPath(path = '', options: InferPathOptions = {}): ParsedPath | Pars
 <h4 id="fn-resolve-path-object">function: <code>resolvePathObject</code></h4>
 
 ```typescript
-function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPath | ParsedPathError;
+function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPath;
 ```
 
 <h5 id="fn-resolve-path-object-arguments">Arguments:</h5>
@@ -190,16 +196,16 @@ function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPa
 <h5 id="fn-resolve-path-object-return">Return:</h5>
 
 - <a href="#parsed-path"><code>ParsedPath</code></a>: In case of successfull resolve.
-- <a href="#parsed-path-error"><code>ParsedPathError</code></a>: In case of legal structure but illegal characters in the `from` or `toFragments`.
 
 <h5 id="fn-resolve-path-object-throws">throws:</h5>
 
-If <code>from</code> is a <a href="#parsed-path-error"><code>ParsedPathError</code></a> an `Error` will be thrown.
+- If <code>from</code> is a <a href="#parsed-path-error"><code>ParsedPathError</code></a> an `Error` will be thrown.
+- If any of the `toFragments` is an invalid path an Error will be thrown.
 
 <h4 id="fn-resolve">function: <code>resolve</code></h4>
 
 ```typescript
-function resolve(fromStr: string, ...toFragments: string[]): ParsedPath | ParsedPathError;
+function resolve(fromStr: string, ...toFragments: string[]): ParsedPath;
 ```
 
 <h5 id="fn-resolve-arguments">Arguments:</h5>
@@ -210,11 +216,10 @@ function resolve(fromStr: string, ...toFragments: string[]): ParsedPath | Parsed
 <h5 id="fn-resolve-return">Return:</h5>
 
 - <a href="#parsed-path"><code>ParsedPath</code></a>: In case of successfull resolve.
-- <a href="#parsed-path-error"><code>ParsedPathError</code></a>: In case of legal structure but illegal characters in the `from` or `toFragments`.
 
 <h5 id="fn-resolve-throws">throws:</h5>
 
-If <code>fromStr</code> is a <a href="#parsed-path-error"><code>ParsedPathError</code></a> an `Error` will be thrown.
+If <code>fromStr</code> is invalid a <a href="#parsed-path-error"><code>ParsedPathError</code></a> an `Error` will be thrown.
 
 <h2>License</h2>
 

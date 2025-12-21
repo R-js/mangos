@@ -1,5 +1,5 @@
-import { TokenEnum } from '../constants.js';
-import { Token } from '../Token.js';
+import { PathTokenEnum } from '../constants.js';
+import { PathToken } from '../Token.js';
 import { tdpBodyAbsorber } from './tdp.js';
 
 type RegExporderdMapDDP = {
@@ -37,10 +37,10 @@ const createRootValueMap = {
 };
 
 function createRootToken(value: string, offset = 0) {
-	return new Token(TokenEnum.ROOT, value, offset, offset + value.length - 1);
+	return new PathToken(PathTokenEnum.ROOT, value, offset, offset + value.length - 1);
 }
 
-export function* ddpAbsorber(str = '', start = 0, end = str.length - 1): Generator<Token, undefined, undefined> {
+export function* ddpAbsorber(str = '', start = 0, end = str.length - 1): Generator<PathToken, undefined, undefined> {
 	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
 	for (const pk of pks) {
 		const match = str.match(regExpOrderedMapDDP[pk]);

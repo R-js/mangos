@@ -1,10 +1,10 @@
-import { TokenEnum } from '../constants.js';
-import { Token } from '../Token.js';
+import { PathTokenEnum } from '../constants.js';
+import { PathToken } from '../Token.js';
 import { tdpBodyAbsorber } from './tdp.js';
 
 export const uncRegExp = /^(\/\/|\\\\)([^\\/\\?\\.]+)(\/|\\)([^\\/]+)(\/|\\)?/;
 
-export default function* uncAbsorber(str = ''): Generator<Token, undefined, undefined> {
+export default function* uncAbsorber(str = ''): Generator<PathToken, undefined, undefined> {
 	// \\system07\C$\    servername: system07 (of fully qualified netbios,  IP/FQDN address ipv4/ipv6
 	//                   c$: shared name
 	// \\Server2\Share\Test\Foo.txt
@@ -24,7 +24,7 @@ export default function* uncAbsorber(str = ''): Generator<Token, undefined, unde
 	const value = `\\\\${server}\\${share}`;
 	const endUnc = value.length - 1;
 
-	yield new Token(TokenEnum.ROOT, value, 0, endUnc);
+	yield new PathToken(PathTokenEnum.ROOT, value, 0, endUnc);
 	// at this point is should be just a normal dos parsing
 	yield* tdpBodyAbsorber(str, endUnc + 1, str.length - 1);
 }

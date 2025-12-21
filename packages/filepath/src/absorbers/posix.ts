@@ -1,19 +1,19 @@
 import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
-import { TokenEnum } from '../constants.js';
-import { Token } from '../Token.js';
+import { PathTokenEnum } from '../constants.js';
+import { PathToken } from '../Token.js';
 import { togglePathFragment } from '../togglePathFragment.js';
-import type { TokenValueType } from '../types/TokenValueType.js';
+import type { PathTokenValueType } from '../types/TokenValueType.js';
 
 export default function* posixAbsorber(
 	str = '',
 	start = 0,
 	end = str.length - 1,
-): Generator<Token, undefined, undefined> {
+): Generator<PathToken, undefined, undefined> {
 	// "/" start with "/" or '\' tokens should be converted to "/"
 	let i = start;
 	const root = absorbSuccessiveValues(str, (s) => s === '/', start, end);
 	if (root) {
-		yield new Token(TokenEnum.ROOT, str.slice(start, root.end + 1), start, root.end);
+		yield new PathToken(PathTokenEnum.ROOT, str.slice(start, root.end + 1), start, root.end);
 		i = root.end + 1;
 	}
 	let toggle = 0;
@@ -23,14 +23,14 @@ export default function* posixAbsorber(
 		const result = absorbSuccessiveValues(str, coalescer, i, end);
 		if (result) {
 			const value = str.slice(i, result.end + 1);
-			let token: TokenValueType = togglePathFragment[toggle % 2];
+			let token: PathTokenValueType = togglePathFragment[toggle % 2];
 			if (value === '..') {
-				token = TokenEnum.PARENT;
+				token = PathTokenEnum.PARENT;
 			}
 			if (value === '.') {
-				token = TokenEnum.CURRENT;
+				token = PathTokenEnum.CURRENT;
 			}
-			yield new Token(token, value, result.start, result.end);
+			yield new PathToken(token, value, result.start, result.end);
 			i = result.end + 1;
 		}
 		toggle = ++toggle % 2;

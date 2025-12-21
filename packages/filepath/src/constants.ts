@@ -1,4 +1,4 @@
-export const TokenEnum = {
+export const PathTokenEnum = {
 	SEP: '\x01',
 	ROOT: '\x03',
 	PATHELT: '\x06',
@@ -6,17 +6,17 @@ export const TokenEnum = {
 	CURRENT: '\x08',
 } as const;
 
-export type TokenValueEnumType = {
-	-readonly [K in keyof typeof TokenEnum as (typeof TokenEnum)[K]]: K;
+export type PathTokenValueEnumType = {
+	-readonly [K in keyof typeof PathTokenEnum as (typeof PathTokenEnum)[K]]: K;
 };
 
 export const TokenValueEnum = (() => {
-	const entries = Object.entries(TokenEnum) as {
-		[K in keyof typeof TokenEnum]: [K, (typeof TokenEnum)[K]];
-	}[keyof typeof TokenEnum][];
+	const entries = Object.entries(PathTokenEnum) as {
+		[K in keyof typeof PathTokenEnum]: [K, (typeof PathTokenEnum)[K]];
+	}[keyof typeof PathTokenEnum][];
 
 	return entries.reduce((obj, [prop, value]) => {
 		(obj as Record<typeof value, typeof prop>)[value] = prop;
 		return obj;
-	}, {} as TokenValueEnumType);
+	}, {} as PathTokenValueEnumType);
 })();
