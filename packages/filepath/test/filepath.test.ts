@@ -4,11 +4,11 @@ import { ddpAbsorber } from '../src/absorbers/ddp.js';
 import posixAbsorber from '../src/absorbers/posix.js';
 import tdpAbsorber from '../src/absorbers/tdp.js';
 import uncAbsorber from '../src/absorbers/unc.js';
-import { TokenEnum } from '../src/constants.js';
+import { PathTokenEnum } from '../src/constants.js';
 import { ParsedPath } from '../src/ParsedPath.js';
 import { ParsedPathError } from '../src/ParsedPathError.js';
 import { allPath, resolve } from '../src/parser.js';
-import { Token } from '../src/Token.js';
+import { PathToken } from '../src/Token.js';
 
 describe('filepath', () => {
 	describe('resolve', () => {
@@ -20,7 +20,7 @@ describe('filepath', () => {
 			expect(answer).toEqual({
 				path: [
 					{
-						token: TokenEnum.ROOT,
+						token: PathTokenEnum.ROOT,
 						value: '\\\\?\\UNC\\Server\\share',
 						start: 0,
 						end: 19,
@@ -63,7 +63,7 @@ describe('filepath', () => {
 			expect(answer).toEqual({
 				path: [
 					{
-						token: TokenEnum.ROOT,
+						token: PathTokenEnum.ROOT,
 						value: '\\\\?\\UNC\\Server\\share',
 						start: 0,
 						end: 19,
@@ -81,7 +81,7 @@ describe('filepath', () => {
 			expect(answer).toEqual({
 				path: [
 					{
-						token: TokenEnum.ROOT,
+						token: PathTokenEnum.ROOT,
 						value: '\\\\Server1\\Share1',
 						start: 0,
 						end: 15,
@@ -101,7 +101,7 @@ describe('filepath', () => {
 			//const renderPath = answer.path.map(m => m.value).join('');
 			expect(answer).toEqual({
 				path: [
-					{ token: TokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
+					{ token: PathTokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
 					{ token: '\u0001', start: 2, end: 2, value: '\\' },
 					{ token: '\u0006', start: 3, end: 22, value: 'hello' },
 					{ token: '\u0001', start: 23, end: 23, value: '\\' },
@@ -118,7 +118,7 @@ describe('filepath', () => {
 			expect(answer).toEqual({
 				path: [
 					{
-						token: TokenEnum.ROOT,
+						token: PathTokenEnum.ROOT,
 						value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
 						start: 0,
 						end: 47,
@@ -139,7 +139,7 @@ describe('filepath', () => {
 			);
 			expect(answer).toEqual({
 				path: [
-					{ token: TokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
+					{ token: PathTokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
 					{ token: '\u0001', start: 2, end: 2, value: '\\' },
 					{ token: '\u0006', start: 3, end: 7, value: 'Users' },
 					{ token: '\u0001', start: 8, end: 8, value: '\\' },
@@ -156,18 +156,18 @@ describe('filepath', () => {
 				new ParsedPathError({
 					type: 'dos',
 					path: [
-						Token.from({ token: '\x03', value: 'c:', start: 0, end: 1 }),
-						Token.from({ token: '\x01', start: 2, end: 2, value: '\\' }),
-						Token.from({ token: '\x06', start: 3, end: 9, value: 'somedir' }),
-						Token.from({ token: '\x01', start: 10, end: 10, value: '\\' }),
-						Token.from({
+						PathToken.from({ token: '\x03', value: 'c:', start: 0, end: 1 }),
+						PathToken.from({ token: '\x01', start: 2, end: 2, value: '\\' }),
+						PathToken.from({ token: '\x06', start: 3, end: 9, value: 'somedir' }),
+						PathToken.from({ token: '\x01', start: 10, end: 10, value: '\\' }),
+						PathToken.from({
 							token: '\x06',
 							start: 11,
 							end: 24,
 							value: 'someOtherdir?:',
 							error: 'name "someOtherdir?:" contains invalid characters',
 						}),
-						Token.from({ token: '\u0001', start: 25, end: 25, value: '\\' }),
+						PathToken.from({ token: '\u0001', start: 25, end: 25, value: '\\' }),
 					],
 				}),
 			]);
@@ -178,8 +178,8 @@ describe('filepath', () => {
 				new ParsedPath({
 					type: 'devicePath',
 					path: [
-						Token.from({
-							token: TokenEnum.ROOT,
+						PathToken.from({
+							token: PathTokenEnum.ROOT,
 							value: '\\\\?\\UNC\\Server\\share',
 							start: 0,
 							end: 19,
@@ -189,50 +189,50 @@ describe('filepath', () => {
 				new ParsedPathError({
 					type: 'dos',
 					path: [
-						Token.from({
+						PathToken.from({
 							token: '\u0001',
 							start: 0,
 							end: 1,
 							value: '\\',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0006',
 							start: 2,
 							end: 2,
 							value: '?',
 							error: 'name "?" contains invalid characters',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0001',
 							start: 3,
 							end: 3,
 							value: '\\',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0006',
 							start: 4,
 							end: 6,
 							value: 'UNC',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0001',
 							start: 7,
 							end: 7,
 							value: '\\',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0006',
 							start: 8,
 							end: 13,
 							value: 'Server',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0001',
 							start: 14,
 							end: 14,
 							value: '\\',
 						}),
-						Token.from({
+						PathToken.from({
 							token: '\u0006',
 							start: 15,
 							end: 19,
@@ -250,7 +250,7 @@ describe('filepath', () => {
 					type: 'dos',
 					path: [
 						{
-							token: TokenEnum.ROOT,
+							token: PathTokenEnum.ROOT,
 							value: 'c:',
 							start: 0,
 							end: 1,
@@ -294,7 +294,7 @@ describe('filepath', () => {
 				{
 					type: 'dos',
 					path: [
-						{ token: TokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
+						{ token: PathTokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
 						{ token: '\u0001', start: 2, end: 2, value: '\\' },
 						{ token: '\u0006', start: 3, end: 7, value: 'Users' },
 						{ token: '\u0001', start: 8, end: 8, value: '\\' },
@@ -308,7 +308,7 @@ describe('filepath', () => {
 				{
 					type: 'dos',
 					path: [
-						{ token: TokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
+						{ token: PathTokenEnum.ROOT, value: 'c:', start: 0, end: 1 },
 						{ token: '\u0001', start: 2, end: 2, value: '\\' },
 						{ token: '\u0006', start: 3, end: 7, value: 'path1' },
 						{ token: '\u0001', start: 8, end: 8, value: '\\' },
@@ -323,7 +323,7 @@ describe('filepath', () => {
 				{
 					type: 'unc',
 					path: [
-						{ token: TokenEnum.ROOT, value: '\\\\Users\\share', start: 0, end: 12 },
+						{ token: PathTokenEnum.ROOT, value: '\\\\Users\\share', start: 0, end: 12 },
 						{ token: '\u0001', start: 13, end: 13, value: '\\' },
 					],
 				},
@@ -339,7 +339,7 @@ describe('filepath', () => {
 			const answer = Array.from(posixAbsorber('/'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					start: 0,
 					end: 0,
 					value: '/',
@@ -350,7 +350,7 @@ describe('filepath', () => {
 			const answer = Array.from(posixAbsorber('////////'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					start: 0,
 					end: 7,
 					value: '////////',
@@ -449,7 +449,7 @@ describe('filepath', () => {
 			const answer = Array.from(posixAbsorber('//?/UNC/Server1/share1/file.txt'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					start: 0,
 					end: 1,
 					value: '//',
@@ -520,7 +520,7 @@ describe('filepath', () => {
 			const answer = Array.from(uncAbsorber('//server/share/'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\server\\share',
 					start: 0,
 					end: 13,
@@ -536,8 +536,8 @@ describe('filepath', () => {
 		it('empty path "//server/share////hello\\world"', () => {
 			const answer = Array.from(uncAbsorber('//server/share////hello\\world'));
 			expect(answer).toEqual([
-				Token.from({
-					token: TokenEnum.ROOT,
+				PathToken.from({
+					token: PathTokenEnum.ROOT,
 					value: '\\\\server\\share',
 					start: 0,
 					end: 13,
@@ -574,7 +574,7 @@ describe('filepath', () => {
 			const answer = Array.from(tdpAbsorber('c:'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: 'c:',
 					start: 0,
 					end: 1,
@@ -585,7 +585,7 @@ describe('filepath', () => {
 			const answer = Array.from(tdpAbsorber('c://'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: 'c:',
 					start: 0,
 					end: 1,
@@ -602,7 +602,7 @@ describe('filepath', () => {
 			const answer = Array.from(tdpAbsorber('c:\\'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: 'c:',
 					start: 0,
 					end: 1,
@@ -630,7 +630,7 @@ describe('filepath', () => {
 			const answer = Array.from(tdpAbsorber('c:somepath\\anothersub\\/file.txt"'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: 'c:',
 					start: 0,
 					end: 1,
@@ -672,7 +672,7 @@ describe('filepath', () => {
 			const answer = Array.from(tdpAbsorber('c:\\someotherCON.txt\\/file.txt'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: 'c:',
 					start: 0,
 					end: 1,
@@ -811,7 +811,7 @@ describe('filepath', () => {
 			);
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
 					start: 0,
 					end: 47,
@@ -846,7 +846,7 @@ describe('filepath', () => {
 			const answer = Array.from(ddpAbsorber('\\\\?\\UNC\\Server\\Share\\'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\UNC\\Server\\Share',
 					start: 0,
 					end: 19,
@@ -863,7 +863,7 @@ describe('filepath', () => {
 			const answer = Array.from(ddpAbsorber('\\\\?\\UNC\\Server\\Share\\Foo\\bar.txt'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\UNC\\Server\\Share',
 					start: 0,
 					end: 19,
@@ -898,7 +898,7 @@ describe('filepath', () => {
 			const answer = Array.from(ddpAbsorber('\\\\?\\UNC\\Server\\Share\\Foo\\bar.txt'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\UNC\\Server\\Share',
 					start: 0,
 					end: 19,
@@ -933,7 +933,7 @@ describe('filepath', () => {
 			const answer = Array.from(ddpAbsorber('\\\\?\\c:\\dir1\\dir2'));
 			expect(answer).toEqual([
 				{
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\c:',
 					start: 0,
 					end: 5,
@@ -970,7 +970,7 @@ describe('filepath', () => {
 				{
 					end: 5,
 					start: 0,
-					token: TokenEnum.ROOT,
+					token: PathTokenEnum.ROOT,
 					value: '\\\\?\\c:',
 				},
 			]);

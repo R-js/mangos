@@ -215,4 +215,4 @@ function* inferPathType(path: string, options: InferPathOptions = {}) {
 	return;
 }
 
-export { resolve, type resolvePathObject, firstPath, allPath };
+export { resolve, resolvePathObject, firstPath, allPath };
