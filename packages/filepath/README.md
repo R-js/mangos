@@ -64,7 +64,19 @@ import { allPath, firstPath, resolve, resolvePathObject } from '@mangos/filepath
 There are 2 exported classes:
 
 ```typescript
-import { ParsedPath,  ParsedPathError } from '@mangos/filepath';
+import { ParsedPath,  ParsedPathError, PathToken } from '@mangos/filepath';
+```
+
+There is 1 exported enum:
+
+```typescript
+import { PathTokenEnum } from '@mangos/filepath'
+```
+
+There is 1 exported type:
+
+```typescript
+import type { InferPathOptions } from '@mangos/filepath'
 ```
 
 Most of the time you will be using <a href="#fn-resolve"><code>resolve</code></a>, <a href="#fn-first-path"><code>firstPath</code></a>.
@@ -126,6 +138,32 @@ When a string is parsed it will be evaluated according to path types in the foll
 2. `unc` tokanization will be tried second, (if the `devicePath` boolean is set to true).
 3. `dos` tokanization will be tried third, (if the `dos` boolean is set to true).
 4. `posix` tokanization will be tried forth, (if the `posix` boolean is set to true)
+
+<h3 id="path-token-type"><code>PathToken</code> object</h3>
+
+You dont create `PathToken`s yourself the api will do it for you.
+
+```typescript
+class PathToken {
+    token: PathTokenValueType;
+	value: string; // actual path fragment (directory, seperator, or file)
+	start: number; // start location in the original string
+	end: number; // end (inclusive) in the original string
+	error?: string; // this token has invalid character for the OS selected
+}
+```
+
+The `PathTokenValueType` match the exported `PathTokenEnum` object
+
+```typescript
+export const PathTokenEnum = {
+	SEP: '\x01',       // path seperator
+	ROOT: '\x03',      // the root (if it is an absolute path)
+	PATHELT: '\x06',   // directory, file, 
+	PARENT: '\x07',    // two dots (..) meaning parent directory
+	CURRENT: '\x08',   // a single dot (.) meaning current directory
+} as const;
+```
 
 <h3 id="api-functions">Functions</h3>
 
