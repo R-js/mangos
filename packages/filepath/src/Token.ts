@@ -26,6 +26,18 @@ export class PathToken {
 	isRoot(): boolean {
 		return this.token === PathTokenEnum.ROOT;
 	}
+	isSeparator(): boolean {
+		return this.token === PathTokenEnum.SEP;
+	}
+	isPathElement(): boolean {
+		return this.token === PathTokenEnum.PATHELT;
+	}
+	isCurrent(): boolean {
+		return this.token === PathTokenEnum.CURRENT;
+	}
+	isParent(): boolean {
+		return this.token === PathTokenEnum.PARENT;
+	}
 	equals(ot: PathToken) {
 		return ot.token === this.token && ot.value === this.value && ot.error === this.error;
 	}

@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## version "1.0.8" 2026-jan-5
+   ### changed
+   - `PathTokenEnum` export is revoked (Jacob Bogers <jkfbogers@gmail.com>)
+   - `Token` class has members to differentiate token type (see readMe.md) (Jacob Bogers <jkfbogers@gmail.com>)
+   ### fixed
+   - `Token` was exported as a type but not a class (Jacob Bogers <jkfbogers@gmail.com>)
+
 ## version "1.0.7" 2026-jan-2
    ### changed
    - exported the enum `PathTokenEnum` (Jacob Bogers <jkfbogers@gmail.com>)

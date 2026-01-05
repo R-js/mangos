@@ -149,7 +149,12 @@ class PathToken {
 	value: string; // actual path fragment (directory, seperator, or file)
 	start: number; // start location in the original string
 	end: number; // end (inclusive) in the original string
-	error?: string; // this token has invalid character for the OS selected
+    error?: string; // this token has invalid character for the OS selected
+    isRoot(): boolean; // is this token a Root Token (c:/,  /, //?/UNC/Server/share, etc)
+    isPathElement(): boolean; // a normal path element
+    isCurrent(): boolean; // token representing "./"
+    isParent(): boolean // token representing "../"
+    isSeperator(): boolean // token representing "/" (posix) or "\" (windows, dos)
 }
 ```
 
