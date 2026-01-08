@@ -1,15 +1,16 @@
 import { PathTokenEnum } from './constants.js';
+import type { Token } from './types/Token.js';
 import type { PathTokenValueType } from './types/TokenValueType.js';
 
-export class PathToken {
+export class PathTokenImpl implements Token {
 	static from(o: {
 		token: PathTokenValueType;
 		value: string;
 		start: number;
 		end: number;
 		error?: string;
-	}): PathToken {
-		return new PathToken(o.token, o.value, o.start, o.end, o.error);
+	}): PathTokenImpl {
+		return new PathTokenImpl(o.token, o.value, o.start, o.end, o.error);
 	}
 	readonly error?: string;
 	constructor(
@@ -38,7 +39,10 @@ export class PathToken {
 	isParent(): boolean {
 		return this.token === PathTokenEnum.PARENT;
 	}
-	equals(ot: PathToken) {
+	equals(ot: PathTokenImpl) {
 		return ot.token === this.token && ot.value === this.value && ot.error === this.error;
+	}
+	hasError(): boolean {
+		return !!this.error
 	}
 }

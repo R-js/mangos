@@ -6,8 +6,8 @@ import { PathTokenEnum } from './constants.js';
 import getCWD from './getCWD.js';
 import { ParsedPath } from './ParsedPath.js';
 import { ParsedPathError } from './ParsedPathError.js';
+import { PathTokenImpl } from './PathTokenImpl.js';
 import mapPlatformNames from './platform.js';
-import { PathToken } from './Token.js';
 
 const absorberMapping = {
 	unc: uncAbsorber,
@@ -41,7 +41,7 @@ function allPath(path = '', options: InferPathOptions = {}): (ParsedPath | Parse
 
 export type ParsedPathDTO = {
 	type: FileSystem;
-	path: PathToken[];
+	path: PathTokenImpl[];
 	firstError?: number; // index in path at wich the first error occurs
 };
 
@@ -73,12 +73,12 @@ function getErrors(parsed: ParsedPathDTO) {
 		.join('|');
 }
 
-function last(arr: PathToken[]) {
+function last(arr: PathTokenImpl[]) {
 	return arr[arr.length - 1];
 }
 
-function upp(path: PathToken[]) {
-	let _last: PathToken;
+function upp(path: PathTokenImpl[]) {
+	let _last: PathTokenImpl;
 	for (_last = last(path); _last.token === PathTokenEnum.SEP; _last = last(path)) {
 		path.pop();
 	}
@@ -87,8 +87,8 @@ function upp(path: PathToken[]) {
 	}
 }
 
-function add(_tokens: PathToken[], token: PathToken) {
-	if (token.token === PathTokenEnum.SEP) {
+function add(_tokens: PathTokenImpl[], token: PathTokenImpl) {
+	if (token.isSeparator()) {
 		return; // skip this
 	}
 	let _last = last(_tokens);
@@ -96,8 +96,8 @@ function add(_tokens: PathToken[], token: PathToken) {
 	for (; _last.token === PathTokenEnum.SEP; _last = last(_tokens)) {
 		_tokens.pop();
 	}
-	_tokens.push(new PathToken(PathTokenEnum.SEP, getSeperator(), _last.end + 1, _last.end + 1));
-	_tokens.push(new PathToken(token.token, token.value, _last.end + 2, _last.end + +2 + token.end));
+	_tokens.push(new PathTokenImpl(PathTokenEnum.SEP, getSeperator(), _last.end + 1, _last.end + 1));
+	_tokens.push(new PathTokenImpl(token.token, token.value, _last.end + 2, _last.end + +2 + token.end));
 }
 
 function firstPathFromCWD(): ParsedPath {

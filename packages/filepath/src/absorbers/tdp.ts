@@ -2,8 +2,8 @@ import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
 import { PathTokenEnum } from '../constants.js';
 import getCWD from '../getCWD.js';
 import getDrive from '../getDrive.js';
+import { PathTokenImpl } from '../PathTokenImpl.js';
 import mapPlatformNames from '../platform.js';
-import { PathToken } from '../Token.js';
 import { togglePathFragment } from '../togglePathFragment.js';
 import type { PathTokenValueType } from '../types/TokenValueType.js';
 import validSep from '../validSep.js';
@@ -46,7 +46,7 @@ function getCWDDOSRoot() {
 	// guess its normal tdp
 	const drive = getDrive(getCWD());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		return new PathToken(PathTokenEnum.ROOT, `${drive.join('')}`, 0, 1);
+		return new PathTokenImpl(PathTokenEnum.ROOT, `${drive.join('')}`, 0, 1);
 	}
 	return undefined;
 }
@@ -66,7 +66,7 @@ function hasLegacyDeviceName(str: string) {
 	}
 }
 
-export default function* tdpAbsorber(str = ''): Generator<PathToken, undefined, undefined> {
+export default function* tdpAbsorber(str = ''): Generator<PathTokenImpl, undefined, undefined> {
 	let i = 0;
 	let end = str.length - 1;
 	// needs correction ?
@@ -76,13 +76,13 @@ export default function* tdpAbsorber(str = ''): Generator<PathToken, undefined, 
 		if (mapPlatformNames() === 'win32') {
 			// in this case we need to have to current drive
 			/*
-               cwd can be anything "tdp", "unc", and "ddp"
-                PROOF:
+			   cwd can be anything "tdp", "unc", and "ddp"
+				PROOF:
 
-                > process.chdir('//./unc/pc123/c')  // use a valid host and share on your machine
-                > process.cwd()
-                    '\\\\.\\unc\\pc123\\c'
-            */
+				> process.chdir('//./unc/pc123/c')  // use a valid host and share on your machine
+				> process.cwd()
+					'\\\\.\\unc\\pc123\\c'
+			*/
 			const winRoot = getCWDDOSRoot();
 			if (winRoot) {
 				yield winRoot; // all roots DONT have '/' token
@@ -100,7 +100,7 @@ export default function* tdpAbsorber(str = ''): Generator<PathToken, undefined, 
 		}
 		// illegal char!! as a dos directory name, not good at all
 		const value = str.slice(result.start, result.end + 1);
-		yield new PathToken(
+		yield new PathTokenImpl(
 			PathTokenEnum.PATHELT,
 			value,
 			0,
@@ -117,7 +117,7 @@ export default function* tdpAbsorber(str = ''): Generator<PathToken, undefined, 
 
 	const drive = getDrive(str.slice(i, i + 2).toLowerCase());
 	if (drive[0] >= 'a' && drive[0] <= 'z' && drive[1] === ':') {
-		yield new PathToken(PathTokenEnum.ROOT, `${drive.join('')}`, i, i + 1);
+		yield new PathTokenImpl(PathTokenEnum.ROOT, `${drive.join('')}`, i, i + 1);
 		i = 2;
 	}
 	// also a unix path would work if it is win32 system
@@ -128,7 +128,7 @@ export function* tdpBodyAbsorber(
 	str = '',
 	start: number,
 	end = str.length - 1,
-): Generator<PathToken, undefined, undefined> {
+): Generator<PathTokenImpl, undefined, undefined> {
 	// also a unix path would work if it is winsos system
 	let toggle = 0;
 	let i = start;
@@ -159,8 +159,8 @@ export function* tdpBodyAbsorber(
 				}
 			}
 			yield errors?.length
-				? new PathToken(token, value, result.start, result.end, errors?.join('|'))
-				: new PathToken(token, value, result.start, result.end);
+				? new PathTokenImpl(token, value, result.start, result.end, errors?.join('|'))
+				: new PathTokenImpl(token, value, result.start, result.end);
 			i = result.end + 1;
 		}
 		toggle = ++toggle % 2;

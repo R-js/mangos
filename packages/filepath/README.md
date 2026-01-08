@@ -67,12 +67,6 @@ There are 2 exported classes:
 import { ParsedPath,  ParsedPathError, PathToken } from '@mangos/filepath';
 ```
 
-There is 1 exported enum:
-
-```typescript
-import { PathTokenEnum } from '@mangos/filepath'
-```
-
 There is 1 exported type:
 
 ```typescript
@@ -145,7 +139,6 @@ You dont create `PathToken`s yourself the api will do it for you.
 
 ```typescript
 class PathToken {
-    token: PathTokenValueType;
 	value: string; // actual path fragment (directory, seperator, or file)
 	start: number; // start location in the original string
 	end: number; // end (inclusive) in the original string
@@ -155,19 +148,8 @@ class PathToken {
     isCurrent(): boolean; // token representing "./"
     isParent(): boolean // token representing "../"
     isSeperator(): boolean // token representing "/" (posix) or "\" (windows, dos)
+    hasError(): boolean // did tokenizing the path associated an error with this token
 }
-```
-
-The `PathTokenValueType` match the exported `PathTokenEnum` object
-
-```typescript
-export const PathTokenEnum = {
-	SEP: '\x01',       // path seperator
-	ROOT: '\x03',      // the root (if it is an absolute path)
-	PATHELT: '\x06',   // directory, file, 
-	PARENT: '\x07',    // two dots (..) meaning parent directory
-	CURRENT: '\x08',   // a single dot (.) meaning current directory
-} as const;
 ```
 
 <h3 id="api-functions">Functions</h3>

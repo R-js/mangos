@@ -7,8 +7,8 @@ import uncAbsorber from '../src/absorbers/unc.js';
 import { PathTokenEnum } from '../src/constants.js';
 import { ParsedPath } from '../src/ParsedPath.js';
 import { ParsedPathError } from '../src/ParsedPathError.js';
+import { PathTokenImpl } from '../src/PathTokenImpl.js';
 import { allPath, resolve } from '../src/parser.js';
-import { PathToken } from '../src/Token.js';
 
 describe('filepath', () => {
 	describe('resolve', () => {
@@ -156,18 +156,18 @@ describe('filepath', () => {
 				new ParsedPathError({
 					type: 'dos',
 					path: [
-						PathToken.from({ token: '\x03', value: 'c:', start: 0, end: 1 }),
-						PathToken.from({ token: '\x01', start: 2, end: 2, value: '\\' }),
-						PathToken.from({ token: '\x06', start: 3, end: 9, value: 'somedir' }),
-						PathToken.from({ token: '\x01', start: 10, end: 10, value: '\\' }),
-						PathToken.from({
+						PathTokenImpl.from({ token: '\x03', value: 'c:', start: 0, end: 1 }),
+						PathTokenImpl.from({ token: '\x01', start: 2, end: 2, value: '\\' }),
+						PathTokenImpl.from({ token: '\x06', start: 3, end: 9, value: 'somedir' }),
+						PathTokenImpl.from({ token: '\x01', start: 10, end: 10, value: '\\' }),
+						PathTokenImpl.from({
 							token: '\x06',
 							start: 11,
 							end: 24,
 							value: 'someOtherdir?:',
 							error: 'name "someOtherdir?:" contains invalid characters',
 						}),
-						PathToken.from({ token: '\u0001', start: 25, end: 25, value: '\\' }),
+						PathTokenImpl.from({ token: '\u0001', start: 25, end: 25, value: '\\' }),
 					],
 				}),
 			]);
@@ -178,7 +178,7 @@ describe('filepath', () => {
 				new ParsedPath({
 					type: 'devicePath',
 					path: [
-						PathToken.from({
+						PathTokenImpl.from({
 							token: PathTokenEnum.ROOT,
 							value: '\\\\?\\UNC\\Server\\share',
 							start: 0,
@@ -189,50 +189,50 @@ describe('filepath', () => {
 				new ParsedPathError({
 					type: 'dos',
 					path: [
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0001',
 							start: 0,
 							end: 1,
 							value: '\\',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0006',
 							start: 2,
 							end: 2,
 							value: '?',
 							error: 'name "?" contains invalid characters',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0001',
 							start: 3,
 							end: 3,
 							value: '\\',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0006',
 							start: 4,
 							end: 6,
 							value: 'UNC',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0001',
 							start: 7,
 							end: 7,
 							value: '\\',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0006',
 							start: 8,
 							end: 13,
 							value: 'Server',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0001',
 							start: 14,
 							end: 14,
 							value: '\\',
 						}),
-						PathToken.from({
+						PathTokenImpl.from({
 							token: '\u0006',
 							start: 15,
 							end: 19,
@@ -536,7 +536,7 @@ describe('filepath', () => {
 		it('empty path "//server/share////hello\\world"', () => {
 			const answer = Array.from(uncAbsorber('//server/share////hello\\world'));
 			expect(answer).toEqual([
-				PathToken.from({
+				PathTokenImpl.from({
 					token: PathTokenEnum.ROOT,
 					value: '\\\\server\\share',
 					start: 0,

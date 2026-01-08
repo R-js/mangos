@@ -1,4 +1,4 @@
-import type { PathToken } from 'Token.js';
+import type { PathToken } from 'PathTokenImpl.js';
 import type { FileSystem, ParsedPathDTO } from './parser.js';
 
 export class ParsedPathError {
