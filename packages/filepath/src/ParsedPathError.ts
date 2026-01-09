@@ -22,7 +22,7 @@ export class ParsedPathError {
 	toDTO(): ParsedPathDTO {
 		return {
 			type: this.type,
-			path: this.path.map(pt => pt.toDTO()),
-		}
+			path: this.path.map((pt) => pt.toDTO()),
+		};
 	}
 }

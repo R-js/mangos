@@ -4,7 +4,6 @@ import { ddpAbsorber } from '../src/absorbers/ddp.js';
 import posixAbsorber from '../src/absorbers/posix.js';
 import tdpAbsorber from '../src/absorbers/tdp.js';
 import uncAbsorber from '../src/absorbers/unc.js';
-import { PathTokenEnum } from '../src/constants.js';
 import { ParsedPath } from '../src/ParsedPath.js';
 import { ParsedPathError } from '../src/ParsedPathError.js';
 import { PathTokenImpl } from '../src/PathTokenImpl.js';
@@ -18,7 +17,7 @@ describe('filepath', () => {
 			const fidelity = answer.path.map((m) => renderPath.slice(m.start, m.end + 1)).join('');
 			expect(fidelity).toBe('\\\\?\\UNC\\Server\\share\\hello\\world');
 			expect(answer.type).toBe('devicePath');
-			expect(answer.path.map(pt => pt.toDTO())).toEqual([
+			expect(answer.path.map((pt) => pt.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\?\\UNC\\Server\\share',
@@ -59,7 +58,7 @@ describe('filepath', () => {
 			// since the answer is the current working directory we test with "fidelity" heuristic
 			// const renderPath = answer.path.map(m => m.value).join('');
 			expect(answer.type).toBe('devicePath');
-			expect(answer.path.map(pt => pt.toDTO())).toEqual([
+			expect(answer.path.map((pt) => pt.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\?\\UNC\\Server\\share',
@@ -75,7 +74,7 @@ describe('filepath', () => {
 		it('from "//Server1/Share1/test1/", to "../../../../../hello/world"', () => {
 			const answer = resolve('//Server1/Share1/test1', '../../../../../hello/world');
 			expect(answer.type).toBe('unc');
-			expect(answer.path.map(tp => tp.toDTO())).toEqual([
+			expect(answer.path.map((tp) => tp.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\Server1\\Share1',
@@ -94,7 +93,7 @@ describe('filepath', () => {
 			// since the answer is the current working directory we test with "fidelity" heuristic
 			//const renderPath = answer.path.map(m => m.value).join('');
 			expect(answer.type).toBe('dos');
-			expect(answer.path.map(pt => pt.toDTO())).toEqual([
+			expect(answer.path.map((pt) => pt.toDTO())).toEqual([
 				{ type: 'ROOT', value: 'c:', start: 0, end: 1 },
 				{ type: 'SEP', start: 2, end: 2, value: '\\' },
 				{ type: 'PATHELT', start: 3, end: 22, value: 'hello' },
@@ -108,7 +107,7 @@ describe('filepath', () => {
 				'../../.././././///hello/world',
 			);
 			expect(answer.type).toBe('devicePath');
-			expect(answer.path.map(tp => tp.toDTO())).toEqual([
+			expect(answer.path.map((tp) => tp.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\?\\Volume{b75e2c83-0000-0000-0000-602f00000000}',
@@ -128,7 +127,7 @@ describe('filepath', () => {
 				'c:\\Users\\guest',
 			);
 			expect(answer.type).toBe('dos');
-			expect(answer.path.map(tp => tp.toDTO())).toEqual([
+			expect(answer.path.map((tp) => tp.toDTO())).toEqual([
 				{ type: 'ROOT', value: 'c:', start: 0, end: 1 },
 				{ type: 'SEP', start: 2, end: 2, value: '\\' },
 				{ type: 'PATHELT', start: 3, end: 7, value: 'Users' },
@@ -140,21 +139,23 @@ describe('filepath', () => {
 	describe('inferPathType', () => {
 		it('path "C:\\somedir\\someOtherdir?:\\"', () => {
 			const answer = allPath('C:\\somedir\\someOtherdir?:\\');
-			expect(answer.map(dp => dp.type)).toEqual(['dos']);
-			expect(answer.map(dp => dp.path.map(tk => tk.toDTO()))).toEqual([[
-				{ type: 'ROOT', value: 'c:', start: 0, end: 1 },
-				{ type: 'SEP', start: 2, end: 2, value: '\\' },
-				{ type: 'PATHELT', start: 3, end: 9, value: 'somedir' },
-				{ type: 'SEP', start: 10, end: 10, value: '\\' },
-				{
-					type: 'PATHELT',
-					start: 11,
-					end: 24,
-					value: 'someOtherdir?:',
-					error: 'name "someOtherdir?:" contains invalid characters',
-				},
-				{ type: 'SEP', start: 25, end: 25, value: '\\' },
-			]]);
+			expect(answer.map((dp) => dp.type)).toEqual(['dos']);
+			expect(answer.map((dp) => dp.path.map((tk) => tk.toDTO()))).toEqual([
+				[
+					{ type: 'ROOT', value: 'c:', start: 0, end: 1 },
+					{ type: 'SEP', start: 2, end: 2, value: '\\' },
+					{ type: 'PATHELT', start: 3, end: 9, value: 'somedir' },
+					{ type: 'SEP', start: 10, end: 10, value: '\\' },
+					{
+						type: 'PATHELT',
+						start: 11,
+						end: 24,
+						value: 'someOtherdir?:',
+						error: 'name "someOtherdir?:" contains invalid characters',
+					},
+					{ type: 'SEP', start: 25, end: 25, value: '\\' },
+				],
+			]);
 		});
 		it('path "//?/UNC/Server/share"', () => {
 			const answer = allPath('//?/UNC/Server/share');
@@ -230,7 +231,7 @@ describe('filepath', () => {
 		it('path "c:\\Users\\" interpreted as dos and unix types', () => {
 			const answer = allPath('c:\\Users\\', { posix: true, dos: true });
 
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'dos',
 					path: [
@@ -282,7 +283,7 @@ describe('filepath', () => {
 		});
 		it('path "\\\\Users\\" as "dos"', () => {
 			const answer = allPath('\\\\Users\\', { dos: true });
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'dos',
 					path: [
@@ -296,7 +297,7 @@ describe('filepath', () => {
 		});
 		it('interpret path "/path1/path2" as a "dos"', () => {
 			const answer = allPath('/path1/path2', { dos: true });
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'dos',
 					path: [
@@ -311,7 +312,7 @@ describe('filepath', () => {
 		});
 		it('path "\\Users\\share\\" should be "unc"', () => {
 			const answer = allPath('\\\\Users\\share\\');
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'unc',
 					path: [
@@ -329,7 +330,7 @@ describe('filepath', () => {
 		});
 		it('path "/"', () => {
 			const answer = Array.from(posixAbsorber('/'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					start: 0,
@@ -340,7 +341,7 @@ describe('filepath', () => {
 		});
 		it('path "////////"', () => {
 			const answer = Array.from(posixAbsorber('////////'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					start: 0,
@@ -351,7 +352,7 @@ describe('filepath', () => {
 		});
 		it('path "something////////something else"', () => {
 			const answer = Array.from(posixAbsorber('something////////something else'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'PATHELT',
 					start: 0,
@@ -374,7 +375,7 @@ describe('filepath', () => {
 		});
 		it('path ".././////../.....///\\\\c:/"', () => {
 			const answer = Array.from(posixAbsorber('.././////../.....///\\\\c:/'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'PARENT',
 					start: 0,
@@ -439,7 +440,7 @@ describe('filepath', () => {
 		});
 		it('path "//?/UNC/Server1/share1/file.txt" is legal posix', () => {
 			const answer = Array.from(posixAbsorber('//?/UNC/Server1/share1/file.txt'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					start: 0,
@@ -510,7 +511,7 @@ describe('filepath', () => {
 		});
 		it('empty path "//server/share/"', () => {
 			const answer = Array.from(uncAbsorber('//server/share/'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\server\\share',
@@ -527,7 +528,7 @@ describe('filepath', () => {
 		});
 		it('empty path "//server/share////hello\\world"', () => {
 			const answer = Array.from(uncAbsorber('//server/share////hello\\world'));
-			expect(answer.map(a => a.toDTO())).toEqual([
+			expect(answer.map((a) => a.toDTO())).toEqual([
 				{
 					type: 'ROOT',
 					value: '\\\\server\\share',

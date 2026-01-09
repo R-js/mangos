@@ -17,12 +17,12 @@ export class ParsedPath {
 	toDTO(): ParsedPathDTO {
 		return {
 			type: this.type,
-			path: this.path.map(pt => pt.toDTO()),
-		}
+			path: this.path.map((pt) => pt.toDTO()),
+		};
 	}
 }
 
 export type ParsedPathDTO = {
 	type: FileSystem;
 	path: PathTokenDTO[];
-}
+};

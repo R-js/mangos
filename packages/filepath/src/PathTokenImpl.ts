@@ -12,13 +12,7 @@ export class PathTokenImpl implements PathToken {
 	}): PathTokenImpl {
 		return new PathTokenImpl(o.token, o.value, o.start, o.end, o.error);
 	}
-	constructor(
-		token: PathTokenValueType,
-		value: string,
-		start: number,
-		end: number,
-		error?: string,
-	) {
+	constructor(token: PathTokenValueType, value: string, start: number, end: number, error?: string) {
 		this.#token = token;
 		this.#value = value;
 		this.#end = end;
@@ -70,7 +64,13 @@ export class PathTokenImpl implements PathToken {
 	}
 
 	clone(): PathTokenImpl {
-		return PathTokenImpl.from({ token: this.#token, value: this.#value, start: this.#start, end: this.#end, error: this.#error })
+		return PathTokenImpl.from({
+			token: this.#token,
+			value: this.#value,
+			start: this.#start,
+			end: this.#end,
+			error: this.#error,
+		});
 	}
 
 	toDTO(): PathTokenDTO {
@@ -79,8 +79,8 @@ export class PathTokenImpl implements PathToken {
 			...(this.#error && { error: this.#error }),
 			value: this.#value,
 			end: this.#end,
-			start: this.#start
-		}
+			start: this.#start,
+		};
 	}
 
 	#error: string | undefined;

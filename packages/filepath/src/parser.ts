@@ -149,7 +149,7 @@ function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPa
 	// at this point
 	// - "fromStr" is guaranteed to be absolute path
 	// - "toFragments" is guaranteed not to be an absolute path
-	const working = from.path.map(s => s.clone());
+	const working = from.path.map((s) => s.clone());
 	// the "toFragments"
 	// Use the first "tokens" to move-up, or down or side-ways fragments to
 	for (const token of firstPathTo.path) {
