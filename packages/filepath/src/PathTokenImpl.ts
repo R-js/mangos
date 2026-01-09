@@ -4,13 +4,13 @@ import type { PathTokenValueType } from './types/TokenValueType.js';
 
 export class PathTokenImpl implements PathToken {
 	static from(o: {
-		token: PathTokenValueType;
+		type: keyof typeof PathTokenEnum;
 		value: string;
 		start: number;
 		end: number;
 		error?: string | undefined;
 	}): PathTokenImpl {
-		return new PathTokenImpl(o.token, o.value, o.start, o.end, o.error);
+		return new PathTokenImpl(PathTokenEnum[o.type], o.value, o.start, o.end, o.error);
 	}
 	constructor(token: PathTokenValueType, value: string, start: number, end: number, error?: string) {
 		this.#token = token;
@@ -64,13 +64,7 @@ export class PathTokenImpl implements PathToken {
 	}
 
 	clone(): PathTokenImpl {
-		return PathTokenImpl.from({
-			token: this.#token,
-			value: this.#value,
-			start: this.#start,
-			end: this.#end,
-			error: this.#error,
-		});
+		return new PathTokenImpl(this.#token, this.#value, this.#start, this.#end, this.#error);
 	}
 
 	toDTO(): PathTokenDTO {
