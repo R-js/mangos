@@ -1,10 +1,10 @@
-import type { PathTokenImpl } from 'PathTokenImpl.js';
-import type { FileSystem, ParsedPathDTO } from './parser.js';
+import type { FileSystem, ParsedPathInputDTO } from './parser.js';
+import type { PathToken, PathTokenDTO } from './types/PathToken.js';
 
 export class ParsedPath {
-	readonly path: PathTokenImpl[];
+	readonly path: PathToken[];
 	readonly type: FileSystem;
-	constructor(parsed: ParsedPathDTO) {
+	constructor(parsed: ParsedPathInputDTO) {
 		this.type = parsed.type;
 		this.path = parsed.path;
 	}
@@ -14,4 +14,15 @@ export class ParsedPath {
 	isRelative() {
 		return this.path[0].isRoot() === false;
 	}
+	toDTO(): ParsedPathDTO {
+		return {
+			type: this.type,
+			path: this.path.map(pt => pt.toDTO()),
+		}
+	}
+}
+
+export type ParsedPathDTO = {
+	type: FileSystem;
+	path: PathTokenDTO[];
 }

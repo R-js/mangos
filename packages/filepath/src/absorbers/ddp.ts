@@ -40,7 +40,11 @@ function createRootToken(value: string, offset = 0) {
 	return new PathTokenImpl(PathTokenEnum.ROOT, value, offset, offset + value.length - 1);
 }
 
-export function* ddpAbsorber(str = '', start = 0, end = str.length - 1): Generator<PathTokenImpl, undefined, undefined> {
+export function* ddpAbsorber(
+	str = '',
+	start = 0,
+	end = str.length - 1,
+): Generator<PathTokenImpl, undefined, undefined> {
 	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
 	for (const pk of pks) {
 		const match = str.match(regExpOrderedMapDDP[pk]);

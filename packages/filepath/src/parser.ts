@@ -8,6 +8,7 @@ import { ParsedPath } from './ParsedPath.js';
 import { ParsedPathError } from './ParsedPathError.js';
 import { PathTokenImpl } from './PathTokenImpl.js';
 import mapPlatformNames from './platform.js';
+import type { PathToken } from './types/PathToken.js';
 
 const absorberMapping = {
 	unc: uncAbsorber,
@@ -39,9 +40,9 @@ function allPath(path = '', options: InferPathOptions = {}): (ParsedPath | Parse
 	return Array.from(inferPathType(path, options));
 }
 
-export type ParsedPathDTO = {
+export type ParsedPathInputDTO = {
 	type: FileSystem;
-	path: PathTokenImpl[];
+	path: PathToken[];
 	firstError?: number; // index in path at wich the first error occurs
 };
 
@@ -52,7 +53,7 @@ function createPathProcessor(path: string) {
 		if (_tokens.length === 0) {
 			return;
 		}
-		const rc: ParsedPathDTO = { type: ns, path: _tokens };
+		const rc: ParsedPathInputDTO = { type: ns, path: _tokens };
 		const hasError = _tokens.some((t) => !!t.error);
 		if (hasError) {
 			return new ParsedPathError(rc);
@@ -61,7 +62,7 @@ function createPathProcessor(path: string) {
 	};
 }
 
-function getErrors(parsed: ParsedPathDTO) {
+function getErrors(parsed: ParsedPathInputDTO) {
 	return parsed.path
 		.reduce((errors, token) => {
 			if (!token.error) {
@@ -73,13 +74,13 @@ function getErrors(parsed: ParsedPathDTO) {
 		.join('|');
 }
 
-function last(arr: PathTokenImpl[]) {
+function last(arr: PathToken[]) {
 	return arr[arr.length - 1];
 }
 
-function upp(path: PathTokenImpl[]) {
-	let _last: PathTokenImpl;
-	for (_last = last(path); _last.token === PathTokenEnum.SEP; _last = last(path)) {
+function upp(path: PathToken[]) {
+	let _last: PathToken;
+	for (_last = last(path); _last.isSeparator(); _last = last(path)) {
 		path.pop();
 	}
 	if (_last !== path[0]) {
@@ -87,17 +88,17 @@ function upp(path: PathTokenImpl[]) {
 	}
 }
 
-function add(_tokens: PathTokenImpl[], token: PathTokenImpl) {
+function add(_tokens: PathToken[], token: PathToken) {
 	if (token.isSeparator()) {
 		return; // skip this
 	}
 	let _last = last(_tokens);
 	// remove trailing Seperators
-	for (; _last.token === PathTokenEnum.SEP; _last = last(_tokens)) {
+	for (; _last.type === PathTokenEnum.SEP; _last = last(_tokens)) {
 		_tokens.pop();
 	}
 	_tokens.push(new PathTokenImpl(PathTokenEnum.SEP, getSeperator(), _last.end + 1, _last.end + 1));
-	_tokens.push(new PathTokenImpl(token.token, token.value, _last.end + 2, _last.end + +2 + token.end));
+	_tokens.push(new PathTokenImpl(token.type, token.value, _last.end + 2, _last.end + +2 + token.end));
 }
 
 function firstPathFromCWD(): ParsedPath {
@@ -148,18 +149,18 @@ function resolvePathObject(from: ParsedPath, ...toFragments: string[]): ParsedPa
 	// at this point
 	// - "fromStr" is guaranteed to be absolute path
 	// - "toFragments" is guaranteed not to be an absolute path
-	const working = structuredClone(from.path);
+	const working = from.path.map(s => s.clone());
 	// the "toFragments"
 	// Use the first "tokens" to move-up, or down or side-ways fragments to
 	for (const token of firstPathTo.path) {
-		switch (token.token) {
-			case PathTokenEnum.SEP:
-			case PathTokenEnum.CURRENT:
+		switch (true) {
+			case token.isSeparator():
+			case token.isCurrent():
 				break;
-			case PathTokenEnum.PARENT:
+			case token.isParent():
 				upp(working);
 				break;
-			case PathTokenEnum.PATHELT:
+			case token.isPathElement():
 				add(working, token);
 				break;
 			default:

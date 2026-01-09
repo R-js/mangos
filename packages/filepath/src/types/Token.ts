@@ -1,3 +1,5 @@
 export interface Token {
-    equals(a: Token): boolean;
+	equals(a: Token): boolean;
 }
+
+
