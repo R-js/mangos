@@ -63,7 +63,7 @@
         "eslint-config-prettier": "8.9.0",
         "eslint-plugin-prettier": "5.0.0",
         "husky": "7.0.2",
-        "jsdom": "22.1.0",
+        "jsdom": "28.1.0",
         "lint-staged": "11.1.2",
         "prettier": "3.0.0",
         "rollup-plugin-typescript-paths": "1.4.0",
