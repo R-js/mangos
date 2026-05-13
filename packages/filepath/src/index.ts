@@ -1,9 +1,9 @@
-export type { ParsedPath } from './parser/ParsedPath.js';
+export type { ParsedPath, ParsedPathDto } from './parser/ParsedPath.js';
 export {
-    allPath,
+    allPlatforms,
     type FileSystem,
-    firstPath,
+    parse,
     resolve,
     resolvePathObject,
 } from './parser/parser.js';
-export type { PathToken, PathTokenEnumKeys } from './types.js';
+export type { PathToken, PathTokenEnumKeys, TokenDto } from './types.js';

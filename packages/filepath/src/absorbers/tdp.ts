@@ -1,6 +1,6 @@
 import absorbSuccessiveValues from '../absorbSuccessiveValues.js';
 import { PathTokenImpl } from '../PathTokenImpl.js';
-import mapPlatformNames from '../platform.js';
+import { mapPlatformNames } from '../platform.js';
 import { type PathTokenEnumKeys, TokenValueEnum, togglePathFragment } from '../types.js';
 import { getCWD, getDrive, validSep } from '../utils.js';
 import { ddpAbsorber, regExpOrderedMapDDP } from './ddp.js';
@@ -154,9 +154,8 @@ export function* tdpBodyAbsorber(
                     }
                 }
             }
-            yield errors?.length
-                ? new PathTokenImpl(token, value, result.start, result.end, errors?.join('|'))
-                : new PathTokenImpl(token, value, result.start, result.end);
+            yield new PathTokenImpl(token, value, result.start, result.end, errors?.join('|'));
+
             i = result.end + 1;
         }
         toggle = ++toggle % 2;

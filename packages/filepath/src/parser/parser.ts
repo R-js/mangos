@@ -3,7 +3,7 @@ import posixAbsorber from '../absorbers/posix.js';
 import tdpAbsorber from '../absorbers/tdp.js';
 import uncAbsorber from '../absorbers/unc.js';
 import { PathTokenImpl } from '../PathTokenImpl.js';
-import mapPlatformNames from '../platform.js';
+import { mapPlatformNames } from '../platform.js';
 import { type PathToken, TokenValueEnum } from '../types.js';
 import { getCWD } from '../utils.js';
 import { type ParsedPath, ParsedPathImpl } from './ParsedPath.js';
@@ -19,11 +19,11 @@ export type FileSystem = keyof typeof absorberMapping;
 
 // order of importance
 
-export function firstPath(path = '', options: InferPathOptions = {}): ParsedPath | undefined {
+export function parse(path = ''): ParsedPath | undefined {
     if (path === '') {
         return undefined;
     }
-    const iterator = inferPathType(path, options);
+    const iterator = inferPathType(path);
     const step = iterator.next(); // only get the first one (is also the most likely one)
     if (step.done) {
         return undefined;
@@ -31,8 +31,8 @@ export function firstPath(path = '', options: InferPathOptions = {}): ParsedPath
     return step.value;
 }
 
-export function allPath(path = '', options: InferPathOptions = {}): ParsedPath[] {
-    return Array.from(inferPathType(path, options));
+export function allPlatforms(path = ''): ParsedPath[] {
+    return Array.from(inferPathType(path));
 }
 
 /** deprecated */
@@ -47,7 +47,7 @@ export type InferPathOptions = {
 };
 
 export function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
-    let firstPathFrom = firstPath(fromStr) ?? firstPathFromCWD();
+    let firstPathFrom = parse(fromStr) ?? firstPathFromCWD();
     if (firstPathFrom.firstError) {
         throw TypeError(`"from" path contains errors: ${firstPathFrom?.allErrors.map((err) => err.value).join('|')}`);
     }
@@ -68,7 +68,7 @@ export function resolvePathObject(from: ParsedPath, ...toFragments: string[]): P
         return from;
     }
 
-    const firstPathTo = firstPath(firstToStr);
+    const firstPathTo = parse(firstToStr);
     if (firstPathTo === undefined) {
         return from;
     }
@@ -160,7 +160,7 @@ function add(_tokens: PathToken[], token: PathToken) {
 }
 
 function firstPathFromCWD(): ParsedPath {
-    return firstPath(getCWD()) as ParsedPath;
+    return parse(getCWD()) as ParsedPath;
 }
 
 function getSeperator() {
@@ -170,22 +170,19 @@ function getSeperator() {
     return '/';
 }
 
-function defaultOptions(options: InferPathOptions = {}) {
-    if (allNamespaces.every((fs) => !(fs in options))) {
-        // no fs specified at all
-        const isWindows = mapPlatformNames() === 'win32';
-        return Object.assign(Object.create(null), {
-            unc: isWindows,
-            dos: isWindows,
-            devicePath: isWindows,
-            posix: !isWindows,
-        });
-    }
-    return options;
+function options(): { unc: boolean; dos: boolean; devicePath: boolean; posix: boolean } {
+    // no fs specified at all
+    const isWindows = mapPlatformNames() === 'win32';
+    return Object.assign(Object.create(null), {
+        unc: isWindows,
+        dos: isWindows,
+        devicePath: isWindows,
+        posix: !isWindows,
+    });
 }
 
-function* inferPathType(path: string, options: InferPathOptions = {}) {
-    const finalOptions = defaultOptions(options);
+function* inferPathType(path: string) {
+    const finalOptions = options();
     const processor = createPathProcessor(path);
     const filtered = allNamespaces.filter((f) => finalOptions[f]);
     for (const ns of filtered) {

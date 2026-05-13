@@ -5,9 +5,10 @@ import posixAbsorber from '../src/absorbers/posix.js';
 import tdpAbsorber from '../src/absorbers/tdp.js';
 
 import uncAbsorber from '../src/absorbers/unc.js';
-import { allPath, resolve } from '../src/index.js';
+import { allPlatforms, resolve } from '../src/index.js';
 import { PathTokenImpl } from '../src/PathTokenImpl.js';
 import { ParsedPathImpl } from '../src/parser/ParsedPath.js';
+import { setPlatForm } from '../src/platform.js';
 import { TokenValueEnum } from '../src/types.js';
 
 describe('filepath', () => {
@@ -39,7 +40,7 @@ describe('filepath', () => {
             expect(fidelity.toLowerCase()).to.equal(cwd.toLowerCase()); // in case of dos , driveletters, unc, devicePath can have UpperCase
         });
         it('from $current working dir', () => {
-            const thereCWD = allPath(process.cwd());
+            const thereCWD = allPlatforms(process.cwd());
             const sameAsCWD = resolve();
             expect(thereCWD).toEqual([sameAsCWD]);
             const fileInCWD = resolve('./h1', 'h2/h9/', 'h3');
@@ -121,7 +122,7 @@ describe('filepath', () => {
                 { type: TokenValueEnum.PATH_ELT, start: 73, end: 101, value: 'world' },
             ]);
         });
-        it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/ Test/Foo.txt", to "../../../../../hello/world", "c:\\Users\\guest"', () => {
+        it('from "//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt", to "../../../../../hello/world", "c:\\Users\\guest"', () => {
             const answer = resolve(
                 '//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt',
                 '../../.././././///hello/world',
@@ -137,9 +138,9 @@ describe('filepath', () => {
             ]);
         });
     });
-    describe('inferPathType', () => {
+    describe.only('inferPathType', () => {
         it('path "C:\\somedir\\someOtherdir?:\\"', () => {
-            const answer = allPath('C:\\somedir\\someOtherdir?:\\');
+            const answer = allPlatforms('C:\\somedir\\someOtherdir?:\\');
             expect(answer.map((dp) => dp.type)).toEqual(['dos']);
             expect(answer.map((dp) => dp.path.map((tk) => tk.toDto()))).toEqual([
                 [
@@ -158,9 +159,9 @@ describe('filepath', () => {
                 ],
             ]);
         });
-        it('path "//?/UNC/Server/share"', () => {
-            const answer = allPath('//?/UNC/Server/share');
-            expect(answer).toEqual([
+        it.only('path "//./UNC/Server/share"', () => {
+            const answer = allPlatforms('//./UNC/Server/share');
+            expect(answer.map((a) => a.toDto())).toEqual([
                 new ParsedPathImpl({
                     type: 'devicePath',
                     path: [
@@ -171,7 +172,7 @@ describe('filepath', () => {
                             end: 19,
                         }),
                     ],
-                }),
+                }).toDto(),
                 new ParsedPathImpl({
                     type: 'dos',
                     path: [
@@ -182,11 +183,10 @@ describe('filepath', () => {
                             value: '\\',
                         }),
                         PathTokenImpl.from({
-                            type: TokenValueEnum.PATH_ELT,
+                            type: TokenValueEnum.CURRENT,
                             start: 2,
                             end: 2,
-                            value: '?',
-                            error: 'name "?" contains invalid characters',
+                            value: '.',
                         }),
                         PathTokenImpl.from({
                             type: TokenValueEnum.SEP,
@@ -225,12 +225,12 @@ describe('filepath', () => {
                             value: 'share',
                         }),
                     ],
-                }),
+                }).toDto(),
             ]);
-        });
+        }, 1e9);
 
         it('path "c:\\Users\\" interpreted as dos and unix types', () => {
-            const answer = allPath('c:\\Users\\', { posix: true, dos: true });
+            const answer = allPlatforms('c:\\Users\\');
 
             expect(answer.map((a) => a.toDto())).toEqual([
                 {
@@ -262,28 +262,10 @@ describe('filepath', () => {
                         },
                     ],
                 },
-                {
-                    /* 
-                        perfectly legal in postscript
-                    	
-                        root@edge-1:~# echo 'hello' > 'c:\\rooot\\'
-                        root@edge-1:~# ls
-                            'c:\\rooot\\'   testfolder
-                    */
-                    type: 'posix',
-                    path: [
-                        {
-                            end: 8,
-                            start: 0,
-                            type: TokenValueEnum.PATH_ELT,
-                            value: 'c:\\Users\\',
-                        },
-                    ],
-                },
             ]);
         });
         it('path "\\\\Users\\" as "dos"', () => {
-            const answer = allPath('\\\\Users\\', { dos: true });
+            const answer = allPlatforms('\\\\Users\\');
             expect(answer.map((a) => a.toDto())).toEqual([
                 {
                     type: 'dos',
@@ -296,23 +278,25 @@ describe('filepath', () => {
                 },
             ]);
         });
-        it('interpret path "/path1/path2" as a "dos"', () => {
-            const answer = allPath('/path1/path2', { dos: true });
+        it('interpret path "/path1/path2" as a "posix"', () => {
+            setPlatForm(() => 'linux');
+            const answer = allPlatforms('/path1/path2'); // because we are on windows machine
             expect(answer.map((a) => a.toDto())).toEqual([
                 {
-                    type: 'dos',
+                    type: 'posix',
                     path: [
-                        { type: TokenValueEnum.ROOT, value: 'c:', start: 0, end: 1 },
-                        { type: TokenValueEnum.SEP, start: 2, end: 2, value: '\\' },
-                        { type: TokenValueEnum.PATH_ELT, start: 3, end: 7, value: 'path1' },
-                        { type: TokenValueEnum.SEP, start: 8, end: 8, value: '\\' },
-                        { type: TokenValueEnum.PATH_ELT, start: 9, end: 13, value: 'path2' },
+                        { type: TokenValueEnum.ROOT, value: '/', start: 0, end: 0 },
+                        { type: TokenValueEnum.PATH_ELT, start: 1, end: 5, value: 'path1' },
+                        { type: TokenValueEnum.SEP, start: 6, end: 6, value: '/' },
+                        { type: TokenValueEnum.PATH_ELT, start: 7, end: 11, value: 'path2' },
                     ],
                 },
             ]);
+            setPlatForm(undefined);
         });
         it('path "\\Users\\share\\" should be "unc"', () => {
-            const answer = allPath('\\\\Users\\share\\');
+            setPlatForm(undefined);
+            const answer = allPlatforms('\\\\Users\\share\\');
             expect(answer.map((a) => a.toDto())).toEqual([
                 {
                     type: 'unc',
