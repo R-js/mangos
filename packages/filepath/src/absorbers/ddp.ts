@@ -1,60 +1,63 @@
-import { PathTokenEnum } from '../constants.js';
+import { resolve } from 'node:path';
 import { PathTokenImpl } from '../PathTokenImpl.js';
+import { TokenValueEnum } from '../types.js';
 import { tdpBodyAbsorber } from './tdp.js';
 
+resolve('');
+
 type RegExporderdMapDDP = {
-	ddpwithUNC: RegExp;
-	ddpwithVolumeUUID: RegExp;
-	ddpwithTDP: RegExp;
-	unc?: RegExp;
+    ddpwithUNC: RegExp;
+    ddpwithVolumeUUID: RegExp;
+    ddpwithTDP: RegExp;
+    unc?: RegExp;
 };
 
 export const regExpOrderedMapDDP: RegExporderdMapDDP = {
-	//  \\?\UNC\Server\Share\
-	//  \\.\UNC\Server\Share\
-	ddpwithUNC: /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^/\\]+)(\/|\\)([^/\\]+)(\/|\\)?/i,
+    //  \\?\UNC\Server\Share\
+    //  \\.\UNC\Server\Share\
+    ddpwithUNC: /^(\/\/|\\\\)(.|\\?)(\/|\\)(unc)(\/|\\)([^/\\]+)(\/|\\)([^/\\]+)(\/|\\)?/i,
 
-	// example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\
-	// example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
-	ddpwithVolumeUUID:
-		/^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)?/i,
+    // example  \\.\Volume{b75e2c83-0000-0000-0000-602f00000000}\
+    // example  \\?\Volume{b75e2c83-0000-0000-0000-602f00000000}\
+    ddpwithVolumeUUID:
+        /^(\/\/|\\\\)(.|\\?)(\/|\\)(Volume{[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}})(\\|\/)?/i,
 
-	// example  \\?\C:\
-	// example  \\.\C:\
-	ddpwithTDP: /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)?/i,
+    // example  \\?\C:\
+    // example  \\.\C:\
+    ddpwithTDP: /^(\/\/|\\\\)(.|\\?)(\/|\\)([a-z]:)(\/|\\)?/i,
 };
 
 const createRootValueMap = {
-	ddpwithVolumeUUID(match: RegExpMatchArray) {
-		return `\\\\?\\${match[4]}`;
-	},
-	ddpwithUNC(match: RegExpMatchArray) {
-		return `\\\\?\\UNC\\${match[6]}\\${match[8]}`;
-	},
-	ddpwithTDP(match: RegExpMatchArray) {
-		return `\\\\?\\${match[4]}`;
-	},
+    ddpwithVolumeUUID(match: RegExpMatchArray) {
+        return `\\\\?\\${match[4]}`;
+    },
+    ddpwithUNC(match: RegExpMatchArray) {
+        return `\\\\?\\UNC\\${match[6]}\\${match[8]}`;
+    },
+    ddpwithTDP(match: RegExpMatchArray) {
+        return `\\\\?\\${match[4]}`;
+    },
 };
 
 function createRootToken(value: string, offset = 0) {
-	return new PathTokenImpl(PathTokenEnum.ROOT, value, offset, offset + value.length - 1);
+    return new PathTokenImpl(TokenValueEnum.ROOT, value, offset, offset + value.length - 1);
 }
 
 export function* ddpAbsorber(
-	str = '',
-	start = 0,
-	end = str.length - 1,
+    str = '',
+    start = 0,
+    end = str.length - 1,
 ): Generator<PathTokenImpl, undefined, undefined> {
-	const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
-	for (const pk of pks) {
-		const match = str.match(regExpOrderedMapDDP[pk]);
-		if (match === null) {
-			continue;
-		}
-		const rootValue = createRootValueMap[pk](match);
-		const record = createRootToken(rootValue, start);
-		yield record;
-		yield* tdpBodyAbsorber(str, record.end + 1, end);
-		break;
-	}
+    const pks = Object.keys(regExpOrderedMapDDP) as (keyof Omit<RegExporderdMapDDP, 'unc'>)[];
+    for (const pk of pks) {
+        const match = str.match(regExpOrderedMapDDP[pk]);
+        if (match === null) {
+            continue;
+        }
+        const rootValue = createRootValueMap[pk](match);
+        const record = createRootToken(rootValue, start);
+        yield record;
+        yield* tdpBodyAbsorber(str, record.end + 1, end);
+        break;
+    }
 }

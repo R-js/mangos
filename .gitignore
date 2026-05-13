@@ -1,0 +1,6 @@
+tsconfig.tsbuildinfo
+node_modules
+cluster
+dist
+provisioning\ copy/
+*turtle*

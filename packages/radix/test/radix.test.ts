@@ -31,6 +31,40 @@ function prepareRadix() {
 
 describe('radix', () => {
 	describe('success', () => {
+		it('get all terminals', () => {
+			const { root } = prepareRadix();
+			// from root scope
+			const terminals = root.terminals();
+			expect(
+				terminals.map((terminals) =>
+					terminals
+						.pathFromRoot()
+						.map((tk) => tk.value)
+						.join('/'),
+				),
+			).toEqual([
+				'//assets/pictures/1.jpg',
+				'//assets/pictures/2.jpg',
+				'//assets/pictures/thumb-nails/2.jpg',
+				'//assets/pictures/thumb-nails/members/user1',
+			]);
+
+			// from "thumbnails subdir down-ward" scope
+			const thumbNailTerminals = root.select(getPathSegments('/assets/pictures/thumb-nails'))?.terminals();
+
+			if (thumbNailTerminals === undefined) {
+				throw new Error('No tokens under /assets/pictures/thumb-nails');
+			}
+
+			expect(
+				thumbNailTerminals.map((terminals) =>
+					terminals
+						.pathFromRoot()
+						.map((tk) => tk.value)
+						.join('/'),
+				),
+			).toEqual(['//assets/pictures/thumb-nails/2.jpg', '//assets/pictures/thumb-nails/members/user1']);
+		});
 		it('insert token sequence into radix', () => {
 			const { cnt1, cnt2, cnt3 } = prepareRadix();
 

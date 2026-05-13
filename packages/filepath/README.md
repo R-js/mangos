@@ -1,7 +1,13 @@
 
-<h1>filepath tokenizer</h1>
+# filepath tokenizer
 
-<h2 id="synopsis">Synopsis</h2>
+Why?
+- Easy and consistent way to work with different filesystems irrespective of the OS the process using this library is running on.
+- <a id="failure-modes"></a> Node `resolve` has failure modes, it will consume the root element of a path if you insert enough `..` parent operators.
+
+Node <code>resolve</code> has failure modes, they are discussed below for the several file systems</h2>
+
+## Synopsis
 
 _Part of the monorepo [mangos][mangos-mono-repo]_
 
@@ -9,71 +15,153 @@ _Part of the monorepo [mangos][mangos-mono-repo]_
 - Preserves correctly (node `resolve` does not) the root of _dos device path_ and _unc path_.
 - Provides utilities to work with different path types irrespective of OS used.
 
-<h2 id="supported-path">Supported Paths</h2>
+## Supported Paths
 
 - [Microsoft dos device path][ddp]
 - [UNC path][unc]
 - [Traditional DOS path][tdp]
 - [Unix path][posix]
 
-<h2 id="ddp-failure">Node <code>resolve</code> does not preserve root of <a href="https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#dos-device-paths"<i>DOS Device Path</i></a></h2>
+## Node [`resolve`][node-resolve] has <a href="#failure-modes">failure modes</a>, they are discussed below for the several file systems.
 
-_Note: `\` needs to be escaped when using it in js code._
+### dos device path (ddp) failure
+
+[`resolve`][node-resolve] below snippet will mangle the `'//?/C:/repos'`
 
 ```javascript
-// node  
-> path.resolve('\\\\?\\C:\\repos','../../../text.txt');
-// -> \\?\text.txt  \\?\C: is mangled
+import { resolve } from 'node:path';
+// note \ needs to be escaped to \\ so we use / instead
 
-// filePath
-> fp.resolve('\\\\?\\C:\\repos','../../../text.txt').toString();
-// -> '\\?\C:\text.txt'  aka'\\?\C:\' root is preserved
+resolve('//?/C:/repos','../../../text.txt');
+// ->  //?/text.txt  
+// -> "//?/C": is lost
 ```
 
-<h2 id="unc-failure"> Node <code>resolve</code> does not (always) preserve root of <a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths"><i>UNC Path</i></a></h2>
+```javascript
+import { resolve } from 'filepath';
+resolve('//?/C:/repos','../../../text.txt');
+// -> '//?/C:/repos\text.txt'
+// -> correctly preserves "//?/C:/repos"
+```
 
-_Note: `\` needs to be escaped when using it in js code._
+### unc path failure
+
+[`resolve`][node-resolve] below snippet will mangle the `//?/UNC/Server/share`
 
 ```javascript
 // node resolve
-path.resolve('//?/UNC/Server/share', '../../../txt');
-// -> '\\\\?\\txt'  mangled unc loot
-
-// this library
-filePath.resolve('//?/UNC/Server/share', '../../../txt').toString();
-// -> '\\\\?\\UNC\\Server\\share\\txt'  unc root preserved
-// -> root: \\\\?\\UNC\\Server\\share
-
-path.resolve('//system07/c$/x/y', '../../../../../txt');
-// -> '\\\\system07\\c$\\txt' unc root preserved 
-
-fp.resolve('//system07/c$/x/y', '../../../../../txt').toString()
-// -> '\\\\system07\\c$\\txt' unc root is preserved
+import { resolve } from 'node:path';
+resolve('//?/UNC/Server/share', '../../../txt');
+// -> '//?/txt'  //?//UNC/Server/share is destroyed by node resolve
 ```
 
-<h2 id="api">Api</h2>
+resolve from filepath preserves root
 
-<h3 id="api-overview">Overview</h3>
+```javascript
+import { resolve } from '@mangos/filepath';
 
-There are 4 exported functions:
+resolve('//?/UNC/Server/share', '../../../txt');
+// -> '//?/UNC/Server//share//txt'   
+//
+// root is preserved (//?/UNC/Server//share)
+
+// another example
+resolve('//system07/c$/x/y', '../../../../../txt');
+// -> '\\\\system07\\c$\\txt' unc root preserved 
+```
+
+### windows device path preservation
+
+
+```javascript
+import { resolve } from '@mangos/filepath';
+
+resolve('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt', '../../../../../hello/world');
+//
+// ->  //?/Volume{b75e2c83-0000-0000-0000-602f00000000}/hello/world
+//
+// despite the ../../ etc sequence of the second argument the root is preserved
+// also the "//./" is replaced by modern //?/ to prevent legacy file handling in windows
+
+```
+
+## Api
+
+### Overview
+
+#### There are 4 exported functions:
 
 ```typescript
 import { allPath, firstPath, resolve, resolvePathObject } from '@mangos/filepath';
 ```
 
-There are 2 exported classes:
+- `allPath`: infer filesystem from the path string, optionally using options.
+- `firstPath`: infer the most likely filesystem from path string, optionally using options.
+- `resolve`: like `node:path` counterpart but preserve root elements in the path
+- `resolveObject`: same as `resolve` but uses a js object instead of path string
+
+#### Classes
 
 ```typescript
-import { ParsedPath,  ParsedPathError, PathToken } from '@mangos/filepath';
+import { type ParsedPath, firstPath } from '@mangos/filepath';
+
+const pp: ParsedPath = firstPath('//./Volume{b75e2c83-0000-0000-0000-602f00000000}/Test/Foo.txt');
 ```
 
-There is 1 exported type:
+You will never create a ParsedPath directly it is created for you either by `allPath` or `firstPath`
+
+```typescript 
+export interface ParsedPath {
+    get path(): PathToken[];                        // path string is parsed in an array of PathToken
+    get type(): FileSystem;                         // filesystem type
+    clone(path: PathToken[]): ParsedPath;           // clone this result
+    toString(): string;                             // generate the path string from tokens
+    isRelative(): boolean;                          // was the path relative
+    toDto(): ParsedPathDto;
+    get firstError(): PathToken | undefined;
+    get allErrors(): TokenDto[];
+    iterator(): Generator<PathToken, void, void>;
+}
+
+
+- `ParsedPath`: the result of parsing operation `allPath`, `firstPath`. it is an implementation of the `PathToken` interface
+
+#### Types
+
+There are 3 types
 
 ```typescript
-import type { InferPathOptions } from '@mangos/filepath'
+import type { FileSystem, PathToken, PathTokenEnumKeys } from '@mangos/filepath'
 ```
 
-Most of the time you will be using <a href="#fn-resolve"><code>resolve</code></a>, <a href="#fn-first-path"><code>firstPath</code></a>.
+- `FileSystem`: Union type of supported paths: `type FileSystem: "unc" | "dos" | "devicePath" | "posix";`
+- `Pathtoken`: A Tokenized Path Element. A path like `/hello/world.txt` will be tokenized into 4 Path tokens  `/`, `hello`, `/`, `world.txt`
+
+```typescript
+export interface PathToken {
+    isRoot(): boolean;                 // is this a root of the path (relative paths dont have a root)
+    isSeparator(): boolean;            // is this a "/" (linux) "\" (windows)
+    isPathElement(): boolean;          // is this a normal path element
+    isCurrent(): boolean;              // is this a "." current dir element     
+    isParent(): boolean;               // is this a parent ".." element
+    equals(ot: PathToken): boolean;    // are 2 pathtokens the same
+    hasError(): boolean;               // was there a parsing error? (illigal path character for example)
+    get error(): undefined | string;   // get the error 
+    get type(): PathTokenEnumKeys;     // Union type "sep" | "root" | "pathElt" | "parent" | "current"
+    get value(): string;               // the original value that this token wraps
+    get start(): number;               // the start postion (zero based offset) in the path string slice of this path element
+    get end(): number;                 // the end position (inclusive) of the path string slice of this path element
+    clone(): PathToken;                // clone this path element
+    toDto(): TokenDto;                 // create a plain dto of the token
+}
+```
+
+- `PathTokenEnumKeys`: used to as a discriminating literal type for the different kind of tokens `"sep" | "root" | "pathElt" | "parent" | "current"`.
+
+
+
+
+<h3 id="fn-all-"></h3>
 
 <h3 id="infer-path-options">Type <code>InferPathOptions</code></h3>
 
@@ -88,14 +176,13 @@ type InferPathOptions = {
 }
 ```
 
-Multiple path types <i>can</i> be tokenized from the same path string.
+Multiple path types _can_ be tokenized from the same path string.
 
 The response of <a href="#fn-all-path"><code>allPath</code></a> will be an <b>array</b> of `ParsedPath` <b>or/and</b> <a href="#parsed-path-error"><code>ParsedPathError</code></a> class instance, representing parsing for multiple OS path types.
 
 <h4 id="infer-path-options-defaults">defaults:</h4>
 
 If <a href="#infer-path-options"><code>InferpathOptions</code></a> argument is left empty in <a href="#fn-all-path"><code>allPath</code></a> and <a href="#fn-first-path"><code>firstPath</code></a> the default will be used based on OS:
-
 
 - The default for windos: <code>{ dos: true, devicePath: true, unc: true, posix: false }</code>
 - The default for unix: <code>{ posix: true }</code>
@@ -261,4 +348,4 @@ Unless required by applicable law or agreed to in writing, software distributed 
 [tdp]: https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#traditional-dos-paths
 [posix]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap03.html#tag_03_266
 [mangos-mono-repo]: https://github.com/R-js/mangos
-
+[node-resolve]: https://nodejs.org/api/path.html#pathresolvepaths

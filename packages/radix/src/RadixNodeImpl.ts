@@ -153,4 +153,11 @@ export class RadixNodeImpl<T extends Token> implements RadixNode<T> {
 		this.#parent = this;
 		return nrNodesChanged + 1;
 	}
+	terminals(): RadixNode<T>[] {
+		if (this.#children.length === 0) {
+			return [this];
+		}
+		const allTerminals = this.#children.flatMap((child) => child.terminals());
+		return allTerminals;
+	}
 }
