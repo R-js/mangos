@@ -1,9 +1,6 @@
-import { resolve } from 'node:path';
 import { PathTokenImpl } from '../PathTokenImpl.js';
 import { TokenValueEnum } from '../types.js';
 import { tdpBodyAbsorber } from './tdp.js';
-
-resolve('');
 
 type RegExporderdMapDDP = {
     ddpwithUNC: RegExp;
