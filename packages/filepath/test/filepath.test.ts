@@ -138,7 +138,7 @@ describe('filepath', () => {
             ]);
         });
     });
-    describe.only('inferPathType', () => {
+    describe('inferPathType', () => {
         it('path "C:\\somedir\\someOtherdir?:\\"', () => {
             const answer = allPlatforms('C:\\somedir\\someOtherdir?:\\');
             expect(answer.map((dp) => dp.type)).toEqual(['dos']);
@@ -159,7 +159,7 @@ describe('filepath', () => {
                 ],
             ]);
         });
-        it.only('path "//./UNC/Server/share"', () => {
+        it('path "//./UNC/Server/share"', () => {
             const answer = allPlatforms('//./UNC/Server/share');
             expect(answer.map((a) => a.toDto())).toEqual([
                 new ParsedPathImpl({
