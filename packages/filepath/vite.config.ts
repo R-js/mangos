@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import typescript from '@rollup/plugin-typescript';
 
 export default defineConfig({
     test: {
@@ -20,6 +21,9 @@ export default defineConfig({
             fileName: 'index',
         },
         rollupOptions: {
+            plugins: [
+                typescript(),
+            ],
             output: {
                 preserveModules: true,
                 preserveModulesRoot: 'src',

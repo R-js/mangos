@@ -47,9 +47,9 @@ export type InferPathOptions = {
 };
 
 export function resolve(fromStr = getCWD(), ...toFragments: string[]): ParsedPath {
-    let firstPathFrom = parse(fromStr) ?? firstPathFromCWD();
+    let firstPathFrom: ParsedPath = parse(fromStr) ?? firstPathFromCWD();
     if (firstPathFrom.firstError) {
-        throw TypeError(`"from" path contains errors: ${firstPathFrom?.allErrors.map((err) => err.value).join('|')}`);
+        throw TypeError(`"from" path contains errors: ${firstPathFrom.allErrors.map((err) => err.value).join('|')}`);
     }
     // relative path? normalize!
     if (firstPathFrom.isRelative()) {

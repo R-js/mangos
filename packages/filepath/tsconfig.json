@@ -3,15 +3,14 @@
     "compilerOptions": {
         "target": "ESNext",
         "lib": ["ESNext", "DOM"],
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "outDir": "./dist",
-        "composite": true,
         "rootDir": "./src",
         "declaration": true,
         "declarationMap": true,
         "strict": true,
-        "types": ["node", "bun"]
+        "types": ["node"]
     },
     "include": ["src/**/*.ts"]
 }

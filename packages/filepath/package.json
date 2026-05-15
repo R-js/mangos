@@ -1,6 +1,6 @@
 {
     "name": "@mangos/filepath",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "author": "jacob bogers <jkfbogers@gmail.com>",
     "repository": {
         "type": "git",
@@ -16,8 +16,10 @@
     "types": "./dist/index.d.ts",
     "main": "./dist/index.js",
     "devDependencies": {
+        "@rollup/plugin-typescript": "12.3.0",
         "@types/node": "^25.7.0",
         "@vitest/coverage-v8": "^4.0.15",
+        "tslib": "2.8.1",
         "typescript": "^5.9.3",
         "vite": "^7.2.7",
         "vitest": "^4.0.15"
@@ -33,6 +35,7 @@
     "files": [
         "dist",
         "README.md",
+        "CHANGELOG.md",
         "package.json"
     ],
     "homepage": "https://github.com/R-js/mangos/blob/master/packages/filepath/README.md",
@@ -50,7 +53,7 @@
     "license": "Apache License 2.0",
     "scripts": {
         "prebuild": "npm run check",
-        "build": "vite build && tsc",
+        "build": "vite build",
         "prepack": "npm run build",
         "test": "vitest run --coverage",
         "check": "biome check .",
