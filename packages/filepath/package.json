@@ -1,6 +1,6 @@
 {
     "name": "@mangos/filepath",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "author": "jacob bogers <jkfbogers@gmail.com>",
     "repository": {
         "type": "git",
@@ -51,7 +51,7 @@
     "scripts": {
         "prebuild": "npm run check",
         "build": "vite build && tsc",
-        "prepublishOnly": "npm run build",
+        "prepack": "npm run build",
         "test": "vitest run --coverage",
         "check": "biome check .",
         "format": "biome format --write ."
